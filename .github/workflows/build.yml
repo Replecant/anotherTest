@@ -36,11 +36,25 @@ jobs:
           set -o pipefail
           ./gradlew build -Pneo_version=${{ steps.neo.outputs.version }} --stacktrace 2>&1 | tee build.log
 
+      - name: Smoke test (headless server loads all mod data)
+        id: smoke
+        if: steps.build.outcome == 'success'
+        run: |
+          set +e
+          timeout 600 ./gradlew runGameTestServer -Pneo_version=${{ steps.neo.outputs.version }} > server.log 2>&1
+          echo "gametest server exit code: $?"
+          # Any data-loading error that mentions our mod fails the job
+          if grep -E "(ERROR|Exception|Failed|Couldn't|Unknown|Invalid|Missing)" server.log | grep -i retrocosmos; then
+            echo "::error::Retro Cosmos data failed to load, see server.log"
+            exit 1
+          fi
+          grep -q "Retro Cosmos: countdown initiated" server.log || { echo "::error::Mod did not load"; exit 1; }
+
       - name: Publish build log (for debugging)
         if: always()
         run: |
-          mkdir -p /tmp/logs && cp build.log /tmp/logs/ || true
-          echo "status=${{ steps.build.outcome }} neo=${{ steps.neo.outputs.version }} sha=${{ github.sha }}" > /tmp/logs/status.txt
+          mkdir -p /tmp/logs && cp build.log server.log /tmp/logs/ 2>/dev/null || true
+          echo "status=${{ steps.build.outcome }} smoke=${{ steps.smoke.outcome }} neo=${{ steps.neo.outputs.version }} sha=${{ github.sha }}" > /tmp/logs/status.txt
           cd /tmp/logs
           git init -q -b ci-logs
           git config user.name "github-actions"
@@ -49,14 +63,14 @@ jobs:
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-logs
 
       - name: Upload jar artifact
-        if: steps.build.outcome == 'success'
+        if: steps.smoke.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: retrocosmos-jar
           path: build/libs/*.jar
 
       - name: Publish GitHub release
-        if: steps.build.outcome == 'success'
+        if: steps.smoke.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

@@ -28,6 +28,11 @@ neoForge {
         data {
             clientData()
         }
+        // Headless server that loads all registries/data packs, runs game tests and exits. Used by CI as a smoke test.
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             logLevel = org.slf4j.event.Level.INFO

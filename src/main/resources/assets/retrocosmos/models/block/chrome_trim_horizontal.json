@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "retrocosmos:block/chrome_trim_end",
+    "side": "retrocosmos:block/chrome_trim"
+  }
+}

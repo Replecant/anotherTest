@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "retrocosmos:block/sputnik_chandelier"
+    },
+    "lit=true": {
+      "model": "retrocosmos:block/sputnik_chandelier_on"
+    }
+  }
+}

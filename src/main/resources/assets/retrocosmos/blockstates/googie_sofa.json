@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/googie_sofa"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/googie_sofa",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/googie_sofa",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/googie_sofa",
+      "y": 270
+    }
+  }
+}

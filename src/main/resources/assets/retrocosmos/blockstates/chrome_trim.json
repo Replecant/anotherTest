@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "retrocosmos:block/chrome_trim"
+    },
+    "axis=z": {
+      "model": "retrocosmos:block/chrome_trim_horizontal",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "retrocosmos:block/chrome_trim_horizontal",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

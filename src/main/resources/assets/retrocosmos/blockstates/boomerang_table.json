@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/boomerang_table"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/boomerang_table",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/boomerang_table",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/boomerang_table",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "retrocosmos:block/atomic_floor_lamp"
+    },
+    "lit=true": {
+      "model": "retrocosmos:block/atomic_floor_lamp_on"
+    }
+  }
+}

@@ -47,7 +47,8 @@ public final class ModFurniture {
             spec(Shapes.or(Block.box(0, 0, 0, 16, 7, 16), Block.box(0, 7, 12, 16, 14, 16)), true, false, false, 0, 7, null),
             soft(MapColor.COLOR_CYAN));
     public static final DeferredBlock<FurnitureBlock> BOOMERANG_TABLE = furniture("boomerang_table",
-            spec(Shapes.or(Block.box(0, 10, 0, 16, 12, 16), Block.box(7, 0, 7, 9, 10, 9)), true, false, false, 0, -1, null),
+            spec(Shapes.or(Block.box(0, 10, 0, 16, 12, 16), Block.box(2, 0, 6, 4, 10, 8), Block.box(12, 0, 6, 14, 10, 8),
+                    Block.box(7, 0, 11, 9, 10, 13)), true, false, false, 0, -1, null),
             metal(MapColor.SAND));
 
     // --- Electronics ---

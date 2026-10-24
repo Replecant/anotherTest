@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/egg_chair"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/egg_chair",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/egg_chair",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/egg_chair",
+      "y": 270
+    }
+  }
+}

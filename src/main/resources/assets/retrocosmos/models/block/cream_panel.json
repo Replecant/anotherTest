@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "retrocosmos:block/cream_panel_end",
+    "side": "retrocosmos:block/cream_panel_side"
+  }
+}

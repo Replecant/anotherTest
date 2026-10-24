@@ -50,6 +50,13 @@ jobs:
           fi
           grep -q "Retro Cosmos: countdown initiated" server.log || { echo "::error::Mod did not load"; exit 1; }
 
+      - name: API probe (javap dumps for development)
+        if: always()
+        run: |
+          mkdir -p /tmp/logs
+          bash tools/ci/api_probe.sh /tmp/logs/api.txt || true
+          wc -l /tmp/logs/api.txt
+
       - name: Publish build log (for debugging)
         if: always()
         run: |

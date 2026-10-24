@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "part=bottom": {
+      "model": "retrocosmos:block/rocket_bottom"
+    },
+    "part=middle": {
+      "model": "retrocosmos:block/rocket_middle"
+    },
+    "part=top": {
+      "model": "retrocosmos:block/rocket_top"
+    }
+  }
+}

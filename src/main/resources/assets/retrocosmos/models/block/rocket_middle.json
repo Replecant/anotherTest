@@ -1,0 +1,41 @@
+{
+  "textures": {
+    "body": "retrocosmos:block/rocket_body",
+    "window": "retrocosmos:block/rocket_window",
+    "fin": "retrocosmos:block/rocket_fin",
+    "nozzle": "retrocosmos:block/rocket_nozzle",
+    "nozzle_bottom": "retrocosmos:block/rocket_nozzle_bottom",
+    "cone": "retrocosmos:block/rocket_cone",
+    "antenna": "retrocosmos:block/rocket_antenna",
+    "particle": "retrocosmos:block/rocket_body"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        16,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#window"
+        },
+        "south": {
+          "texture": "#window"
+        },
+        "east": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        }
+      }
+    }
+  ],
+  "ambientocclusion": false
+}

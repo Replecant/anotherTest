@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "YBY",
+    "TTT",
+    "III"
+  ],
+  "key": {
+    "Y": "minecraft:yellow_concrete",
+    "B": "minecraft:black_concrete",
+    "T": "retrocosmos:titanium_plate",
+    "I": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "retrocosmos:launch_pad",
+    "count": 4
+  }
+}

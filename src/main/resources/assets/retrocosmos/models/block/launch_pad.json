@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "retrocosmos:block/launch_pad_top",
+    "bottom": "retrocosmos:block/titanium_block",
+    "side": "retrocosmos:block/launch_pad_side"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TFT",
+    "TBT",
+    "T T"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "F": "minecraft:fire_charge",
+    "B": "minecraft:blast_furnace"
+  },
+  "result": {
+    "id": "retrocosmos:rocket_engine",
+    "count": 1
+  }
+}

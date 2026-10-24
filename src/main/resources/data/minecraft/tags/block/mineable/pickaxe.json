@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "retrocosmos:bauxite_ore",
+    "retrocosmos:deepslate_bauxite_ore",
+    "retrocosmos:titanium_ore",
+    "retrocosmos:deepslate_titanium_ore",
+    "retrocosmos:aluminum_block",
+    "retrocosmos:titanium_block",
+    "retrocosmos:launch_pad",
+    "retrocosmos:rocket"
+  ]
+}

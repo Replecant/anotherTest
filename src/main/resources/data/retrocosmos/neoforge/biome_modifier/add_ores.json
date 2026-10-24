@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "retrocosmos:ore_bauxite",
+    "retrocosmos:ore_titanium"
+  ],
+  "step": "underground_ores"
+}

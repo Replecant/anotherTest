@@ -1,0 +1,60 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:space_helmet"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.space_suit.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.space_suit.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_space_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:space_helmet"
+          }
+        ]
+      }
+    },
+    "has_space_suit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:space_suit"
+          }
+        ]
+      }
+    },
+    "has_space_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:space_leggings"
+          }
+        ]
+      }
+    },
+    "has_space_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:space_boots"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/titanium"
+}

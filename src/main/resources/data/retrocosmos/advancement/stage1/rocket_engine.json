@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket_engine"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.rocket_engine.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.rocket_engine.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_rocket_engine": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:rocket_engine"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/titanium"
+}

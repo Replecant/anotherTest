@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "W W",
+    "TVT",
+    "WTW"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "W": "minecraft:white_wool",
+    "V": "retrocosmos:vacuum_tube"
+  },
+  "result": {
+    "id": "retrocosmos:space_suit",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "retrocosmos:raw_aluminum",
+  "result": {
+    "id": "retrocosmos:aluminum_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

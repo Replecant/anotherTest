@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "VVV",
+    "RQR",
+    "TTT"
+  ],
+  "key": {
+    "V": "retrocosmos:vacuum_tube",
+    "R": "minecraft:redstone",
+    "Q": "minecraft:compass",
+    "T": "retrocosmos:titanium_plate"
+  },
+  "result": {
+    "id": "retrocosmos:guidance_computer",
+    "count": 1
+  }
+}

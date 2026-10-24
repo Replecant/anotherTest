@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " I ",
+    "A A",
+    "AAA"
+  ],
+  "key": {
+    "I": "minecraft:iron_nugget",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:empty_fuel_canister",
+    "count": 2
+  }
+}

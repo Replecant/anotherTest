@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "retrocosmos:titanium_ingot"
+  },
+  "result": {
+    "id": "retrocosmos:titanium_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:titanium_ingot"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.titanium.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.titanium.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_titanium_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:titanium_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/aluminum"
+}

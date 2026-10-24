@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:vacuum_tube"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.vacuum_tube.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.vacuum_tube.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_vacuum_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:vacuum_tube"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/aluminum"
+}

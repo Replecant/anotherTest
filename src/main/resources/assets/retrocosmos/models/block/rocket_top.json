@@ -1,0 +1,172 @@
+{
+  "textures": {
+    "body": "retrocosmos:block/rocket_body",
+    "window": "retrocosmos:block/rocket_window",
+    "fin": "retrocosmos:block/rocket_fin",
+    "nozzle": "retrocosmos:block/rocket_nozzle",
+    "nozzle_bottom": "retrocosmos:block/rocket_nozzle_bottom",
+    "cone": "retrocosmos:block/rocket_cone",
+    "antenna": "retrocosmos:block/rocket_antenna",
+    "particle": "retrocosmos:block/rocket_cone"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        2,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        6,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cone"
+        },
+        "south": {
+          "texture": "#cone"
+        },
+        "east": {
+          "texture": "#cone"
+        },
+        "west": {
+          "texture": "#cone"
+        },
+        "up": {
+          "texture": "#cone"
+        },
+        "down": {
+          "texture": "#cone"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        6,
+        5
+      ],
+      "to": [
+        11,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cone"
+        },
+        "south": {
+          "texture": "#cone"
+        },
+        "east": {
+          "texture": "#cone"
+        },
+        "west": {
+          "texture": "#cone"
+        },
+        "up": {
+          "texture": "#cone"
+        },
+        "down": {
+          "texture": "#cone"
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        11,
+        6
+      ],
+      "to": [
+        10,
+        14,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cone"
+        },
+        "south": {
+          "texture": "#cone"
+        },
+        "east": {
+          "texture": "#cone"
+        },
+        "west": {
+          "texture": "#cone"
+        },
+        "up": {
+          "texture": "#cone"
+        },
+        "down": {
+          "texture": "#cone"
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        14,
+        7.5
+      ],
+      "to": [
+        8.5,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#antenna"
+        },
+        "south": {
+          "texture": "#antenna"
+        },
+        "east": {
+          "texture": "#antenna"
+        },
+        "west": {
+          "texture": "#antenna"
+        },
+        "up": {
+          "texture": "#antenna"
+        },
+        "down": {
+          "texture": "#antenna"
+        }
+      }
+    }
+  ],
+  "ambientocclusion": false
+}

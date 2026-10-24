@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.rocket.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.rocket.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_rocket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:rocket"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/rocket_engine"
+}

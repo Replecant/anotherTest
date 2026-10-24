@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "retrocosmos:aluminum_ingot"
+  },
+  "result": {
+    "id": "retrocosmos:aluminum_block",
+    "count": 1
+  }
+}

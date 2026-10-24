@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "APA",
+    "AGA",
+    "APA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "P": "retrocosmos:titanium_plate",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "retrocosmos:hull_segment",
+    "count": 1
+  }
+}

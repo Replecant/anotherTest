@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket_fuel_canister"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.fuel.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.fuel.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_rocket_fuel_canister": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:rocket_fuel_canister"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/aluminum"
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:guidance_computer"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.guidance_computer.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.guidance_computer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_guidance_computer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:guidance_computer"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/vacuum_tube"
+}

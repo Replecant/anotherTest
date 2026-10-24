@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "TWT",
+    "W W",
+    "W W"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "W": "minecraft:white_wool"
+  },
+  "result": {
+    "id": "retrocosmos:space_leggings",
+    "count": 1
+  }
+}

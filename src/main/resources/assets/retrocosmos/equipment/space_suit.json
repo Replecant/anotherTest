@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "retrocosmos:space_suit"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "retrocosmos:space_suit"
+      }
+    ]
+  }
+}

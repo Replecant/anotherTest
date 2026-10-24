@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "  A",
+    " AA",
+    "TTA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "T": "retrocosmos:titanium_plate"
+  },
+  "result": {
+    "id": "retrocosmos:rocket_fin",
+    "count": 2
+  }
+}

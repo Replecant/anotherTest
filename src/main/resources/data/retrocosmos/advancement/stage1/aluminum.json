@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:aluminum_ingot"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.aluminum.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.aluminum.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_aluminum_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:aluminum_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/root"
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:empty_fuel_canister",
+    "minecraft:coal",
+    "minecraft:coal",
+    "minecraft:gunpowder",
+    "minecraft:blaze_powder"
+  ],
+  "result": {
+    "id": "retrocosmos:rocket_fuel_canister",
+    "count": 1
+  }
+}

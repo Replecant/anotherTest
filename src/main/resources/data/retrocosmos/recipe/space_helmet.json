@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "TTT",
+    "TGT"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "G": "minecraft:glass"
+  },
+  "result": {
+    "id": "retrocosmos:space_helmet",
+    "count": 1
+  }
+}

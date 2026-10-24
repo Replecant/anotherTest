@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "ARA",
+    "A A"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "R": "minecraft:redstone_torch"
+  },
+  "result": {
+    "id": "retrocosmos:nose_cone",
+    "count": 1
+  }
+}

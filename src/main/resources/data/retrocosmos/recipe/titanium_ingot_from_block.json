@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:titanium_block"
+  ],
+  "result": {
+    "id": "retrocosmos:titanium_ingot",
+    "count": 9
+  }
+}

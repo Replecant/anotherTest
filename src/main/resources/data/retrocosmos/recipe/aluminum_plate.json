@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "key": {
+    "#": "retrocosmos:aluminum_ingot"
+  },
+  "result": {
+    "id": "retrocosmos:aluminum_plate",
+    "count": 1
+  }
+}

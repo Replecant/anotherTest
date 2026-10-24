@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.root.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:gui/advancements/backgrounds/stone"
+  },
+  "criteria": {
+    "has_raw_aluminum": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "retrocosmos:raw_aluminum",
+              "retrocosmos:raw_titanium",
+              "retrocosmos:bauxite_ore",
+              "retrocosmos:titanium_ore"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " N ",
+    "FGF",
+    "HEH"
+  ],
+  "key": {
+    "N": "retrocosmos:nose_cone",
+    "G": "retrocosmos:guidance_computer",
+    "H": "retrocosmos:hull_segment",
+    "F": "retrocosmos:rocket_fin",
+    "E": "retrocosmos:rocket_engine"
+  },
+  "result": {
+    "id": "retrocosmos:rocket",
+    "count": 1
+  }
+}

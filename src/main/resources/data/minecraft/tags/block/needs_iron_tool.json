@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "retrocosmos:titanium_ore",
+    "retrocosmos:deepslate_titanium_ore",
+    "retrocosmos:titanium_block",
+    "retrocosmos:launch_pad"
+  ]
+}

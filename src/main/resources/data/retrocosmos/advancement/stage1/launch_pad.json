@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:launch_pad"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.launch_pad.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.launch_pad.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_launch_pad": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:launch_pad"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/titanium"
+}

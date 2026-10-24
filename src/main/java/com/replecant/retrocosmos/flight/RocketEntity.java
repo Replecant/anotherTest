@@ -45,6 +45,8 @@ public class RocketEntity extends Entity {
     public static final int PHASE_ASCENT = 1;
     public static final int PHASE_ORBIT = 2;
     public static final int PHASE_DESCENT = 3;
+    /** Touched down; the crew climbs out on the next tick (once clients know the phase) and the rocket turns back into blocks. */
+    public static final int PHASE_LANDED = 4;
 
     public static final int PAD_COUNTDOWN = 10 * 20;
     /** Height above the world's build limit at which the rocket is considered to be in orbit. */
@@ -124,6 +126,7 @@ public class RocketEntity extends Entity {
             case PHASE_PAD -> 1.0F;
             case PHASE_ASCENT -> (float) (1.0 - 0.8 * Math.min(1, alt / span));
             case PHASE_ORBIT -> 0.2F;
+            case PHASE_LANDED -> 0.0F;
             default -> (float) (0.2 * Math.min(1, alt / span));
         };
     }
@@ -182,7 +185,7 @@ public class RocketEntity extends Entity {
 
     /** Whether the crew may leave right now (only while still on the pad). */
     public boolean canDisembark() {
-        return phase() == PHASE_PAD;
+        return phase() == PHASE_PAD || phase() == PHASE_LANDED;
     }
 
     @Override
@@ -210,6 +213,7 @@ public class RocketEntity extends Entity {
             case PHASE_ASCENT -> tickAscent(level, ticks);
             case PHASE_ORBIT -> tickOrbit(level, ticks);
             case PHASE_DESCENT -> tickDescent(level, ticks);
+            case PHASE_LANDED -> land(level);
             default -> setPhase(PHASE_DESCENT);
         }
     }
@@ -284,7 +288,8 @@ public class RocketEntity extends Entity {
         double speed = Math.max(0.12, Math.min(MAX_ASCENT_SPEED, height * 0.025));
         if (height <= speed) {
             setPos(getX(), padBase.getY(), getZ());
-            land(level);
+            setDeltaMovement(Vec3.ZERO);
+            setPhase(PHASE_LANDED);
             return;
         }
         move(-speed);

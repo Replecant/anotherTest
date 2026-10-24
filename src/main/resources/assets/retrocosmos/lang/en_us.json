@@ -87,6 +87,8 @@
   "message.retrocosmos.console.abort_manual": "Countdown aborted by the flight director.",
   "message.retrocosmos.console.abort_vehicle": "Countdown aborted: the vehicle or the launch complex is no longer GO.",
   "gui.retrocosmos.console.header": "MISSION CONTROL - LIBERTY I",
+  "gui.retrocosmos.console.go": "GO",
+  "gui.retrocosmos.console.no_go_short": "NO-GO",
   "gui.retrocosmos.console.vehicle": "VEHICLE",
   "gui.retrocosmos.console.vehicle_on_pad": "ON STAND, %sm",
   "gui.retrocosmos.console.vehicle_missing": "NOT FOUND",
@@ -137,9 +139,14 @@
   "command.retrocosmos.oxygen.set": "Suit oxygen of %s set to %s seconds",
   "command.retrocosmos.oxygen.no_suit": "%s is not wearing the pressure suit",
   "command.retrocosmos.hud": "Suit telemetry HUD: %s",
-  "gui.retrocosmos.hud.title": "TELEMETRY",
+  "gui.retrocosmos.hud.title": "SUIT TELEMETRY",
+  "gui.retrocosmos.hud.o2": "O2 %s",
+  "gui.retrocosmos.hud.creative": "CREATIVE: no oxygen damage",
   "gui.retrocosmos.hud.vacuum": "VAC",
   "gui.retrocosmos.hud.atmosphere": "ATM",
   "gui.retrocosmos.hud.o2_low": "! O2 LOW - RECHARGE !",
-  "gui.retrocosmos.hud.suit_breach": "! SUIT INCOMPLETE !"
+  "gui.retrocosmos.hud.suit_breach": "! SUIT INCOMPLETE !",
+  "message.retrocosmos.oxygen.creative": "You are in creative mode: oxygen does not drain and cannot hurt you. Switch to survival to test.",
+  "death.attack.retrocosmos.suffocation": "%1$s ran out of oxygen",
+  "death.attack.retrocosmos.suffocation.player": "%1$s ran out of oxygen whilst fighting %2$s"
 }

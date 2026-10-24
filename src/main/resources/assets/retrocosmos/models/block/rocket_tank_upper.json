@@ -1,0 +1,87 @@
+{
+  "textures": {
+    "body": "retrocosmos:block/rocket_body",
+    "stripe": "retrocosmos:block/rocket_body_stripe",
+    "star": "retrocosmos:block/rocket_body_star",
+    "hatch": "retrocosmos:block/rocket_hatch",
+    "window": "retrocosmos:block/rocket_window",
+    "fin": "retrocosmos:block/rocket_fin",
+    "nozzle": "retrocosmos:block/rocket_nozzle",
+    "nozzle_bottom": "retrocosmos:block/rocket_nozzle_bottom",
+    "cone": "retrocosmos:block/rocket_cone",
+    "antenna": "retrocosmos:block/rocket_antenna",
+    "chrome": "retrocosmos:block/rocket_chrome",
+    "particle": "retrocosmos:block/rocket_body"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        -4,
+        0,
+        -4
+      ],
+      "to": [
+        20,
+        16,
+        20
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#body"
+        }
+      }
+    }
+  ]
+}

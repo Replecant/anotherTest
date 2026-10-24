@@ -1,13 +1,31 @@
 {
   "variants": {
-    "part=bottom": {
-      "model": "retrocosmos:block/rocket_bottom"
+    "part=engine": {
+      "model": "retrocosmos:block/rocket_engine"
     },
-    "part=middle": {
-      "model": "retrocosmos:block/rocket_middle"
+    "part=fin_root": {
+      "model": "retrocosmos:block/rocket_fin_root"
     },
-    "part=top": {
-      "model": "retrocosmos:block/rocket_top"
+    "part=tank_lower": {
+      "model": "retrocosmos:block/rocket_tank_lower"
+    },
+    "part=tank_mid": {
+      "model": "retrocosmos:block/rocket_tank_mid"
+    },
+    "part=tank_upper": {
+      "model": "retrocosmos:block/rocket_tank_upper"
+    },
+    "part=cabin": {
+      "model": "retrocosmos:block/rocket_cabin"
+    },
+    "part=shoulder": {
+      "model": "retrocosmos:block/rocket_shoulder"
+    },
+    "part=cone": {
+      "model": "retrocosmos:block/rocket_cone"
+    },
+    "part=needle": {
+      "model": "retrocosmos:block/rocket_needle"
     }
   }
 }

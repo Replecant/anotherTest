@@ -92,71 +92,97 @@ public class ConsoleScreen extends AbstractContainerScreen<ConsoleMenu> {
         boolean suitOk = suit == LaunchSite.SUIT_FULL;
         boolean allGo = found && padOk && towerOk && fuelOk && oxOk && suitOk;
         boolean blink = (tick / 10) % 2 == 0;
+        int left = x + 6;
+        int right = x + CRT_W - 6;
 
         g.fill(x, y, x + CRT_W, y + CRT_H, CRT_BG);
 
-        // header
-        String header = Component.translatable("gui.retrocosmos.console.header").getString();
-        g.drawString(font, header, x + 6, y + 5, PHOSPHOR, false);
+        // header: title on the left, mission clock right-aligned; the clock loses its prefix, then the title shrinks
         String clock = String.format("MET %02d:%02d", (tick / 20 / 60) % 60, (tick / 20) % 60);
-        if (font.width(header) + font.width(clock) + 18 > CRT_W) {
+        String header = TextFit.str("gui.retrocosmos.console.header");
+        if (font.width(header) + font.width(clock) + 8 > right - left) {
             clock = clock.substring(4);
         }
-        g.drawString(font, clock, x + CRT_W - 6 - font.width(clock), y + 5, PHOSPHOR_DIM, false);
+        int clockX = TextFit.rightX(font, clock, right);
+        g.drawString(font, TextFit.fit(font, header, clockX - 6 - left), left, y + 5, PHOSPHOR, false);
+        g.drawString(font, clock, clockX, y + 5, PHOSPHOR_DIM, false);
         g.hLine(x + 4, x + CRT_W - 5, y + 15, PHOSPHOR_DIM);
 
-        // readouts
-        int ry = y + 20;
-        String vehicle;
-        if (found) {
-            int dx = menu.get(ConsoleMenu.DATA_DX), dz = menu.get(ConsoleMenu.DATA_DZ);
-            vehicle = Component.translatable("gui.retrocosmos.console.vehicle_on_pad", (int) Math.round(Math.sqrt(dx * dx + dz * dz))).getString();
-        } else {
-            vehicle = Component.translatable("gui.retrocosmos.console.vehicle_missing").getString();
+        // readout table: label column as wide as the widest label, GO / NO-GO column right-aligned
+        String goText = TextFit.str("gui.retrocosmos.console.go");
+        String noGoText = TextFit.str("gui.retrocosmos.console.no_go_short");
+        int flagW = Math.max(font.width(goText), font.width(noGoText));
+        int flagX = right - flagW;
+        String[] labels = {
+                TextFit.str("gui.retrocosmos.console.vehicle"), TextFit.str("gui.retrocosmos.console.pad"),
+                TextFit.str("gui.retrocosmos.console.tower"), TextFit.str("gui.retrocosmos.console.fuel"),
+                TextFit.str("gui.retrocosmos.console.oxidizer"), TextFit.str("gui.retrocosmos.console.suit")};
+        int labelW = 0;
+        for (String l : labels) {
+            labelW = Math.max(labelW, font.width(l));
         }
-        row(g, x, ry, Component.translatable("gui.retrocosmos.console.vehicle").getString(), vehicle, found);
-        row(g, x, ry + 11, Component.translatable("gui.retrocosmos.console.pad").getString(), pad + " / " + LaunchSite.PAD_SIZE, padOk);
-        row(g, x, ry + 22, Component.translatable("gui.retrocosmos.console.tower").getString(), tower + " / " + ServiceTowerBlock.MIN_HEIGHT, towerOk);
-        gauge(g, x, ry + 33, Component.translatable("gui.retrocosmos.console.fuel").getString(), fuel, RocketBlock.MAX_FUEL, fuelOk ? PHOSPHOR : AMBER);
-        gauge(g, x, ry + 44, Component.translatable("gui.retrocosmos.console.oxidizer").getString(), ox, RocketBlock.MAX_FUEL, oxOk ? PHOSPHOR : 0xFF7FD4FF);
+        labelW = Math.min(labelW, 96);
+        int valueX = left + labelW + 6;
+        int valueW = flagX - 6 - valueX;
+
+        int ry = y + 20;
+        String vehicle = found
+                ? TextFit.str("gui.retrocosmos.console.vehicle_on_pad", (int) Math.round(Math.sqrt(
+                        (double) menu.get(ConsoleMenu.DATA_DX) * menu.get(ConsoleMenu.DATA_DX) + (double) menu.get(ConsoleMenu.DATA_DZ) * menu.get(ConsoleMenu.DATA_DZ))))
+                : TextFit.str("gui.retrocosmos.console.vehicle_missing");
+        row(g, left, labelW, valueX, valueW, flagX, ry, labels[0], vehicle, found, goText, noGoText);
+        row(g, left, labelW, valueX, valueW, flagX, ry + 11, labels[1], pad + " / " + LaunchSite.PAD_SIZE, padOk, goText, noGoText);
+        row(g, left, labelW, valueX, valueW, flagX, ry + 22, labels[2], tower + " / " + ServiceTowerBlock.MIN_HEIGHT, towerOk, goText, noGoText);
+        gauge(g, left, labelW, valueX, right, ry + 33, labels[3], fuel, RocketBlock.MAX_FUEL, fuelOk ? PHOSPHOR : AMBER);
+        gauge(g, left, labelW, valueX, right, ry + 44, labels[4], ox, RocketBlock.MAX_FUEL, oxOk ? PHOSPHOR : 0xFF7FD4FF);
 
         // suit lamps
-        g.drawString(font, Component.translatable("gui.retrocosmos.console.suit").getString(), x + 6, ry + 55, PHOSPHOR_DIM, false);
+        g.drawString(font, TextFit.fit(font, labels[5], labelW), left, ry + 55, PHOSPHOR_DIM, false);
         String[] pieces = {"H", "C", "L", "B"};
+        int lampW = Math.min(18, Math.max(10, (right - valueX) / 4));
         for (int i = 0; i < 4; i++) {
             boolean on = (suit & (1 << i)) != 0;
-            int lx = x + 96 + i * 18;
-            g.fill(lx, ry + 54, lx + 14, ry + 64, on ? PHOSPHOR : 0xFF3A1E1E);
-            g.drawString(font, pieces[i], lx + 4, ry + 55, on ? CRT_BG : RED, false);
+            int lx = valueX + i * lampW;
+            g.fill(lx, ry + 54, lx + lampW - 4, ry + 64, on ? PHOSPHOR : 0xFF3A1E1E);
+            g.drawString(font, pieces[i], lx + (lampW - 4 - font.width(pieces[i])) / 2, ry + 55, on ? CRT_BG : RED, false);
         }
 
-        // GO / NO-GO board
+        // GO / NO-GO board: six equal cells across the tube
         int by = y + 90;
         g.hLine(x + 4, x + CRT_W - 5, by - 3, PHOSPHOR_DIM);
-        String[] labels = {"VEH", "PAD", "TWR", "RP1", "LOX", "SUIT"};
+        String[] cells = {"VEH", "PAD", "TWR", "RP1", "LOX", "SUIT"};
         boolean[] states = {found, padOk, towerOk, fuelOk, oxOk, suitOk};
-        for (int i = 0; i < labels.length; i++) {
-            int lx = x + 6 + i * 33;
+        int cellW = (CRT_W - 12) / cells.length;
+        for (int i = 0; i < cells.length; i++) {
+            int lx = left + i * cellW;
             boolean ok = states[i];
-            g.fill(lx, by, lx + 30, by + 18, ok ? 0xFF104020 : (blink ? 0xFF501818 : 0xFF301010));
-            g.drawCenteredString(font, labels[i], lx + 15, by + 2, ok ? PHOSPHOR : RED);
-            g.drawCenteredString(font, ok ? "GO" : "NO", lx + 15, by + 10, ok ? PHOSPHOR : RED);
+            g.fill(lx, by, lx + cellW - 3, by + 18, ok ? 0xFF104020 : (blink ? 0xFF501818 : 0xFF301010));
+            int cx = lx + (cellW - 3) / 2;
+            g.drawCenteredString(font, cells[i], cx, by + 2, ok ? PHOSPHOR : RED);
+            g.drawCenteredString(font, ok ? "GO" : "NO", cx, by + 10, ok ? PHOSPHOR : RED);
         }
 
-        // status line
+        // status line (always fitted to the tube width)
         int sy = by + 24;
+        String status;
+        int statusColor;
         if (countdown >= 0) {
             int seconds = (countdown + 19) / 20;
-            String t = String.format("T-%02d", seconds);
             g.fill(x + 4, sy - 2, x + CRT_W - 4, sy + 14, blink ? 0xFF402008 : 0xFF2A1404);
-            g.drawCenteredString(font, Component.translatable("gui.retrocosmos.console.counting", t).getString(), x + CRT_W / 2, sy + 3, AMBER);
+            status = TextFit.str("gui.retrocosmos.console.counting", String.format("T-%02d", seconds));
+            statusColor = AMBER;
         } else if (allGo) {
-            g.drawCenteredString(font, Component.translatable("gui.retrocosmos.console.all_go").getString(), x + CRT_W / 2, sy + 3, PHOSPHOR);
+            status = TextFit.str("gui.retrocosmos.console.all_go");
+            statusColor = PHOSPHOR;
         } else if (lastCheck == ConsoleBlockEntity.CHECK_NO_GO) {
-            g.drawCenteredString(font, Component.translatable("gui.retrocosmos.console.no_go").getString(), x + CRT_W / 2, sy + 3, blink ? RED : AMBER);
+            status = TextFit.str("gui.retrocosmos.console.no_go");
+            statusColor = blink ? RED : AMBER;
         } else {
-            g.drawCenteredString(font, Component.translatable("gui.retrocosmos.console.standby").getString(), x + CRT_W / 2, sy + 3, PHOSPHOR_DIM);
+            status = TextFit.str("gui.retrocosmos.console.standby");
+            statusColor = PHOSPHOR_DIM;
         }
+        status = TextFit.fit(font, status, CRT_W - 12);
+        g.drawString(font, status, x + (CRT_W - font.width(status)) / 2, sy + 3, statusColor, false);
 
         // scanlines and a soft vignette over everything on the tube
         for (int sl = y; sl < y + CRT_H; sl += 2) {
@@ -168,21 +194,25 @@ public class ConsoleScreen extends AbstractContainerScreen<ConsoleMenu> {
         g.fill(x + CRT_W - 2, y, x + CRT_W, y + CRT_H, 0x40000000);
     }
 
-    private void row(GuiGraphics g, int x, int y, String label, String value, boolean ok) {
-        g.drawString(font, label, x + 6, y, PHOSPHOR_DIM, false);
-        g.drawString(font, value, x + 96, y, ok ? PHOSPHOR : AMBER, false);
-        g.drawString(font, ok ? "GO" : "NO-GO", x + CRT_W - 6 - font.width(ok ? "GO" : "NO-GO"), y, ok ? PHOSPHOR : RED, false);
+    private void row(GuiGraphics g, int left, int labelW, int valueX, int valueW, int flagX, int y,
+                     String label, String value, boolean ok, String goText, String noGoText) {
+        g.drawString(font, TextFit.fit(font, label, labelW), left, y, PHOSPHOR_DIM, false);
+        g.drawString(font, TextFit.fit(font, value, valueW), valueX, y, ok ? PHOSPHOR : AMBER, false);
+        String flag = ok ? goText : noGoText;
+        int rightEdge = flagX + Math.max(font.width(goText), font.width(noGoText));
+        g.drawString(font, flag, TextFit.rightX(font, flag, rightEdge), y, ok ? PHOSPHOR : RED, false);
     }
 
-    private void gauge(GuiGraphics g, int x, int y, String label, int value, int max, int color) {
-        g.drawString(font, label, x + 6, y, PHOSPHOR_DIM, false);
-        int gx = x + 96, gw = 70;
-        g.fill(gx, y + 1, gx + gw, y + 8, 0xFF143020);
-        g.fill(gx + 1, y + 2, gx + 1 + (gw - 2) * value / max, y + 7, color);
-        for (int i = 1; i < max; i++) {
-            g.fill(gx + gw * i / max, y + 1, gx + gw * i / max + 1, y + 8, CRT_BG);
-        }
+    private void gauge(GuiGraphics g, int left, int labelW, int valueX, int right, int y, String label, int value, int max, int color) {
+        g.drawString(font, TextFit.fit(font, label, labelW), left, y, PHOSPHOR_DIM, false);
         String txt = value + "/" + max;
-        g.drawString(font, txt, x + CRT_W - 6 - font.width(txt), y, color, false);
+        int txtX = TextFit.rightX(font, txt, right);
+        int gw = Math.max(20, Math.min(70, txtX - 6 - valueX));
+        g.fill(valueX, y + 1, valueX + gw, y + 8, 0xFF143020);
+        g.fill(valueX + 1, y + 2, valueX + 1 + (gw - 2) * value / max, y + 7, color);
+        for (int i = 1; i < max; i++) {
+            g.fill(valueX + gw * i / max, y + 1, valueX + gw * i / max + 1, y + 8, CRT_BG);
+        }
+        g.drawString(font, txt, txtX, y, color, false);
     }
 }

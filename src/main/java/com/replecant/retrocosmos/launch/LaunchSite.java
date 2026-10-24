@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public final class LaunchSite {
     public static final int SCAN_RADIUS = 12;
-    public static final int SCAN_HEIGHT = 6;
+    public static final int SCAN_HEIGHT = 10;
     public static final int PAD_SIZE = 9;
 
     /** Snapshot of a launch site. {@code base} is the bottom rocket block, or null when no rocket was found. */

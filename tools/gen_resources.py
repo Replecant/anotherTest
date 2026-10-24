@@ -197,8 +197,8 @@ def launch_pad_side():
     return img
 
 
-def rocket_body():
-    """Sleek silver-white hull with panel seams, a cherry-red band and a navy star."""
+def rocket_body(variant="stripe"):
+    """Sleek silver-white hull with panel seams; variants: plain, stripe (red band), star, hatch."""
     img = new()
     noise_fill(img, WHITE, 2, 5)
     for y in range(16):
@@ -206,22 +206,32 @@ def rocket_body():
         px(img, [(14, y), (15, y)], WHITE_D)
         px(img, [(15, y)], WHITE_DD)
         px(img, [(2, y)], CHROME_L)
-    # horizontal panel seam
     for x in range(16):
         px(img, [(x, 4)], WHITE_D)
-    # cherry red racing band with chrome trim
-    for x in range(16):
-        px(img, [(x, 10)], CHROME)
-        for y in (11, 12, 13):
-            px(img, [(x, y)], RED)
-        px(img, [(x, 13)], RED_D)
-        px(img, [(x, 14)], CHROME)
-    star(img, 7, 7, NAVY)
+    for (x, y) in [(5, 2), (10, 2), (5, 13), (10, 13)]:
+        px(img, [(x, y)], CHROME_D)
+    if variant == "stripe":
+        for x in range(16):
+            px(img, [(x, 9)], CHROME)
+            for y in (10, 11, 12, 13):
+                px(img, [(x, y)], RED)
+            px(img, [(x, 13)], RED_D)
+            px(img, [(x, 14)], CHROME)
+    elif variant == "star":
+        star(img, 7, 8, NAVY)
+        px(img, [(8, 8), (8, 9), (7, 9), (6, 9)], NAVY)
+        px(img, [(7, 6), (7, 10), (5, 8), (9, 8)], NAVY_L)
+    elif variant == "hatch":
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((3, 2, 12, 13), radius=2, fill=rgba(WHITE_D), outline=rgba(CHROME_D))
+        d.rounded_rectangle((4, 3, 11, 12), radius=2, outline=rgba(CHROME))
+        px(img, [(7, 7), (8, 7), (7, 8), (8, 8)], RED)
+        px(img, [(5, 5), (10, 5), (5, 10), (10, 10)], CHROME_D)
     return img
 
 
 def rocket_window():
-    img = rocket_body()
+    img = rocket_body("plain")
     d = ImageDraw.Draw(img)
     # chrome porthole, dark glass with a glint
     d.ellipse((4, 2, 11, 9), fill=rgba(CHROME), outline=rgba(CHROME_D))
@@ -896,73 +906,91 @@ def element(frm, to, tex, faces=("north", "south", "east", "west", "up", "down")
             "faces": {f: {"texture": face_tex.get(f, tex)} for f in faces}}
 
 
-def swept_fin(axis, side):
-    """Three stepped slabs forming a swept-back fin: tall at the hull, short at the tip."""
-    steps = [(2, 10), (1, 7), (0, 4)]  # (offset from the block edge, height)
+FULL_UV = [0, 0, 16, 16]
+
+
+def el(frm, to, tex, faces=("north", "south", "east", "west", "up", "down"), face_tex=None, uv=None, face_uv=None):
+    """Model element with explicit UVs (elements reach outside 0..16, so the default UVs would be invalid)."""
+    face_tex = face_tex or {}
+    face_uv = face_uv or {}
+    out = {}
+    for f in faces:
+        out[f] = {"uv": list(face_uv.get(f, uv or FULL_UV)), "texture": face_tex.get(f, tex)}
+    return {"from": list(frm), "to": list(to), "faces": out}
+
+
+HULL = (-4, 20)   # the hull spans 1.5 blocks around the centre column
+
+
+def hull(y0, y1, tex="#body", **kw):
+    return el((HULL[0], y0, HULL[0]), (HULL[1], y1, HULL[1]), tex, **kw)
+
+
+def fins(steps):
+    """Four swept fins (2px thick); steps = [(inner_x, outer_x, y0, y1), ...] measured from the hull edge."""
     out = []
-    for off, height in steps:
-        lo = off if side < 0 else 15 - off
-        hi = lo + 1
-        if axis == "x":
-            out.append(element((lo, 0, 7.5), (hi, height, 8.5), "#fin"))
-        else:
-            out.append(element((7.5, 0, lo), (8.5, height, hi), "#fin"))
+    for (a, b, y0, y1) in steps:
+        out.append(el((HULL[1] + a, y0, 7), (HULL[1] + b, y1, 9), "#fin"))          # +x
+        out.append(el((HULL[0] - b, y0, 7), (HULL[0] - a, y1, 9), "#fin"))          # -x
+        out.append(el((7, y0, HULL[1] + a), (9, y1, HULL[1] + b), "#fin"))          # +z
+        out.append(el((7, y0, HULL[0] - b), (9, y1, HULL[0] - a), "#fin"))          # -z
     return out
 
 
-def rocket_models():
-    """Raygun-gothic 'Liberty I': chrome needle nose, white hull with red band, swept red fins.
+def porthole_plates():
+    """Chrome porthole plates on all four sides of the cabin, raised half a pixel off the hull."""
+    w = "#window"
+    return [
+        el((3, 4, HULL[0] - 0.5), (13, 12, HULL[0]), "#chrome", faces=("north", "up", "down", "east", "west"), face_tex={"north": w}),
+        el((3, 4, HULL[1]), (13, 12, HULL[1] + 0.5), "#chrome", faces=("south", "up", "down", "east", "west"), face_tex={"south": w}),
+        el((HULL[1], 4, 3), (HULL[1] + 0.5, 12, 13), "#chrome", faces=("east", "up", "down", "north", "south"), face_tex={"east": w}),
+        el((HULL[0] - 0.5, 4, 3), (HULL[0], 12, 13), "#chrome", faces=("west", "up", "down", "north", "south"), face_tex={"west": w}),
+    ]
 
-    Block textures are projected onto the elements (an element's face samples the texture at
-    its own block coordinates), so the cone texture is painted as a vertical strip:
-    chrome tip, white, red band."""
-    t = {"body": f"{MOD}:block/rocket_body", "window": f"{MOD}:block/rocket_window",
-         "fin": f"{MOD}:block/rocket_fin", "nozzle": f"{MOD}:block/rocket_nozzle",
-         "nozzle_bottom": f"{MOD}:block/rocket_nozzle_bottom", "cone": f"{MOD}:block/rocket_cone",
-         "antenna": f"{MOD}:block/rocket_antenna", "chrome": f"{MOD}:block/rocket_chrome"}
+
+def rocket_models():
+    """Raygun-gothic 'Liberty I', nine blocks tall: chrome needle, white hull 1.5 blocks wide with red bands,
+    portholes and a hatch, swept red fins spanning the whole 3x3 pad, engine skirt with five nozzles."""
+    t = {"body": f"{MOD}:block/rocket_body", "stripe": f"{MOD}:block/rocket_body_stripe",
+         "star": f"{MOD}:block/rocket_body_star", "hatch": f"{MOD}:block/rocket_hatch",
+         "window": f"{MOD}:block/rocket_window", "fin": f"{MOD}:block/rocket_fin",
+         "nozzle": f"{MOD}:block/rocket_nozzle", "nozzle_bottom": f"{MOD}:block/rocket_nozzle_bottom",
+         "cone": f"{MOD}:block/rocket_cone", "antenna": f"{MOD}:block/rocket_antenna", "chrome": f"{MOD}:block/rocket_chrome"}
     chrome_caps = {"up": "#chrome", "down": "#chrome"}
-    bottom = {
-        "textures": dict(t, particle=t["body"]),
-        "elements": [
-            element((3, 3, 3), (13, 16, 13), "#body", faces=("north", "south", "east", "west", "down"),
-                    face_tex={"down": "#chrome"}),
-            element((4, 1, 4), (12, 3, 12), "#chrome", faces=("north", "south", "east", "west", "down")),
-            element((5, 0, 5), (11, 1, 11), "#nozzle", face_tex={"down": "#nozzle_bottom"}),
-            *swept_fin("x", -1), *swept_fin("x", 1), *swept_fin("z", -1), *swept_fin("z", 1),
+    nozzle = lambda x0, z0, x1, z1, y1: el((x0, 0, z0), (x1, y1, z1), "#nozzle", face_tex={"down": "#nozzle_bottom", "up": "#chrome"})
+    parts = {
+        "engine": [
+            hull(6, 16, face_tex={"down": "#chrome"}),
+            el((-2, 3, -2), (18, 6, 18), "#chrome"),
+            nozzle(3, 3, 13, 13, 3),
+            nozzle(-3, -3, 1, 1, 2), nozzle(15, -3, 19, 1, 2), nozzle(-3, 15, 1, 19, 2), nozzle(15, 15, 19, 19, 2),
+            *fins([(0, 12, 0, 5), (0, 9, 5, 11), (0, 6, 11, 16)]),
+        ],
+        "fin_root": [hull(0, 16, "#stripe"), *fins([(0, 4, 0, 6), (0, 2, 6, 12)])],
+        "tank_lower": [hull(0, 16),
+                       el((3, 3, HULL[0] - 0.5), (13, 13, HULL[0]), "#chrome", faces=("north", "up", "down", "east", "west"),
+                          face_tex={"north": "#hatch"})],
+        "tank_mid": [hull(0, 16, "#star")],
+        "tank_upper": [hull(0, 16)],
+        "cabin": [hull(0, 16), *porthole_plates()],
+        "shoulder": [hull(0, 6, "#stripe"), el((-2, 6, -2), (18, 12, 18), "#body"), el((0, 12, 0), (16, 16, 16), "#body")],
+        "cone": [
+            el((1, 0, 1), (15, 6, 15), "#cone", uv=[0, 9, 16, 13], face_tex=chrome_caps, face_uv={"up": FULL_UV, "down": FULL_UV}),
+            el((3, 6, 3), (13, 12, 13), "#cone", uv=[0, 6, 16, 9], face_tex=chrome_caps, face_uv={"up": FULL_UV, "down": FULL_UV}),
+            el((5, 12, 5), (11, 16, 11), "#cone", uv=[0, 3, 16, 6], face_tex=chrome_caps, face_uv={"up": FULL_UV, "down": FULL_UV}),
+        ],
+        "needle": [
+            el((5, 0, 5), (11, 5, 11), "#cone", uv=[0, 1, 16, 5], face_tex=chrome_caps, face_uv={"up": FULL_UV, "down": FULL_UV}),
+            el((6.5, 5, 6.5), (9.5, 10, 9.5), "#chrome"),
+            el((7.5, 10, 7.5), (8.5, 16, 8.5), "#antenna"),
         ],
     }
-    middle = {
-        "textures": dict(t, particle=t["body"]),
-        "elements": [
-            element((3, 0, 3), (13, 16, 13), "#body", faces=("north", "south", "east", "west"),
-                    face_tex={"north": "#window", "south": "#window"}),
-            # porthole mounting plates, raised half a pixel off the hull
-            element((4, 7, 2.5), (12, 14, 3), "#chrome", faces=("north", "up", "down", "east", "west"),
-                    face_tex={"north": "#window"}),
-            element((4, 7, 13), (12, 14, 13.5), "#chrome", faces=("south", "up", "down", "east", "west"),
-                    face_tex={"south": "#window"}),
-        ],
-    }
-    top = {
-        "textures": dict(t, particle=t["cone"]),
-        "elements": [
-            element((3, 0, 3), (13, 3, 13), "#body", faces=("north", "south", "east", "west", "up"),
-                    face_tex={"up": "#chrome"}),
-            element((4, 3, 4), (12, 7, 12), "#cone", face_tex=chrome_caps),
-            element((5, 7, 5), (11, 10, 11), "#cone", face_tex=chrome_caps),
-            element((6, 10, 6), (10, 13, 10), "#cone", face_tex=chrome_caps),
-            element((7, 13, 7), (9, 15, 9), "#cone", face_tex=chrome_caps),
-            element((7.5, 15, 7.5), (8.5, 16, 8.5), "#antenna"),
-        ],
-    }
-    for part, model in (("bottom", bottom), ("middle", middle), ("top", top)):
-        model["ambientocclusion"] = False
+    variants = {}
+    for part, elements in parts.items():
+        model = {"textures": dict(t, particle=t["body"]), "ambientocclusion": False, "elements": elements}
         write_json(os.path.join(ASSETS, "models", "block", f"rocket_{part}.json"), model)
-    write_json(os.path.join(ASSETS, "blockstates", "rocket.json"), {"variants": {
-        "part=bottom": {"model": f"{MOD}:block/rocket_bottom"},
-        "part=middle": {"model": f"{MOD}:block/rocket_middle"},
-        "part=top": {"model": f"{MOD}:block/rocket_top"},
-    }})
+        variants[f"part={part}"] = {"model": f"{MOD}:block/rocket_{part}"}
+    write_json(os.path.join(ASSETS, "blockstates", "rocket.json"), {"variants": variants})
 
 
 def launch_pad_model():
@@ -1574,27 +1602,25 @@ def gui_console():
 
 
 def gui_hud():
-    """Suit telemetry HUD plate (128x64 sheet): bakelite panel 120x46 at (0,0), gauge glass at (0,48) 100x10."""
-    img = new(128, 64)
+    """Suit telemetry HUD plate (160x64 sheet): bakelite panel 140x46 at (0,0), gauge glass at (0,48) 100x10,
+    warning lamps (off / amber / red) at (104,48), 8x8 each."""
+    img = new(160, 64)
     d = ImageDraw.Draw(img)
-    # panel: dark bakelite with chrome edge and a cream label strip
-    d.rounded_rectangle((0, 0, 119, 45), radius=4, fill=rgba((36, 32, 34)), outline=rgba(BLACK))
-    d.rounded_rectangle((1, 1, 118, 44), radius=3, outline=rgba(CHROME_D))
-    d.rectangle((3, 3, 116, 10), fill=rgba(CREAM))
-    d.line((3, 11, 116, 11), fill=rgba(CREAM_D))
+    W = 140
+    d.rounded_rectangle((0, 0, W - 1, 45), radius=4, fill=rgba((36, 32, 34)), outline=rgba(BLACK))
+    d.rounded_rectangle((1, 1, W - 2, 44), radius=3, outline=rgba(CHROME_D))
+    d.rectangle((3, 3, W - 4, 10), fill=rgba(CREAM))
+    d.line((3, 11, W - 4, 11), fill=rgba(CREAM_D))
     d.rectangle((3, 3, 7, 10), fill=rgba(RED))
-    d.rectangle((112, 3, 116, 10), fill=rgba(TEAL))
-    # rivets
-    for (x, y) in [(3, 14), (116, 14), (3, 41), (116, 41)]:
+    d.rectangle((W - 8, 3, W - 4, 10), fill=rgba(TEAL))
+    for (x, y) in [(3, 14), (W - 4, 14), (3, 41), (W - 4, 41)]:
         px(img, [(x, y)], CHROME)
         px(img, [(x + (1 if x < 60 else -1), y + 1)], CHROME_D)
-    # gauge glass track (0,48) 100x10: dark channel with chrome ends and tick marks
     d.rectangle((0, 48, 99, 57), fill=rgba((18, 20, 22)), outline=rgba(CHROME_D))
     for i in range(1, 10):
         x = i * 10
         d.line((x, 49, x, 50 if i % 5 else 52), fill=rgba(CHROME_D))
     px(img, [(1, 49), (98, 49)], CHROME_L)
-    # warning lamp sprites (104,48): off / amber / red, 8x8 each
     for i, c in enumerate(((60, 40, 40), AMBER_LAMP, RED)):
         x = 104 + i * 8
         d.ellipse((x, 48, x + 6, 54), fill=rgba(c), outline=rgba(BLACK))
@@ -1805,6 +1831,11 @@ def stage1b_data():
     advancement("countdown", "rocket", "ready_for_launch", {"liftoff": {"trigger": "minecraft:impossible"}}, frame="challenge")
     advancement("canned_air", "liquid_oxygen_canister", "space_suit", {"refilled": {"trigger": "minecraft:impossible"}})
 
+    # suffocation damage type (armour does not help; shows its own death message)
+    write_json(os.path.join(DATA, "damage_type", "suffocation.json"),
+               {"message_id": "retrocosmos.suffocation", "exhaustion": 0.0, "scaling": "never", "effects": "drowning"})
+    tag("damage_type/bypasses_armor", [f"{MOD}:suffocation"])
+
 
 EN_1B = {
     "block.retrocosmos.oil_shale": "Oil Shale",
@@ -1842,6 +1873,8 @@ EN_1B = {
     "message.retrocosmos.console.abort_manual": "Countdown aborted by the flight director.",
     "message.retrocosmos.console.abort_vehicle": "Countdown aborted: the vehicle or the launch complex is no longer GO.",
     "gui.retrocosmos.console.header": "MISSION CONTROL - LIBERTY I",
+    "gui.retrocosmos.console.go": "GO",
+    "gui.retrocosmos.console.no_go_short": "NO-GO",
     "gui.retrocosmos.console.vehicle": "VEHICLE",
     "gui.retrocosmos.console.vehicle_on_pad": "ON STAND, %sm",
     "gui.retrocosmos.console.vehicle_missing": "NOT FOUND",
@@ -1900,11 +1933,16 @@ EN_1B = {
     "command.retrocosmos.oxygen.set": "Suit oxygen of %s set to %s seconds",
     "command.retrocosmos.oxygen.no_suit": "%s is not wearing the pressure suit",
     "command.retrocosmos.hud": "Suit telemetry HUD: %s",
-    "gui.retrocosmos.hud.title": "TELEMETRY",
+    "gui.retrocosmos.hud.title": "SUIT TELEMETRY",
+    "gui.retrocosmos.hud.o2": "O2 %s",
+    "gui.retrocosmos.hud.creative": "CREATIVE: no oxygen damage",
     "gui.retrocosmos.hud.vacuum": "VAC",
     "gui.retrocosmos.hud.atmosphere": "ATM",
     "gui.retrocosmos.hud.o2_low": "! O2 LOW - RECHARGE !",
     "gui.retrocosmos.hud.suit_breach": "! SUIT INCOMPLETE !",
+    "message.retrocosmos.oxygen.creative": "You are in creative mode: oxygen does not drain and cannot hurt you. Switch to survival to test.",
+    "death.attack.retrocosmos.suffocation": "%1$s ran out of oxygen",
+    "death.attack.retrocosmos.suffocation.player": "%1$s ran out of oxygen whilst fighting %2$s",
 }
 
 RU_1B = {
@@ -1942,14 +1980,16 @@ RU_1B = {
     "message.retrocosmos.console.hold": "СТОП, СТОП, СТОП!",
     "message.retrocosmos.console.abort_manual": "Отсчёт прерван руководителем полёта.",
     "message.retrocosmos.console.abort_vehicle": "Отсчёт прерван: ракета или стартовый комплекс больше не в готовности.",
-    "gui.retrocosmos.console.header": "ЦЕНТР УПР. - ЛИБЕРТИ-1",
+    "gui.retrocosmos.console.header": "MISSION CONTROL - ЛИБЕРТИ-1",
+    "gui.retrocosmos.console.go": "GO",
+    "gui.retrocosmos.console.no_go_short": "NO-GO",
     "gui.retrocosmos.console.vehicle": "РАКЕТА",
-    "gui.retrocosmos.console.vehicle_on_pad": "НА СТОЛЕ, %s м",
+    "gui.retrocosmos.console.vehicle_on_pad": "НА СТОЛЕ %sм",
     "gui.retrocosmos.console.vehicle_missing": "НЕ НАЙДЕНА",
     "gui.retrocosmos.console.pad": "ПЛОЩАДКА 3x3",
-    "gui.retrocosmos.console.tower": "БАШНЯ ОБСЛУЖ.",
+    "gui.retrocosmos.console.tower": "БАШНЯ",
     "gui.retrocosmos.console.fuel": "КЕРОСИН RP-1",
-    "gui.retrocosmos.console.oxidizer": "ЖИДКИЙ КИСЛОРОД",
+    "gui.retrocosmos.console.oxidizer": "КИСЛОРОД LOX",
     "gui.retrocosmos.console.suit": "СКАФАНДР",
     "gui.retrocosmos.console.counting": "ОТСЧЁТ  %s",
     "gui.retrocosmos.console.all_go": "ВСЕ СИСТЕМЫ GO - ГОТОВ К ОТСЧЁТУ",
@@ -2002,10 +2042,15 @@ RU_1B = {
     "command.retrocosmos.oxygen.no_suit": "%s не в скафандре",
     "command.retrocosmos.hud": "Панель телеметрии скафандра: %s",
     "gui.retrocosmos.hud.title": "ТЕЛЕМЕТРИЯ",
+    "gui.retrocosmos.hud.o2": "O2 %s",
+    "gui.retrocosmos.hud.creative": "ТВОРЧЕСКИЙ РЕЖИМ: кислород не вредит",
     "gui.retrocosmos.hud.vacuum": "ВАК",
     "gui.retrocosmos.hud.atmosphere": "АТМ",
     "gui.retrocosmos.hud.o2_low": "! МАЛО O2 - ЗАПРАВКА !",
     "gui.retrocosmos.hud.suit_breach": "! СКАФАНДР НЕ ПОЛОН !",
+    "message.retrocosmos.oxygen.creative": "Вы в творческом режиме: кислород не расходуется и не вредит. Для теста перейдите в выживание.",
+    "death.attack.retrocosmos.suffocation": "У %1$s кончился кислород",
+    "death.attack.retrocosmos.suffocation.player": "У %1$s кончился кислород в бою с %2$s",
 }
 
 
@@ -2021,7 +2066,10 @@ def main():
     save(riveted_panel(TI, TI_D, TI_L, 6), "block", "titanium_block")
     save(launch_pad_top(), "block", "launch_pad_top")
     save(launch_pad_side(), "block", "launch_pad_side")
-    save(rocket_body(), "block", "rocket_body")
+    save(rocket_body("plain"), "block", "rocket_body")
+    save(rocket_body("stripe"), "block", "rocket_body_stripe")
+    save(rocket_body("star"), "block", "rocket_body_star")
+    save(rocket_body("hatch"), "block", "rocket_hatch")
     save(rocket_window(), "block", "rocket_window")
     save(rocket_fin(), "block", "rocket_fin")
     save(rocket_nozzle(), "block", "rocket_nozzle")

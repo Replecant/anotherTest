@@ -54,6 +54,9 @@ public final class RetroCosmosCommands {
         OxygenSystem.setSettings(player, OxygenSystem.settings(player).withAirless(airless));
         player.displayClientMessage(Component.translatable(airless ? "message.retrocosmos.oxygen.airless_on" : "message.retrocosmos.oxygen.airless_off")
                 .withStyle(airless ? ChatFormatting.RED : ChatFormatting.GREEN), false);
+        if (airless && player.isCreative()) {
+            player.displayClientMessage(Component.translatable("message.retrocosmos.oxygen.creative").withStyle(ChatFormatting.YELLOW), false);
+        }
         ctx.getSource().sendSuccess(() -> Component.translatable("command.retrocosmos.oxygen.toggled", player.getName(),
                 Component.translatable(airless ? "command.retrocosmos.on" : "command.retrocosmos.off")), true);
         return 1;

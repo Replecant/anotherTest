@@ -1,6 +1,7 @@
 package com.replecant.retrocosmos.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -32,8 +33,10 @@ public class RetroButton extends AbstractButton {
         graphics.fill(x0 + 1, y0 + 1, x1 - 1, y1 - 1, hot ? lighten(cap, 40) : cap);
         graphics.fill(x0 + 1, y0 + 1, x1 - 1, y0 + 3, 0x66FFFFFF);        // top gloss
         graphics.fill(x0 + 1, y1 - 3, x1 - 1, y1 - 1, 0x55000000);        // bottom shade
-        graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(), (x0 + x1) / 2, y0 + (getHeight() - 8) / 2,
-                active ? 0xFFFFFFFF : 0xFFBBBBBB);
+        Font font = Minecraft.getInstance().font;
+        String label = TextFit.fit(font, getMessage().getString(), getWidth() - 6);
+        graphics.drawString(font, label, x0 + (getWidth() - font.width(label)) / 2, y0 + (getHeight() - 8) / 2,
+                active ? 0xFFFFFFFF : 0xFFBBBBBB, true);
     }
 
     private static int lighten(int argb, int amount) {

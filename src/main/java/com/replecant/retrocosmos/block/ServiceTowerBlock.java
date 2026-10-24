@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  * right next to the 3x3 launch pad is required for the pre-flight check.
  */
 public class ServiceTowerBlock extends Block {
-    public static final int MIN_HEIGHT = 3;
+    public static final int MIN_HEIGHT = 6;
 
     public ServiceTowerBlock(BlockBehaviour.Properties properties) {
         super(properties);

@@ -1,5 +1,6 @@
 package com.replecant.retrocosmos.oxygen;
 
+import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.launch.LaunchSite;
 import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModBlocks;
@@ -7,12 +8,16 @@ import com.replecant.retrocosmos.registry.ModDataComponents;
 import com.replecant.retrocosmos.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,6 +34,10 @@ public final class OxygenSystem {
     public static final int MAX_OXYGEN = 300 * 20;
     private static final int LIFE_SUPPORT_RANGE = 2;
     private static final int[] WARNINGS_SECONDS = {60, 30, 10};
+    /** Suffocation damage: data/retrocosmos/damage_type/suffocation.json (bypasses armour, like drowning). */
+    public static final ResourceKey<DamageType> SUFFOCATION = ResourceKey.create(Registries.DAMAGE_TYPE,
+            Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "suffocation"));
+    public static final float SUFFOCATION_DAMAGE = 2.0F;
 
     private OxygenSystem() {}
 
@@ -61,13 +70,14 @@ public final class OxygenSystem {
         if (!(event.getEntity() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level)) {
             return;
         }
-        if (player.isCreative() || player.isSpectator() || player.isDeadOrDying()) {
-            return;
-        }
-        if (!settings(player).airless()) {
+        if (player.isSpectator() || player.isDeadOrDying() || !settings(player).airless()) {
             return;
         }
         if (player.tickCount % 20 != 0) {
+            return;
+        }
+        if (player.isCreative()) {
+            // creative players are invulnerable; the HUD says so, and the tank does not drain either
             return;
         }
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
@@ -98,8 +108,12 @@ public final class OxygenSystem {
             }
             return;
         }
-        // no air: suffocate like drowning
-        player.hurtServer(level, player.damageSources().drown(), 2.0F);
+        // no air: suffocate (custom damage type, armour does not help, can kill)
+        boolean applied = player.hurtServer(level, player.damageSources().source(SUFFOCATION), SUFFOCATION_DAMAGE);
+        if (player.tickCount % 100 == 0) {
+            RetroCosmos.LOGGER.info("Retro Cosmos: {} is suffocating (suit {}, O2 {} ticks), damage applied={} health={}",
+                    player.getName().getString(), suited ? "complete" : "incomplete", o2, applied, player.getHealth());
+        }
         level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_HURT_DROWN, SoundSource.PLAYERS, 1.0F, 0.8F);
         player.displayClientMessage(Component.translatable(suited ? "message.retrocosmos.oxygen.empty" : "message.retrocosmos.oxygen.no_suit")
                 .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);

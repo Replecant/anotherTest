@@ -1096,6 +1096,7 @@ ALLOY_D = (118, 126, 118)
 ALLOY_L = (226, 232, 222)
 COPPER = (196, 118, 72)
 COPPER_L = (236, 170, 120)
+AMBER_LAMP = (255, 190, 70)
 
 
 def oil_shale():
@@ -1572,6 +1573,34 @@ def gui_console():
     return img
 
 
+def gui_hud():
+    """Suit telemetry HUD plate (128x64 sheet): bakelite panel 120x46 at (0,0), gauge glass at (0,48) 100x10."""
+    img = new(128, 64)
+    d = ImageDraw.Draw(img)
+    # panel: dark bakelite with chrome edge and a cream label strip
+    d.rounded_rectangle((0, 0, 119, 45), radius=4, fill=rgba((36, 32, 34)), outline=rgba(BLACK))
+    d.rounded_rectangle((1, 1, 118, 44), radius=3, outline=rgba(CHROME_D))
+    d.rectangle((3, 3, 116, 10), fill=rgba(CREAM))
+    d.line((3, 11, 116, 11), fill=rgba(CREAM_D))
+    d.rectangle((3, 3, 7, 10), fill=rgba(RED))
+    d.rectangle((112, 3, 116, 10), fill=rgba(TEAL))
+    # rivets
+    for (x, y) in [(3, 14), (116, 14), (3, 41), (116, 41)]:
+        px(img, [(x, y)], CHROME)
+        px(img, [(x + (1 if x < 60 else -1), y + 1)], CHROME_D)
+    # gauge glass track (0,48) 100x10: dark channel with chrome ends and tick marks
+    d.rectangle((0, 48, 99, 57), fill=rgba((18, 20, 22)), outline=rgba(CHROME_D))
+    for i in range(1, 10):
+        x = i * 10
+        d.line((x, 49, x, 50 if i % 5 else 52), fill=rgba(CHROME_D))
+    px(img, [(1, 49), (98, 49)], CHROME_L)
+    # warning lamp sprites (104,48): off / amber / red, 8x8 each
+    for i, c in enumerate(((60, 40, 40), AMBER_LAMP, RED)):
+        x = 104 + i * 8
+        d.ellipse((x, 48, x + 6, 54), fill=rgba(c), outline=rgba(BLACK))
+    return img
+
+
 # --- models / data ----------------------------------------------------------
 
 def machine_models(name):
@@ -1691,6 +1720,7 @@ def stage1b_textures():
     os.makedirs(os.path.join(ASSETS, "textures", "gui"), exist_ok=True)
     gui_machine().save(os.path.join(ASSETS, "textures", "gui", "machine.png"))
     gui_console().save(os.path.join(ASSETS, "textures", "gui", "console.png"))
+    gui_hud().save(os.path.join(ASSETS, "textures", "gui", "hud.png"))
 
 
 def stage1b_data():
@@ -1773,6 +1803,7 @@ def stage1b_data():
     advancement("launch_complex", "service_tower", "launch_pad", {"pad_complete": {"trigger": "minecraft:impossible"}})
     advancement("console", "mission_control_console", "guidance_computer", has_item("mission_control_console"))
     advancement("countdown", "rocket", "ready_for_launch", {"liftoff": {"trigger": "minecraft:impossible"}}, frame="challenge")
+    advancement("canned_air", "liquid_oxygen_canister", "space_suit", {"refilled": {"trigger": "minecraft:impossible"}})
 
 
 EN_1B = {
@@ -1850,6 +1881,30 @@ EN_1B = {
     "advancements.retrocosmos.ready_for_launch.description": "Pass the pre-flight checklist: 3x3 pad, service tower, RP-1, LOX, suited up",
     "advancements.retrocosmos.countdown.title": "We Have Liftoff!",
     "advancements.retrocosmos.countdown.description": "Run the countdown to zero from the Mission Control console",
+    "advancements.retrocosmos.canned_air.title": "First Breath of Canned Air",
+    "advancements.retrocosmos.canned_air.description": "Recharge your pressure suit from a liquid oxygen canister",
+    "tooltip.retrocosmos.space_suit.oxygen": "Oxygen: %s%% (%s)",
+    "tooltip.retrocosmos.liquid_oxygen_canister": "Right click in the air to recharge the worn pressure suit",
+    "message.retrocosmos.oxygen.low": "Oxygen low: %s seconds left!",
+    "message.retrocosmos.oxygen.empty": "OXYGEN DEPLETED - recharge the suit!",
+    "message.retrocosmos.oxygen.no_suit": "NO PRESSURE SUIT - suffocating!",
+    "message.retrocosmos.oxygen.recharged": "Suit oxygen tank recharged by life support",
+    "message.retrocosmos.oxygen.refilled": "Suit oxygen tank recharged: 300 s",
+    "message.retrocosmos.oxygen.need_suit": "Put the pressure suit on first",
+    "message.retrocosmos.oxygen.already_full": "The suit's oxygen tank is already full",
+    "message.retrocosmos.oxygen.airless_on": "Airless environment simulation ON - your suit's oxygen now counts down.",
+    "message.retrocosmos.oxygen.airless_off": "Airless environment simulation OFF - breathing normally.",
+    "command.retrocosmos.on": "on",
+    "command.retrocosmos.off": "off",
+    "command.retrocosmos.oxygen.toggled": "Airless environment for %s: %s",
+    "command.retrocosmos.oxygen.set": "Suit oxygen of %s set to %s seconds",
+    "command.retrocosmos.oxygen.no_suit": "%s is not wearing the pressure suit",
+    "command.retrocosmos.hud": "Suit telemetry HUD: %s",
+    "gui.retrocosmos.hud.title": "SUIT TELEMETRY",
+    "gui.retrocosmos.hud.vacuum": "VAC",
+    "gui.retrocosmos.hud.atmosphere": "ATM",
+    "gui.retrocosmos.hud.o2_low": "! O2 LOW - RECHARGE !",
+    "gui.retrocosmos.hud.suit_breach": "! SUIT INCOMPLETE !",
 }
 
 RU_1B = {
@@ -1927,6 +1982,30 @@ RU_1B = {
     "advancements.retrocosmos.ready_for_launch.description": "Пройдите предстартовую проверку: площадка 3x3, башня, RP-1, LOX, скафандр",
     "advancements.retrocosmos.countdown.title": "Есть отрыв!",
     "advancements.retrocosmos.countdown.description": "Доведите отсчёт до нуля с пульта Центра управления",
+    "advancements.retrocosmos.canned_air.title": "Первый глоток консервированного воздуха",
+    "advancements.retrocosmos.canned_air.description": "Заправьте скафандр из канистры жидкого кислорода",
+    "tooltip.retrocosmos.space_suit.oxygen": "Кислород: %s%% (%s)",
+    "tooltip.retrocosmos.liquid_oxygen_canister": "ПКМ в воздух — заправить надетый скафандр",
+    "message.retrocosmos.oxygen.low": "Кислород на исходе: осталось %s с!",
+    "message.retrocosmos.oxygen.empty": "КИСЛОРОД КОНЧИЛСЯ — заправьте скафандр!",
+    "message.retrocosmos.oxygen.no_suit": "НЕТ СКАФАНДРА — удушье!",
+    "message.retrocosmos.oxygen.recharged": "Баллон скафандра заправлен системой жизнеобеспечения",
+    "message.retrocosmos.oxygen.refilled": "Баллон скафандра заправлен: 300 с",
+    "message.retrocosmos.oxygen.need_suit": "Сначала наденьте скафандр",
+    "message.retrocosmos.oxygen.already_full": "Баллон скафандра уже полон",
+    "message.retrocosmos.oxygen.airless_on": "Симуляция безвоздушной среды ВКЛ — кислород скафандра пошёл на убыль.",
+    "message.retrocosmos.oxygen.airless_off": "Симуляция безвоздушной среды ВЫКЛ — дышите спокойно.",
+    "command.retrocosmos.on": "вкл",
+    "command.retrocosmos.off": "выкл",
+    "command.retrocosmos.oxygen.toggled": "Безвоздушная среда для %s: %s",
+    "command.retrocosmos.oxygen.set": "Кислород скафандра %s: %s с",
+    "command.retrocosmos.oxygen.no_suit": "%s не в скафандре",
+    "command.retrocosmos.hud": "Панель телеметрии скафандра: %s",
+    "gui.retrocosmos.hud.title": "ТЕЛЕМЕТРИЯ",
+    "gui.retrocosmos.hud.vacuum": "ВАК",
+    "gui.retrocosmos.hud.atmosphere": "АТМ",
+    "gui.retrocosmos.hud.o2_low": "! МАЛО O2 - ЗАПРАВКА !",
+    "gui.retrocosmos.hud.suit_breach": "! СКАФАНДР НЕ ПОЛОН !",
 }
 
 

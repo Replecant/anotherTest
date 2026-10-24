@@ -12,6 +12,7 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -159,10 +160,11 @@ public final class LaunchSite {
     }
 
     public static void award(ServerPlayer player, String advancement, String criterion) {
-        if (player.getServer() == null) {
+        MinecraftServer server = player.level().getServer();
+        if (server == null) {
             return;
         }
-        AdvancementHolder holder = player.getServer().getAdvancements()
+        AdvancementHolder holder = server.getAdvancements()
                 .get(Identifier.fromNamespaceAndPath(RetroCosmos.MODID, advancement));
         if (holder != null) {
             player.getAdvancements().award(holder, criterion);

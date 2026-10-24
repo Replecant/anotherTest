@@ -1,6 +1,8 @@
 package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.oxygen.OxygenCanisterItem;
+import com.replecant.retrocosmos.oxygen.SpaceSuitItem;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -68,12 +70,12 @@ public final class ModItems {
     public static final DeferredItem<Item> AIRFRAME = register("airframe", Item::new, p -> p.rarity(Rarity.UNCOMMON).stacksTo(1));
     public static final DeferredItem<Item> EMPTY_FUEL_CANISTER = simple("empty_fuel_canister");
     public static final DeferredItem<Item> ROCKET_FUEL_CANISTER = register("rocket_fuel_canister", Item::new, p -> p.stacksTo(16));
-    public static final DeferredItem<Item> LIQUID_OXYGEN_CANISTER = register("liquid_oxygen_canister", Item::new, p -> p.stacksTo(16));
+    public static final DeferredItem<Item> LIQUID_OXYGEN_CANISTER = register("liquid_oxygen_canister", OxygenCanisterItem::new, p -> p.stacksTo(16));
 
     // --- Space suit ---
     public static final DeferredItem<Item> SPACE_HELMET = register("space_helmet", Item::new,
             p -> p.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.HELMET));
-    public static final DeferredItem<Item> SPACE_SUIT = register("space_suit", Item::new,
+    public static final DeferredItem<Item> SPACE_SUIT = register("space_suit", SpaceSuitItem::new,
             p -> p.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.CHESTPLATE));
     public static final DeferredItem<Item> SPACE_LEGGINGS = register("space_leggings", Item::new,
             p -> p.humanoidArmor(SPACE_SUIT_MATERIAL, ArmorType.LEGGINGS));

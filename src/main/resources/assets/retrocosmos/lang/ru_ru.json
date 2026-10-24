@@ -86,7 +86,7 @@
   "message.retrocosmos.console.hold": "СТОП, СТОП, СТОП!",
   "message.retrocosmos.console.abort_manual": "Отсчёт прерван руководителем полёта.",
   "message.retrocosmos.console.abort_vehicle": "Отсчёт прерван: ракета или стартовый комплекс больше не в готовности.",
-  "gui.retrocosmos.console.header": "ЦЕНТР УПРАВЛЕНИЯ  -  ЛИБЕРТИ-1",
+  "gui.retrocosmos.console.header": "ЦЕНТР УПР. - ЛИБЕРТИ-1",
   "gui.retrocosmos.console.vehicle": "РАКЕТА",
   "gui.retrocosmos.console.vehicle_on_pad": "НА СТОЛЕ, %s м",
   "gui.retrocosmos.console.vehicle_missing": "НЕ НАЙДЕНА",

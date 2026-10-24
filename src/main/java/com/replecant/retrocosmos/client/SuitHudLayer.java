@@ -75,12 +75,12 @@ public class SuitHudLayer implements GuiLayer {
         }
 
         // readouts
-        String o2Text = String.format("O2 %3d%%  %d:%02d", Math.round(frac * 100), seconds / 60, seconds % 60);
+        String o2Text = String.format("O2 %d%% %d:%02d", Math.round(frac * 100), seconds / 60, seconds % 60);
         g.drawString(font, o2Text, x + 10, y + 26, hasChest ? color : RED, false);
         double wobble = Math.sin(ticks / 25.0);
         String flavour = settings.airless()
-                ? String.format("P %.1f psi  T %+d C", suit == LaunchSite.SUIT_FULL ? 3.5 + wobble * 0.1 : 0.0, (int) (21 + wobble * 2))
-                : String.format("P 14.7 psi  T %+d C", (int) (21 + wobble * 2));
+                ? String.format("P %.1fpsi T%+dC", suit == LaunchSite.SUIT_FULL ? 3.5 + wobble * 0.1 : 0.0, (int) (21 + wobble * 2))
+                : String.format("P 14.7psi T%+dC", (int) (21 + wobble * 2));
         g.drawString(font, flavour, x + 10, y + 36, CREAM, false);
 
         // suit integrity lamps H C L B

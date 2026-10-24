@@ -96,9 +96,13 @@ public class ConsoleScreen extends AbstractContainerScreen<ConsoleMenu> {
         g.fill(x, y, x + CRT_W, y + CRT_H, CRT_BG);
 
         // header
-        g.drawString(font, Component.translatable("gui.retrocosmos.console.header"), x + 6, y + 5, PHOSPHOR, false);
-        String clock = String.format("%02d:%02d", (tick / 20 / 60) % 60, (tick / 20) % 60);
-        g.drawString(font, "MET " + clock, x + CRT_W - 6 - font.width("MET " + clock), y + 5, PHOSPHOR_DIM, false);
+        String header = Component.translatable("gui.retrocosmos.console.header").getString();
+        g.drawString(font, header, x + 6, y + 5, PHOSPHOR, false);
+        String clock = String.format("MET %02d:%02d", (tick / 20 / 60) % 60, (tick / 20) % 60);
+        if (font.width(header) + font.width(clock) + 18 > CRT_W) {
+            clock = clock.substring(4);
+        }
+        g.drawString(font, clock, x + CRT_W - 6 - font.width(clock), y + 5, PHOSPHOR_DIM, false);
         g.hLine(x + 4, x + CRT_W - 5, y + 15, PHOSPHOR_DIM);
 
         // readouts

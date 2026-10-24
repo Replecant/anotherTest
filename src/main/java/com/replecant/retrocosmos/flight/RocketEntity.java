@@ -275,7 +275,7 @@ public class RocketEntity extends Entity {
         }
     }
 
-    /** Called when the crew picks "Return to Earth" on the system map. */
+    /** Called when the crew picks "Return home" on the system map. */
     public void beginDescent() {
         if (phase() == PHASE_ORBIT) {
             setPhase(PHASE_DESCENT);

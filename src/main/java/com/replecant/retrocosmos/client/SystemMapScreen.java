@@ -1,7 +1,7 @@
 package com.replecant.retrocosmos.client;
 
 import com.replecant.retrocosmos.RetroCosmos;
-import com.replecant.retrocosmos.network.ReturnToEarthPayload;
+import com.replecant.retrocosmos.network.ReturnHomePayload;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -16,8 +16,9 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * The orbital chart the crew sees once the Liberty I reaches orbit: a Googie orrery of the solar system.
- * Every destination beyond Earth is locked for now; the only way out is "Return to Earth".
+ * The orbital chart the crew sees once the Liberty I reaches orbit: a tilted Googie orrery of the Vesper
+ * system, an invented star system whose third world, Homestead, is the player's home. Every other
+ * destination is locked for now; the only way out is "Return home".
  */
 public class SystemMapScreen extends Screen {
     private static final String DIR = "textures/gui/system_map/";
@@ -25,7 +26,9 @@ public class SystemMapScreen extends Screen {
     private static final Identifier SELECTION = tex("selection");
     private static final Identifier LOCK = tex("lock");
     private static final Identifier BUTTON = tex("button");
-    private static final Identifier MOON = tex("moon");
+    private static final Identifier MOON = tex("lantern");
+    private static final Identifier STAR = tex("vesper");
+    private static final Identifier BELT_ROCK = tex("belt_rock");
     private static final int W = 320, H = 200;
     private static final int MAP_X = 8, MAP_Y = 22, MAP_W = 208, MAP_H = 170;
     private static final int INFO_X = 222, INFO_Y = 22, INFO_W = 90;
@@ -49,12 +52,15 @@ public class SystemMapScreen extends Screen {
     }
 
     private static final List<Body> BODIES = List.of(
-            new Body("mercury", 20, 900, 0.3F, 10, 10, false),
-            new Body("venus", 30, 1600, 2.1F, 12, 12, false),
-            new Body("earth", 42, 2400, 4.0F, 14, 14, true),
-            new Body("mars", 54, 3600, 5.2F, 12, 12, false),
-            new Body("jupiter", 68, 6000, 1.0F, 24, 24, false),
-            new Body("saturn", 80, 8400, 3.0F, 28, 16, false));
+            new Body("cinder", 18, 900, 0.3F, 10, 10, false),
+            new Body("mirage", 28, 1600, 2.1F, 12, 12, false),
+            new Body("homestead", 40, 2400, 4.0F, 14, 14, true),
+            new Body("verdigris", 52, 3600, 5.2F, 14, 14, false),
+            new Body("goliath", 72, 6000, 1.0F, 26, 26, false),
+            new Body("halo", 84, 8400, 3.0F, 28, 18, false));
+    /** Orbits are drawn as ellipses: the chart is tilted like a desk orrery. */
+    private static final float TILT = 0.58F;
+    private static final int BELT_INNER = 60, BELT_OUTER = 65, BELT_ROCKS = 46;
 
     private int left, top;
     private int ticks;
@@ -103,7 +109,7 @@ public class SystemMapScreen extends Screen {
         float angle = body.phase() + (ticks + partialTick) / body.period() * Mth.TWO_PI;
         int cx = left + MAP_X + MAP_W / 2;
         int cy = top + MAP_Y + MAP_H / 2;
-        return new int[] {cx + Math.round(Mth.cos(angle) * body.radius()), cy + Math.round(Mth.sin(angle) * body.radius())};
+        return new int[] {cx + Math.round(Mth.cos(angle) * body.radius()), cy + Math.round(Mth.sin(angle) * body.radius() * TILT)};
     }
 
     @Override
@@ -120,7 +126,15 @@ public class SystemMapScreen extends Screen {
         for (Body body : BODIES) {
             ring(g, cx, cy, body.radius(), body == selected ? 0xFF3C5498 : ORBIT);
         }
-        g.blit(RenderPipelines.GUI_TEXTURED, tex("sun"), cx - 16, cy - 16, 0, 0, 32, 32, 32, 32);
+        // the Scrapyard belt between Verdigris and Goliath, drifting slowly
+        for (int i = 0; i < BELT_ROCKS; i++) {
+            float a = i * 2.399F + (ticks + partialTick) / 12000F * Mth.TWO_PI;
+            int r = BELT_INNER + (i * 7) % (BELT_OUTER - BELT_INNER + 1);
+            int bx = cx + Math.round(Mth.cos(a) * r) - 1;
+            int by = cy + Math.round(Mth.sin(a) * r * TILT) - 1;
+            g.blit(RenderPipelines.GUI_TEXTURED, BELT_ROCK, bx, by, 0, 0, 3, 3, 3, 3);
+        }
+        g.blit(RenderPipelines.GUI_TEXTURED, STAR, cx - 16, cy - 16, 0, 0, 32, 32, 32, 32);
 
         Body hovered = null;
         for (Body body : BODIES) {
@@ -130,7 +144,7 @@ public class SystemMapScreen extends Screen {
             if (body.home()) {
                 float moonAngle = (ticks + partialTick) / 200F * Mth.TWO_PI;
                 int mx = p[0] + Math.round(Mth.cos(moonAngle) * 11) - 3;
-                int my = p[1] + Math.round(Mth.sin(moonAngle) * 11) - 3;
+                int my = p[1] + Math.round(Mth.sin(moonAngle) * 11 * TILT) - 3;
                 g.blit(RenderPipelines.GUI_TEXTURED, MOON, mx, my, 0, 0, 6, 6, 6, 6);
             } else {
                 g.blit(RenderPipelines.GUI_TEXTURED, LOCK, p[0] + body.w() / 2 - 2, p[1] - body.h() / 2 - 6, 0, 0, 7, 9, 7, 9);
@@ -145,6 +159,14 @@ public class SystemMapScreen extends Screen {
             int[] p = position(hovered, partialTick);
             String name = TextFit.str("gui.retrocosmos.map.body." + hovered.id());
             g.drawString(font, name, p[0] - font.width(name) / 2, p[1] + hovered.h() / 2 + 3, hovered == selected ? AMBER : LABEL, false);
+        } else {
+            // label the asteroid belt when the cursor is over it
+            float dx = mouseX - cx, dy = (mouseY - cy) / TILT;
+            float dist = Mth.sqrt(dx * dx + dy * dy);
+            if (dist >= BELT_INNER - 2 && dist <= BELT_OUTER + 2) {
+                String belt = TextFit.str("gui.retrocosmos.map.belt");
+                g.drawString(font, belt, mouseX - font.width(belt) / 2, mouseY + 8, LABEL, false);
+            }
         }
         g.disableScissor();
 
@@ -161,7 +183,7 @@ public class SystemMapScreen extends Screen {
             }
             float a = i / (float) steps * Mth.TWO_PI;
             int x = cx + Math.round(Mth.cos(a) * r);
-            int y = cy + Math.round(Mth.sin(a) * r);
+            int y = cy + Math.round(Mth.sin(a) * r * TILT);
             g.fill(x, y, x + 1, y + 1, color);
         }
     }
@@ -213,7 +235,7 @@ public class SystemMapScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mx = event.x(), my = event.y();
         if (overButton(mx, my) && selected.home()) {
-            ClientPacketDistributor.sendToServer(ReturnToEarthPayload.INSTANCE);
+            ClientPacketDistributor.sendToServer(ReturnHomePayload.INSTANCE);
             if (minecraft != null) {
                 minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
                         net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));

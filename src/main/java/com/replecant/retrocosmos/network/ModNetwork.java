@@ -8,6 +8,6 @@ public final class ModNetwork {
 
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
-        registrar.playToServer(ReturnToEarthPayload.TYPE, ReturnToEarthPayload.STREAM_CODEC, ReturnToEarthPayload::handle);
+        registrar.playToServer(ReturnHomePayload.TYPE, ReturnHomePayload.STREAM_CODEC, ReturnHomePayload::handle);
     }
 }

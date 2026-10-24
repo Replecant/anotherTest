@@ -150,19 +150,6 @@ def walnut(seed=41):
     return img
 
 
-def white_shell():
-    img = new()
-    noise_fill(img, WHITE, 2, 42)
-    for y in range(16):
-        for x in range(16):
-            if x + y < 6:
-                px(img, [(x, y)], (250, 250, 248))
-            elif x + y > 24:
-                px(img, [(x, y)], WHITE_D)
-    px(img, [(2, 2), (3, 2), (2, 3)], (255, 255, 255))
-    return img
-
-
 def teal_plastic():
     img = new()
     noise_fill(img, TEAL, 3, 43)
@@ -515,17 +502,78 @@ def neon_item_sprite():
     return img
 
 
+def stool_chrome():
+    """Vanilla-style chrome for cuboid sides: flat tone with a vertical highlight stripe."""
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            c = CHROME
+            if x in (6, 7):
+                c = CHROME_L
+            elif x in (9, 10):
+                c = CHROME_D
+            px(img, [(x, y)], c)
+    return img
+
+
+def chrome_top():
+    """Concentric rings (block space) so stepped discs read as turned chrome from above."""
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            r = int(max(abs(x - 7.5), abs(y - 7.5)))
+            c = (CHROME, CHROME_L, CHROME_D, CHROME, CHROME_L, CHROME, CHROME_L, CHROME_D)[r]
+            px(img, [(x, y)], c)
+    return img
+
+
+def tufted(base, dark, light):
+    """Flat vinyl with an 8-px tuft grid: seams on 7/15, buttons on 3/11. Same on every face."""
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            c = base
+            if x % 8 == 7 or y % 8 == 7:
+                c = dark
+            elif x % 8 == 3 and y % 8 == 3:
+                c = dark
+            elif (x % 8, y % 8) in ((2, 3), (3, 2)):
+                c = light
+            px(img, [(x, y)], c)
+    return img
+
+
+def shell_white():
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            px(img, [(x, y)], WHITE if y < 13 else WHITE_D)
+    return img
+
+
+def shell_white_top():
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            px(img, [(x, y)], (250, 250, 248))
+    return img
+
+
 def generate_textures():
+    tex("stool_chrome", stool_chrome())
+    tex("chrome_top", chrome_top())
+    tex("red_tufted", tufted(RED, RED_D, RED_L))
+    tex("teal_tufted", tufted(TEAL, TEAL_D, TEAL_L))
+    tex("shell_white", shell_white())
+    tex("shell_white_top", shell_white_top())
     tex("furn_chrome", chrome_plain())
     tex("chrome_trim", chrome_ribbed())
     tex("chrome_trim_end", chrome_trim_end())
     tex("teal_upholstery", upholstery(TEAL, TEAL_D, TEAL_L, 1))
     tex("teal_upholstery_front", upholstery_piped(TEAL, TEAL_D, TEAL_L, 2))
-    tex("red_upholstery", upholstery(RED, RED_D, RED_L, 3))
     tex("cream_formica", cream_formica())
     tex("table_edge", chrome_ribbed(24))
     tex("walnut", walnut())
-    tex("white_shell", white_shell())
     tex("teal_plastic", teal_plastic())
     tex("cream_bakelite", cream_bakelite())
     tex("bulb_off", bulb(False))
@@ -786,34 +834,41 @@ def sputnik_chandelier(lit):
 
 
 def diner_stool():
-    m = Model({"chrome": "furn_chrome", "ribbed": "chrome_trim", "red": "red_upholstery", "red_side": "red_upholstery"},
-              "red_upholstery")
-    m.octagon((4, 0, 4), (12, 0.75, 12), "chrome")
-    m.box((7, 0.75, 7), (9, 7, 9), "ribbed")
-    m.octagon((6, 7, 6), (10, 8, 10), "chrome")
-    m.octagon((3, 8, 3), (13, 9, 13), "chrome")
-    m.octagon((3.5, 9, 3.5), (12.5, 10, 12.5), "red")
+    """Vanilla-style: stepped chrome base, column, chrome seat rim with the red cushion inset on top."""
+    m = Model({"chrome": "stool_chrome", "top": "chrome_top", "red": "red_tufted"}, "red_tufted")
+    caps = {"up": "top", "down": "top"}
+    m.box((4, 0, 4), (12, 1, 12), "chrome", face_tex=caps)
+    m.box((5, 1, 5), (11, 2, 11), "chrome", faces=("north", "south", "east", "west", "up"), face_tex=caps)
+    m.box((7, 2, 7), (9, 8, 9), "chrome", faces=("north", "south", "east", "west"))
+    m.box((3, 8, 3), (13, 9, 13), "chrome", face_tex=caps)
+    m.box((4, 9, 4), (12, 10, 12), "red", faces=("north", "south", "east", "west", "up"))
     return m.write("diner_stool")
 
 
 def egg_chair():
-    m = Model({"shell": "white_shell", "teal": "teal_upholstery", "chrome": "furn_chrome", "ribbed": "chrome_trim"},
-              "white_shell")
-    m.octagon((4, 0, 4), (12, 0.75, 12), "chrome")
-    m.box((6.5, 0.75, 6.5), (9.5, 2.5, 9.5), "ribbed")
-    # bowl of the egg with the cushion on top
-    m.octagon((2, 2.5, 2), (14, 6, 14), "shell")
-    m.octagon((3, 5.5, 3), (13, 6.75, 13), "teal")
-    # back shell (teal inside), side wings and the hood
-    m.box((2, 6, 12), (14, 15, 14.5), "shell", face_tex={"north": "teal"})
-    m.box((1.5, 6, 6), (3, 15, 12), "shell", face_tex={"east": "teal"})
-    m.box((13, 6, 6), (14.5, 15, 12), "shell", face_tex={"west": "teal"})
-    m.box((2.5, 14.5, 5), (13.5, 16, 14.5), "shell", face_tex={"down": "teal"})
-    # curved edges: 45-degree chamfers at the front of the wings
-    m.box((1.5, 6, 4.5), (3, 15, 6.5), "shell", rot=("y", 22.5, (2.25, 10, 6.5)), face_tex={"east": "teal"})
-    m.box((13, 6, 4.5), (14.5, 15, 6.5), "shell", rot=("y", -22.5, (13.75, 10, 6.5)), face_tex={"west": "teal"})
-    # back cushion
-    m.box((3.5, 6.75, 11), (12.5, 13, 12), "teal")
+    """Vanilla-style egg chair: chrome pedestal, stepped white bowl, teal cushion, white shell with
+    teal lining opening to the front (north)."""
+    m = Model({"chrome": "stool_chrome", "top": "chrome_top", "shell": "shell_white", "shell_top": "shell_white_top",
+               "teal": "teal_tufted"}, "shell_white")
+    caps = {"up": "top", "down": "top"}
+    sh = {"up": "shell_top", "down": "shell_top"}
+    sides = ("north", "south", "east", "west")
+    m.box((4, 0, 4), (12, 1, 12), "chrome", face_tex=caps)
+    m.box((6, 1, 6), (10, 2, 10), "chrome", faces=sides)
+    # bowl, two steps
+    m.box((3, 2, 3), (13, 4, 13), "shell", faces=sides + ("down",), face_tex=sh)
+    m.box((2, 4, 2), (14, 7, 14), "shell", face_tex=sh)
+    # seat cushion
+    m.box((3, 7, 3), (13, 8, 12), "teal", faces=("north", "east", "west", "up"))
+    # back shell with teal lining, raised back cushion
+    m.box((2, 7, 12), (14, 15, 14), "shell", faces=("north", "south", "east", "west", "up"),
+          face_tex={"north": "teal", "up": "shell_top"})
+    m.box((4, 8, 11), (12, 13, 12), "teal", faces=("north", "east", "west", "up", "down"))
+    # side wings
+    m.box((2, 7, 8), (4, 14, 12), "shell", faces=("north", "east", "west", "up"), face_tex={"east": "teal", "up": "shell_top"})
+    m.box((12, 7, 8), (14, 14, 12), "shell", faces=("north", "east", "west", "up"), face_tex={"west": "teal", "up": "shell_top"})
+    # hood (rounded top of the egg)
+    m.box((3, 15, 9), (13, 16, 14), "shell", face_tex={"down": "teal", "up": "shell_top"})
     return m.write("egg_chair")
 
 

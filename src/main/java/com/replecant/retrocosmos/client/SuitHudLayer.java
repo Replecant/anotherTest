@@ -84,13 +84,14 @@ public class SuitHudLayer implements GuiLayer {
 
         // suit integrity lamps H C L B, right-aligned on the O2 line
         String[] pieces = {"H", "C", "L", "B"};
-        int lampW = 7;
-        int lampsX = x + INNER_RIGHT - 4 * lampW + 1;
+        int lampW = 10;
+        int lampsX = x + INNER_RIGHT - 4 * lampW + 2;
         for (int i = 0; i < 4; i++) {
             boolean on = (suit & (1 << i)) != 0;
             int lx = lampsX + i * lampW;
-            g.fill(lx, y + 26, lx + 6, y + 34, on ? TEAL : (blink ? 0xFF7A2424 : 0xFF4A1C1C));
-            g.drawString(font, pieces[i], lx + (6 - font.width(pieces[i])) / 2 + 1, y + 26, on ? INK : RED, false);
+            g.fill(lx, y + 25, lx + 8, y + 35, on ? TEAL : (blink ? 0xFF7A2424 : 0xFF4A1C1C));
+            // font.width() includes the 1px trailing spacing, so centre on the visible glyph width
+            g.drawString(font, pieces[i], lx + (8 - (font.width(pieces[i]) - 1) + 1) / 2, y + 26, on ? INK : RED, false);
         }
         String o2Text = TextFit.str("gui.retrocosmos.hud.o2", String.format("%d:%02d", seconds / 60, seconds % 60));
         g.drawString(font, TextFit.fit(font, o2Text, lampsX - 4 - gx), gx, y + 26, hasChest ? color : RED, false);

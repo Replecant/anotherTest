@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ACA",
+    "AGA",
+    "TFT"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "C": "minecraft:copper_ingot",
+    "G": "minecraft:glass",
+    "T": "retrocosmos:titanium_plate",
+    "F": "minecraft:furnace"
+  },
+  "result": {
+    "id": "retrocosmos:fuel_refinery",
+    "count": 1
+  }
+}

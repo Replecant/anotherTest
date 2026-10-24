@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:aluminum_ingot",
+    "retrocosmos:aluminum_ingot",
+    "retrocosmos:titanium_ingot"
+  ],
+  "result": {
+    "id": "retrocosmos:aero_alloy_blend",
+    "count": 3
+  }
+}

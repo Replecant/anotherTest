@@ -1,7 +1,58 @@
 {
   "variants": {
-    "": {
-      "model": "retrocosmos:block/launch_pad"
+    "facing=north,part=single": {
+      "model": "retrocosmos:block/launch_pad_single"
+    },
+    "facing=east,part=single": {
+      "model": "retrocosmos:block/launch_pad_single"
+    },
+    "facing=south,part=single": {
+      "model": "retrocosmos:block/launch_pad_single"
+    },
+    "facing=west,part=single": {
+      "model": "retrocosmos:block/launch_pad_single"
+    },
+    "facing=north,part=center": {
+      "model": "retrocosmos:block/launch_pad_center"
+    },
+    "facing=east,part=center": {
+      "model": "retrocosmos:block/launch_pad_center"
+    },
+    "facing=south,part=center": {
+      "model": "retrocosmos:block/launch_pad_center"
+    },
+    "facing=west,part=center": {
+      "model": "retrocosmos:block/launch_pad_center"
+    },
+    "facing=north,part=edge": {
+      "model": "retrocosmos:block/launch_pad_edge"
+    },
+    "facing=east,part=edge": {
+      "model": "retrocosmos:block/launch_pad_edge",
+      "y": 90
+    },
+    "facing=south,part=edge": {
+      "model": "retrocosmos:block/launch_pad_edge",
+      "y": 180
+    },
+    "facing=west,part=edge": {
+      "model": "retrocosmos:block/launch_pad_edge",
+      "y": 270
+    },
+    "facing=north,part=corner": {
+      "model": "retrocosmos:block/launch_pad_corner"
+    },
+    "facing=east,part=corner": {
+      "model": "retrocosmos:block/launch_pad_corner",
+      "y": 90
+    },
+    "facing=south,part=corner": {
+      "model": "retrocosmos:block/launch_pad_corner",
+      "y": 180
+    },
+    "facing=west,part=corner": {
+      "model": "retrocosmos:block/launch_pad_corner",
+      "y": 270
     }
   }
 }

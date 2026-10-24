@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "retrocosmos:block/air_liquefier_top",
+    "side": "retrocosmos:block/air_liquefier_side",
+    "front": "retrocosmos:block/air_liquefier_front"
+  }
+}

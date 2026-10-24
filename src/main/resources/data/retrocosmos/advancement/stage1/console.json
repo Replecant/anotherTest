@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:mission_control_console"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.console.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.console.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_mission_control_console": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:mission_control_console"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/guidance_computer"
+}

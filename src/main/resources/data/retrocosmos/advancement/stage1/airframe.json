@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:airframe"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.airframe.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.airframe.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_airframe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:airframe"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/aero_alloy"
+}

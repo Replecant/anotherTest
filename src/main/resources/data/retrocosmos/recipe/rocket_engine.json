@@ -2,14 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "TFT",
-    "TBT",
-    "T T"
+    " C ",
+    "TPT",
+    " N "
   ],
   "key": {
+    "C": "retrocosmos:combustion_chamber",
     "T": "retrocosmos:titanium_plate",
-    "F": "minecraft:fire_charge",
-    "B": "minecraft:blast_furnace"
+    "P": "retrocosmos:turbopump",
+    "N": "retrocosmos:engine_nozzle"
   },
   "result": {
     "id": "retrocosmos:rocket_engine",

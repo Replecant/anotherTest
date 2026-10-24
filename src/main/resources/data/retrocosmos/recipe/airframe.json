@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "HTH",
+    "HTH",
+    "FAF"
+  ],
+  "key": {
+    "H": "retrocosmos:hull_segment",
+    "T": "retrocosmos:fuel_tank",
+    "F": "retrocosmos:rocket_fin",
+    "A": "retrocosmos:aero_alloy_plate"
+  },
+  "result": {
+    "id": "retrocosmos:airframe",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "A A",
+    "CPC",
+    "AVA"
+  ],
+  "key": {
+    "A": "retrocosmos:aero_alloy_plate",
+    "C": "minecraft:copper_ingot",
+    "P": "minecraft:piston",
+    "V": "retrocosmos:vacuum_tube"
+  },
+  "result": {
+    "id": "retrocosmos:turbopump",
+    "count": 1
+  }
+}

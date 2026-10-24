@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "AGA",
+    "VCV",
+    "TRT"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "G": "minecraft:glass_pane",
+    "V": "retrocosmos:vacuum_tube",
+    "C": "retrocosmos:guidance_computer",
+    "T": "retrocosmos:titanium_plate",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "retrocosmos:mission_control_console",
+    "count": 1
+  }
+}

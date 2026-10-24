@@ -3,6 +3,11 @@
   "values": [
     "retrocosmos:bauxite_ore",
     "retrocosmos:deepslate_bauxite_ore",
-    "retrocosmos:aluminum_block"
+    "retrocosmos:aluminum_block",
+    "retrocosmos:oil_shale",
+    "retrocosmos:service_tower",
+    "retrocosmos:fuel_refinery",
+    "retrocosmos:air_liquefier",
+    "retrocosmos:mission_control_console"
   ]
 }

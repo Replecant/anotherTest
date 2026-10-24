@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "A A",
+    "BBB",
+    "A A"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "B": "minecraft:iron_bars"
+  },
+  "result": {
+    "id": "retrocosmos:service_tower",
+    "count": 4
+  }
+}

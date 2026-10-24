@@ -26,5 +26,5 @@
       }
     }
   },
-  "parent": "retrocosmos:stage1/rocket_engine"
+  "parent": "retrocosmos:stage1/airframe"
 }

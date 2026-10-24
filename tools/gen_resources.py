@@ -1082,6 +1082,855 @@ def has_item(*items):
 
 
 # ----------------------------------------------------------------------------
+# Stage 1b: propellant chain, machines, 3x3 launch complex, Mission Control console
+# ----------------------------------------------------------------------------
+SHALE = (52, 50, 54)
+SHALE_D = (34, 32, 36)
+SHALE_L = (74, 72, 78)
+OIL = (26, 22, 30)
+LOX = (120, 190, 240)
+LOX_L = (200, 235, 255)
+LOX_D = (50, 110, 170)
+ALLOY = (176, 182, 170)
+ALLOY_D = (118, 126, 118)
+ALLOY_L = (226, 232, 222)
+COPPER = (196, 118, 72)
+COPPER_L = (236, 170, 120)
+
+
+def oil_shale():
+    img = new()
+    noise_fill(img, SHALE, 6, 31)
+    rnd = random.Random(32)
+    for y in range(0, 16, 3):
+        for x in range(16):
+            if rnd.random() < 0.75:
+                px(img, [(x, y)], SHALE_D)
+    for y in range(1, 16, 3):
+        for x in range(16):
+            if rnd.random() < 0.35:
+                px(img, [(x, y)], SHALE_L)
+    # oily sheen
+    for (x, y) in [(3, 5), (4, 5), (10, 8), (11, 8), (12, 8), (6, 13), (7, 13), (13, 2)]:
+        px(img, [(x, y)], OIL)
+    px(img, [(4, 4), (11, 7), (7, 12)], (90, 70, 110))
+    return img
+
+
+def machine_side(seed):
+    """Cream enamel cabinet with a turquoise belt line and chrome trim."""
+    img = new()
+    noise_fill(img, CREAM, 2, seed)
+    for x in range(16):
+        px(img, [(x, 0)], CHROME)
+        px(img, [(x, 15)], CHROME_D)
+        px(img, [(x, 10), (x, 11)], TEAL)
+        px(img, [(x, 12)], TEAL_D)
+    for y in range(16):
+        px(img, [(0, y)], CHROME_L if y < 10 else TEAL_L if y < 12 else CHROME)
+        px(img, [(15, y)], CREAM_D if y < 10 else TEAL_D)
+    for (x, y) in [(2, 2), (13, 2), (2, 8), (13, 8)]:
+        px(img, [(x, y)], CHROME_D)
+    return img
+
+
+def machine_top(seed, accent):
+    img = new()
+    noise_fill(img, CREAM, 2, seed)
+    for i in range(16):
+        px(img, [(i, 0), (0, i)], CHROME_L)
+        px(img, [(i, 15), (15, i)], CHROME_D)
+    d = ImageDraw.Draw(img)
+    d.rectangle((3, 3, 12, 12), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    d.ellipse((5, 5, 10, 10), fill=rgba(accent))
+    px(img, [(6, 6)], CHROME_L)
+    return img
+
+
+def refinery_front(lit):
+    img = machine_side(41)
+    d = ImageDraw.Draw(img)
+    # boiler window with a sight glass and two gauges
+    d.rectangle((2, 2, 7, 8), fill=rgba(STEEL_D), outline=rgba(CHROME_D))
+    glow = ORANGE if lit else (60, 40, 30)
+    d.rectangle((3, 3, 6, 7), fill=rgba(glow))
+    if lit:
+        px(img, [(4, 4), (5, 5)], ORANGE_L)
+        px(img, [(3, 7), (6, 7)], RED)
+    d.ellipse((9, 2, 13, 6), fill=rgba(WHITE), outline=rgba(CHROME_D))
+    px(img, [(11, 4), (12, 3)], RED if lit else STEEL_D)
+    # pipe with valve
+    for x in range(9, 15):
+        px(img, [(x, 8)], COPPER)
+    px(img, [(12, 7), (12, 9)], RED)
+    return img
+
+
+def liquefier_front(lit):
+    img = machine_side(42)
+    d = ImageDraw.Draw(img)
+    # frost-covered compressor window + LOX gauge
+    d.rectangle((2, 2, 7, 8), fill=rgba(LOX_D), outline=rgba(CHROME_D))
+    d.rectangle((3, 3, 6, 7), fill=rgba(LOX if lit else (70, 100, 130)))
+    if lit:
+        px(img, [(3, 3), (4, 3), (3, 4), (6, 7)], LOX_L)
+        px(img, [(5, 6)], WHITE)
+    d.ellipse((9, 2, 13, 6), fill=rgba(WHITE), outline=rgba(CHROME_D))
+    px(img, [(11, 4), (10, 3)], LOX_D if lit else STEEL_D)
+    # vent grille
+    for x in range(9, 15, 2):
+        px(img, [(x, 8), (x, 9)], CHROME_D)
+    return img
+
+
+def service_tower():
+    """Red / white lattice, transparent in between (cutout render type)."""
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            on_frame = x in (0, 1, 14, 15)
+            on_bar = y in (0, 15) or (x + y) % 8 == 0 or (x - y) % 8 == 0
+            if on_frame or on_bar:
+                band_red = (y // 4) % 2 == 0
+                c = (RED if band_red else WHITE) if on_frame else CHROME_D
+                if on_frame and x in (0, 15):
+                    c = RED_D if band_red else WHITE_D
+                px(img, [(x, y)], c)
+    return img
+
+
+def launch_pad_steel(seed):
+    img = new()
+    noise_fill(img, STEEL, 4, seed)
+    for (x, y) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        px(img, [(x, y)], STEEL_D)
+        px(img, [(x + 1, y + 1)], CHROME_D)
+    return img
+
+
+def hazard(img, cells):
+    for (x, y) in cells:
+        px(img, [(x, y)], YELLOW if ((x + y) // 2) % 2 == 0 else BLACK)
+
+
+def launch_pad_center():
+    img = launch_pad_steel(101)
+    d = ImageDraw.Draw(img)
+    d.ellipse((1, 1, 14, 14), outline=rgba(WHITE))
+    d.ellipse((4, 4, 11, 11), fill=rgba(RED))
+    star(img, 7, 7, WHITE)
+    px(img, [(8, 7), (8, 8), (7, 8)], WHITE)
+    return img
+
+
+def launch_pad_edge():
+    """Stripes along the north (top) side, white guide line below them."""
+    img = launch_pad_steel(102)
+    hazard(img, [(x, y) for x in range(16) for y in range(3)])
+    for x in range(16):
+        px(img, [(x, 4)], WHITE)
+    for x in range(4, 12):
+        px(img, [(x, 10)], CHROME_D)
+    return img
+
+
+def launch_pad_corner():
+    """Stripes along the north and west sides."""
+    img = launch_pad_steel(103)
+    hazard(img, [(x, y) for x in range(16) for y in range(16) if x < 3 or y < 3])
+    for i in range(4, 16):
+        px(img, [(i, 4), (4, i)], WHITE)
+    return img
+
+
+def console_side():
+    img = new()
+    noise_fill(img, CREAM, 2, 51)
+    for x in range(16):
+        px(img, [(x, 0)], CHROME_L)
+        px(img, [(x, 6), (x, 7)], TEAL)
+        px(img, [(x, 8)], TEAL_D)
+        px(img, [(x, 15)], CHROME_D)
+    for y in range(16):
+        px(img, [(0, y)], CHROME)
+        px(img, [(15, y)], CREAM_D)
+    return img
+
+
+def console_front():
+    """Cabinet front: cream panel, chrome kick plate, a row of bakelite buttons and the name plate."""
+    img = console_side()
+    d = ImageDraw.Draw(img)
+    d.rectangle((2, 1, 13, 4), fill=rgba(NAVY), outline=rgba(CHROME))
+    for i, x in enumerate(range(3, 13, 2)):
+        px(img, [(x, 2)], WHITE)
+    for i, (x, c) in enumerate(zip(range(2, 14, 3), (TEAL, RED, ORANGE, TEAL))):
+        d.rectangle((x, 10, x + 1, 12), fill=rgba(c), outline=rgba(BLACK))
+    for x in range(16):
+        px(img, [(x, 14), (x, 15)], CHROME)
+    return img
+
+
+def console_screen():
+    """The CRT face used on the sloped top box of the console model (block texture)."""
+    img = new()
+    noise_fill(img, CREAM, 2, 52)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((1, 1, 14, 12), radius=2, fill=rgba(BLACK), outline=rgba(CHROME_D))
+    d.rounded_rectangle((2, 2, 13, 11), radius=2, fill=rgba((10, 26, 16)))
+    g = (92, 255, 138)
+    for x in range(3, 13):
+        px(img, [(x, 3)], g if x < 10 else (40, 120, 70))
+    for x in range(3, 9):
+        px(img, [(x, 5)], (40, 140, 70))
+    for x in range(3, 11):
+        px(img, [(x, 7)], (40, 140, 70))
+    for x in range(3, 13, 2):
+        px(img, [(x, 9), (x, 10)], g)
+    px(img, [(12, 10)], RED)
+    for x in range(16):
+        px(img, [(x, 14), (x, 15)], CHROME)
+    px(img, [(3, 13), (6, 13), (9, 13), (12, 13)], RED)
+    return img
+
+
+def console_top():
+    img = new()
+    noise_fill(img, CREAM, 2, 53)
+    for i in range(16):
+        px(img, [(i, 0), (0, i)], CHROME_L)
+        px(img, [(i, 15), (15, i)], CHROME_D)
+    d = ImageDraw.Draw(img)
+    d.rectangle((3, 3, 12, 12), fill=rgba(TEAL), outline=rgba(TEAL_D))
+    star(img, 7, 7, CREAM)
+    px(img, [(8, 7), (8, 8), (7, 8)], CREAM)
+    return img
+
+
+# --- items ---------------------------------------------------------------
+
+def blend_pile():
+    img = new()
+    rnd = random.Random(61)
+    d = ImageDraw.Draw(img)
+    d.ellipse((2, 6, 13, 13), fill=rgba(ALLOY))
+    d.ellipse((5, 3, 11, 9), fill=rgba(ALLOY))
+    for _ in range(18):
+        px(img, [(rnd.randint(3, 12), rnd.randint(5, 12))], rnd.choice([ALU_L, TI, ALLOY_D]))
+    px(img, [(6, 4), (7, 4), (5, 6)], ALLOY_L)
+    outline(img, ALLOY_D)
+    return img
+
+
+def wiring_harness():
+    img = new()
+    d = ImageDraw.Draw(img)
+    # bundle of wires: red, white, navy, copper
+    cols = [RED, WHITE, NAVY, COPPER, RED, WHITE]
+    for i, c in enumerate(cols):
+        y = 3 + i * 2
+        for x in range(2, 14):
+            if (x + i) % 5 != 0:
+                px(img, [(x, y)], c)
+    d.rectangle((5, 2, 7, 14), fill=rgba(BLACK))
+    d.rectangle((10, 2, 12, 14), fill=rgba(BLACK))
+    px(img, [(6, 3), (11, 3)], CHROME)
+    # plug
+    d.rectangle((13, 6, 15, 10), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    outline(img, BLACK)
+    return img
+
+
+def heat_shield():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.pieslice((1, 2, 14, 24), start=180, end=360, fill=rgba(TI), outline=rgba(TI_D))
+    for x in range(2, 14):
+        for y in range(3, 13):
+            if (x + y) % 3 == 0 and img.getpixel((x, y))[3] > 0:
+                px(img, [(x, y)], (120, 70, 60))
+    d.rectangle((1, 12, 14, 14), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    px(img, [(4, 4), (5, 4), (3, 6)], TI_L)
+    outline(img, STEEL_D)
+    return img
+
+
+def fuel_tank():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((3, 1, 12, 14), radius=3, fill=rgba(WHITE), outline=rgba(WHITE_DD))
+    for y in range(2, 14):
+        px(img, [(4, y)], CHROME_L)
+        px(img, [(11, y)], WHITE_D)
+    for x in range(4, 12):
+        px(img, [(x, 5)], CHROME)
+        px(img, [(x, 8), (x, 9)], RED)
+        px(img, [(x, 10)], CHROME)
+    px(img, [(7, 0), (8, 0), (7, 15), (8, 15)], CHROME_D)
+    outline(img, STEEL_D)
+    return img
+
+
+def combustion_chamber():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rectangle((5, 1, 10, 3), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    d.rounded_rectangle((3, 4, 12, 12), radius=2, fill=rgba(ALLOY), outline=rgba(ALLOY_D))
+    for y in range(5, 12, 2):
+        for x in range(4, 12):
+            px(img, [(x, y)], ALLOY_L if x % 4 == 0 else ALLOY)
+    d.rectangle((5, 12, 10, 14), fill=rgba(ORANGE))
+    px(img, [(7, 14), (8, 14)], ORANGE_L)
+    px(img, [(2, 6), (13, 6)], COPPER)
+    outline(img, BLACK)
+    return img
+
+
+def engine_nozzle():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.polygon([(6, 1), (9, 1), (13, 13), (2, 13)], fill=rgba(TI), outline=rgba(TI_D))
+    for y in (4, 7, 10):
+        half = (y - 1) // 3 + 1
+        d.line((7 - half, y, 8 + half, y), fill=rgba(TI_D))
+    for y in range(2, 13):
+        px(img, [(7 - (y - 1) // 3, y)], TI_L)
+    d.rectangle((2, 13, 13, 14), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    outline(img, STEEL_D)
+    return img
+
+
+def turbopump():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.ellipse((2, 3, 13, 14), fill=rgba(ALLOY), outline=rgba(ALLOY_D))
+    d.ellipse((5, 6, 10, 11), fill=rgba(CHROME_D), outline=rgba(CHROME_L))
+    px(img, [(7, 8), (8, 8), (7, 9), (8, 9)], RED)
+    for (x, y) in [(4, 5), (11, 5), (4, 12), (11, 12)]:
+        px(img, [(x, y)], CHROME_D)
+    d.rectangle((6, 0, 9, 3), fill=rgba(COPPER), outline=rgba((120, 70, 40)))
+    d.rectangle((12, 7, 15, 9), fill=rgba(COPPER))
+    outline(img, BLACK)
+    return img
+
+
+def airframe():
+    """Assembled hull without the nose and engine: white cylinder, tanks visible, fins at the bottom."""
+    img = new()
+    for y in range(1, 14):
+        for x in range(5, 11):
+            px(img, [(x, y)], WHITE)
+        px(img, [(5, y)], CHROME_L)
+        px(img, [(10, y)], WHITE_D)
+    for x in range(5, 11):
+        px(img, [(x, 4)], CHROME)
+        px(img, [(x, 9), (x, 10)], RED)
+        px(img, [(x, 1)], CHROME_D)
+        px(img, [(x, 13)], CHROME_D)
+    px(img, [(7, 6), (8, 6), (7, 7), (8, 7)], VISOR)
+    px(img, [(7, 6)], GLASS_L)
+    px(img, [(4, 10), (4, 11), (3, 12), (4, 12), (2, 13), (3, 13), (4, 13)], RED)
+    px(img, [(11, 10), (11, 11), (11, 12), (12, 12), (11, 13), (12, 13), (13, 13)], RED)
+    outline(img, STEEL_D)
+    return img
+
+
+def lox_canister():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((3, 4, 12, 14), radius=2, fill=rgba(LOX), outline=rgba(LOX_D))
+    d.rectangle((6, 1, 9, 3), fill=rgba(STEEL))
+    d.rectangle((5, 3, 10, 4), fill=rgba(STEEL_D))
+    d.rectangle((4, 7, 11, 11), fill=rgba(WHITE))
+    px(img, [(5, 8), (6, 8), (5, 9), (6, 9), (5, 10), (6, 10)], LOX_D)
+    px(img, [(6, 9)], WHITE)
+    px(img, [(8, 8), (9, 8), (8, 10), (9, 10), (10, 9), (8, 9)], LOX_D)
+    px(img, [(4, 5), (4, 6), (11, 13)], LOX_L)
+    outline(img, BLACK)
+    return img
+
+
+def kerosene_canister():
+    img = new()
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((3, 4, 12, 14), radius=2, fill=rgba(RED), outline=rgba(RED_D))
+    d.rectangle((6, 1, 9, 3), fill=rgba(STEEL))
+    d.rectangle((5, 3, 10, 4), fill=rgba(STEEL_D))
+    d.rectangle((4, 7, 11, 11), fill=rgba(WHITE))
+    star(img, 6, 9, NAVY)
+    px(img, [(9, 8), (10, 8), (9, 10), (10, 10), (9, 9)], RED_D)
+    px(img, [(4, 5), (4, 6)], RED_L)
+    outline(img, BLACK)
+    return img
+
+
+# --- GUI art -----------------------------------------------------------------
+
+def panel(d, x0, y0, x1, y1, fill, light, dark):
+    d.rectangle((x0, y0, x1, y1), fill=rgba(fill))
+    d.line((x0, y0, x1, y0), fill=rgba(light))
+    d.line((x0, y0, x0, y1), fill=rgba(light))
+    d.line((x0, y1, x1, y1), fill=rgba(dark))
+    d.line((x1, y0, x1, y1), fill=rgba(dark))
+
+
+def slot_box(d, x, y, size=18):
+    d.rectangle((x, y, x + size - 1, y + size - 1), fill=rgba((139, 139, 139)))
+    d.line((x, y, x + size - 1, y), fill=rgba((55, 55, 55)))
+    d.line((x, y, x, y + size - 1), fill=rgba((55, 55, 55)))
+    d.line((x, y + size - 1, x + size - 1, y + size - 1), fill=rgba((255, 255, 255)))
+    d.line((x + size - 1, y, x + size - 1, y + size - 1), fill=rgba((255, 255, 255)))
+
+
+def gui_machine():
+    img = new(256, 256)
+    d = ImageDraw.Draw(img)
+    # cream enamel panel with turquoise header band and chrome frame
+    d.rounded_rectangle((0, 0, 175, 165), radius=4, fill=rgba(CREAM), outline=rgba(BLACK))
+    d.rounded_rectangle((1, 1, 174, 164), radius=3, outline=rgba(CHROME_L))
+    d.rectangle((3, 3, 172, 14), fill=rgba(TEAL))
+    d.line((3, 15, 172, 15), fill=rgba(TEAL_D))
+    for x in range(8, 172, 6):
+        px(img, [(x, 4)], TEAL_L)
+    d.rectangle((3, 76, 172, 78), fill=rgba(CHROME))
+    d.line((3, 79, 172, 79), fill=rgba(CHROME_D))
+    # machine panel (darker inset) behind the slots
+    panel(d, 24, 18, 150, 72, (226, 216, 190), CHROME_L, CREAM_D)
+    # slots: input (56,17) canister (32,35) fuel (56,53) output (116,35)
+    slot_box(d, 55, 16)
+    slot_box(d, 31, 34)
+    slot_box(d, 55, 52)
+    d.rounded_rectangle((110, 29, 137, 56), radius=3, fill=rgba(CHROME), outline=rgba(CHROME_D))
+    slot_box(d, 115, 34)
+    # flame socket
+    d.rectangle((56, 35, 70, 49), fill=rgba((90, 86, 80)))
+    for y in range(36, 49, 2):
+        d.line((57, y, 69, y), fill=rgba((70, 66, 60)))
+    # pipe outline from the input to the output
+    d.rectangle((79, 34, 102, 50), fill=rgba((120, 118, 112)), outline=rgba(CHROME_D))
+    d.polygon([(79, 36), (96, 36), (96, 32), (103, 42), (96, 52), (96, 48), (79, 48)], fill=rgba((150, 148, 142)))
+    # stars & stripes decoration on the header
+    for i in range(3):
+        star(img, 160 + i * 5, 9, CREAM)
+    # player inventory slots
+    for row in range(3):
+        for col in range(9):
+            slot_box(d, 7 + col * 18, 83 + row * 18)
+    for col in range(9):
+        slot_box(d, 7 + col * 18, 141)
+    # overlays: flame (176,0) 14x14
+    d.polygon([(183, 0), (189, 4), (189, 13), (177, 13), (177, 6)], fill=rgba(ORANGE))
+    d.polygon([(183, 4), (187, 8), (186, 13), (180, 13), (180, 8)], fill=rgba(ORANGE_L))
+    px(img, [(183, 9), (182, 10), (184, 10)], (255, 240, 200))
+    # progress fill (176,14) 24x17: turquoise liquid in the pipe
+    d.polygon([(176, 16), (193, 16), (193, 14), (199, 22), (193, 30), (193, 28), (176, 28)], fill=rgba(TEAL))
+    d.polygon([(177, 18), (192, 18), (192, 20), (177, 20)], fill=rgba(TEAL_L))
+    # emblems (216,0) and (216,20), 24x20
+    d.ellipse((218, 1, 237, 18), fill=rgba(RED), outline=rgba(RED_D))
+    d.polygon([(227, 3), (232, 11), (227, 16), (222, 11)], fill=rgba(WHITE))
+    px(img, [(227, 9), (227, 10), (226, 10), (228, 10)], RED_D)
+    d.ellipse((218, 21, 237, 38), fill=rgba(LOX_D), outline=rgba(NAVY))
+    for a in range(0, 360, 60):
+        import math
+        d.line((227, 29, 227 + 7 * math.cos(math.radians(a)), 29 + 7 * math.sin(math.radians(a))), fill=rgba(LOX_L))
+    return img
+
+
+def gui_console():
+    img = new(256, 256)
+    d = ImageDraw.Draw(img)
+    W, H = 232, 200
+    # cabinet: cream body, turquoise flanks, chrome trims
+    d.rounded_rectangle((0, 0, W - 1, H - 1), radius=6, fill=rgba(CREAM), outline=rgba(BLACK))
+    d.rounded_rectangle((1, 1, W - 2, H - 2), radius=5, outline=rgba(CHROME_L))
+    d.rectangle((2, 2, 9, H - 3), fill=rgba(TEAL))
+    d.rectangle((W - 10, 2, W - 3, H - 3), fill=rgba(TEAL))
+    d.line((9, 2, 9, H - 3), fill=rgba(TEAL_D))
+    d.line((W - 10, 2, W - 10, H - 3), fill=rgba(TEAL_D))
+    # CRT bezel (dark bakelite with rounded corners) around (14,16) 204x132
+    d.rounded_rectangle((10, 12, 221, 151), radius=8, fill=rgba((40, 36, 36)), outline=rgba(BLACK))
+    d.rounded_rectangle((11, 13, 220, 150), radius=7, outline=rgba((90, 84, 80)))
+    d.rounded_rectangle((13, 15, 218, 148), radius=4, fill=rgba((10, 26, 16)), outline=rgba((20, 60, 36)))
+    # header plate above the bezel
+    d.rectangle((60, 3, 171, 10), fill=rgba(NAVY), outline=rgba(CHROME))
+    for x in range(64, 170, 6):
+        px(img, [(x, 6)], WHITE)
+    # lamp row under the CRT
+    d.rectangle((12, 153, 219, 159), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    for i, c in enumerate((RED, ORANGE, YELLOW, TEAL, (120, 230, 120), RED, ORANGE, YELLOW, TEAL, (120, 230, 120))):
+        x = 16 + i * 20
+        d.ellipse((x, 154, x + 4, 158), fill=rgba(c), outline=rgba(BLACK))
+    # button bay
+    panel(d, 12, 160, 219, 187, (222, 212, 186), CHROME_L, CREAM_D)
+    # name plate & starburst
+    d.rectangle((70, 189, 161, 197), fill=rgba(NAVY), outline=rgba(CHROME))
+    import math
+    for a in range(0, 360, 30):
+        d.line((40, 193, 40 + 6 * math.cos(math.radians(a)), 193 + 6 * math.sin(math.radians(a))), fill=rgba(RED))
+        d.line((191, 193, 191 + 6 * math.cos(math.radians(a)), 193 + 6 * math.sin(math.radians(a))), fill=rgba(RED))
+    px(img, [(40, 193), (191, 193)], CREAM)
+    return img
+
+
+# --- models / data ----------------------------------------------------------
+
+def machine_models(name):
+    tex = {"top": f"{MOD}:block/{name}_top", "side": f"{MOD}:block/{name}_side", "front": f"{MOD}:block/{name}_front"}
+    write_json(os.path.join(ASSETS, "models", "block", name + ".json"), {"parent": "minecraft:block/orientable", "textures": tex})
+    write_json(os.path.join(ASSETS, "models", "block", name + "_on.json"),
+               {"parent": "minecraft:block/orientable", "textures": dict(tex, front=f"{MOD}:block/{name}_front_on")})
+    variants = {}
+    for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        for lit in ("false", "true"):
+            v = {"model": f"{MOD}:block/{name}{'_on' if lit == 'true' else ''}"}
+            if rot:
+                v["y"] = rot
+            variants[f"facing={facing},lit={lit}"] = v
+    write_json(os.path.join(ASSETS, "blockstates", name + ".json"), {"variants": variants})
+    item_def(name, f"{MOD}:block/{name}")
+
+
+def console_model():
+    t = {"side": f"{MOD}:block/console_side", "front": f"{MOD}:block/console_front",
+         "screen": f"{MOD}:block/console_screen", "top": f"{MOD}:block/console_top", "particle": f"{MOD}:block/console_side"}
+    model = {"textures": t, "elements": [
+        element((0, 0, 0), (16, 10, 16), "#side", face_tex={"north": "#front", "up": "#top", "down": "#side"}),
+        # sloped CRT housing on top (front face carries the screen)
+        element((1, 10, 2), (15, 16, 14), "#side", face_tex={"north": "#screen", "up": "#top"}),
+    ]}
+    write_json(os.path.join(ASSETS, "models", "block", "mission_control_console.json"), model)
+    variants = {}
+    for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        v = {"model": f"{MOD}:block/mission_control_console"}
+        if rot:
+            v["y"] = rot
+        variants[f"facing={facing}"] = v
+    write_json(os.path.join(ASSETS, "blockstates", "mission_control_console.json"), {"variants": variants})
+    item_def("mission_control_console", f"{MOD}:block/mission_control_console")
+
+
+def launch_pad_models():
+    for part in ("single", "center", "edge", "corner"):
+        write_json(os.path.join(ASSETS, "models", "block", f"launch_pad_{part}.json"), {
+            "parent": "minecraft:block/cube_bottom_top",
+            "textures": {"top": f"{MOD}:block/launch_pad_{part}" if part != "single" else f"{MOD}:block/launch_pad_top",
+                         "bottom": f"{MOD}:block/titanium_block", "side": f"{MOD}:block/launch_pad_side"}})
+    variants = {}
+    for part in ("single", "center", "edge", "corner"):
+        for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+            v = {"model": f"{MOD}:block/launch_pad_{part}"}
+            if rot and part in ("edge", "corner"):
+                v["y"] = rot
+            variants[f"facing={facing},part={part}"] = v
+    write_json(os.path.join(ASSETS, "blockstates", "launch_pad.json"), {"variants": variants})
+    item_def("launch_pad", f"{MOD}:block/launch_pad_single")
+
+
+def service_tower_model():
+    write_json(os.path.join(ASSETS, "models", "block", "service_tower.json"),
+               {"parent": "minecraft:block/cube_all", "render_type": "minecraft:cutout",
+                "textures": {"all": f"{MOD}:block/service_tower"}})
+    simple_blockstate("service_tower")
+    item_def("service_tower", f"{MOD}:block/service_tower")
+
+
+def stone_ore_feature(name, block, size, count, lo, hi):
+    write_json(os.path.join(DATA, "worldgen", "configured_feature", name + ".json"), {
+        "type": "minecraft:ore",
+        "config": {"size": size, "discard_chance_on_air_exposure": 0.0, "targets": [
+            {"target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables"},
+             "state": {"Name": f"{MOD}:{block}"}}]}})
+    write_json(os.path.join(DATA, "worldgen", "placed_feature", name + ".json"), {
+        "feature": f"{MOD}:{name}",
+        "placement": [
+            {"type": "minecraft:count", "count": count},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:height_range", "height": {
+                "type": "minecraft:uniform", "min_inclusive": {"absolute": lo}, "max_inclusive": {"absolute": hi}}},
+            {"type": "minecraft:biome"},
+        ]})
+
+
+def has_count(item, count):
+    return {"has_" + item: {"trigger": "minecraft:inventory_changed",
+                            "conditions": {"items": [{"items": ing(item), "count": {"min": count}}]}}}
+
+
+def stage1b_textures():
+    save(oil_shale(), "block", "oil_shale")
+    save(machine_side(41), "block", "fuel_refinery_side")
+    save(machine_top(43, ORANGE), "block", "fuel_refinery_top")
+    save(refinery_front(False), "block", "fuel_refinery_front")
+    save(refinery_front(True), "block", "fuel_refinery_front_on")
+    save(machine_side(42), "block", "air_liquefier_side")
+    save(machine_top(44, LOX), "block", "air_liquefier_top")
+    save(liquefier_front(False), "block", "air_liquefier_front")
+    save(liquefier_front(True), "block", "air_liquefier_front_on")
+    save(service_tower(), "block", "service_tower")
+    save(launch_pad_center(), "block", "launch_pad_center")
+    save(launch_pad_edge(), "block", "launch_pad_edge")
+    save(launch_pad_corner(), "block", "launch_pad_corner")
+    save(console_side(), "block", "console_side")
+    save(console_front(), "block", "console_front")
+    save(console_screen(), "block", "console_screen")
+    save(console_top(), "block", "console_top")
+
+    save(blend_pile(), "item", "aero_alloy_blend")
+    save(ingot(ALLOY_D, ALLOY, ALLOY_L), "item", "aero_alloy_ingot")
+    save(plate(ALLOY_D, ALLOY, ALLOY_L), "item", "aero_alloy_plate")
+    save(wiring_harness(), "item", "wiring_harness")
+    save(heat_shield(), "item", "heat_shield")
+    save(fuel_tank(), "item", "fuel_tank")
+    save(combustion_chamber(), "item", "combustion_chamber")
+    save(engine_nozzle(), "item", "engine_nozzle")
+    save(turbopump(), "item", "turbopump")
+    save(airframe(), "item", "airframe")
+    save(lox_canister(), "item", "liquid_oxygen_canister")
+    save(kerosene_canister(), "item", "rocket_fuel_canister")
+
+    os.makedirs(os.path.join(ASSETS, "textures", "gui"), exist_ok=True)
+    gui_machine().save(os.path.join(ASSETS, "textures", "gui", "machine.png"))
+    gui_console().save(os.path.join(ASSETS, "textures", "gui", "console.png"))
+
+
+def stage1b_data():
+    # models / blockstates / items
+    cube_all("oil_shale")
+    simple_blockstate("oil_shale")
+    item_def("oil_shale", f"{MOD}:block/oil_shale")
+    machine_models("fuel_refinery")
+    machine_models("air_liquefier")
+    console_model()
+    launch_pad_models()
+    service_tower_model()
+    for i in ("aero_alloy_blend", "aero_alloy_ingot", "aero_alloy_plate", "wiring_harness", "heat_shield", "fuel_tank",
+              "combustion_chamber", "engine_nozzle", "turbopump", "airframe", "liquid_oxygen_canister"):
+        generated_item(i)
+
+    # loot
+    for b in ("oil_shale", "service_tower", "fuel_refinery", "air_liquefier", "mission_control_console"):
+        loot_self(b)
+
+    # tags
+    tag("block/mineable/pickaxe", [f"{MOD}:{b}" for b in ("oil_shale", "service_tower", "fuel_refinery", "air_liquefier",
+                                                            "mission_control_console")] + [
+        f"{MOD}:{b}" for b in ("bauxite_ore", "deepslate_bauxite_ore", "titanium_ore", "deepslate_titanium_ore",
+                               "aluminum_block", "titanium_block", "launch_pad", "rocket")])
+    tag("block/needs_stone_tool", [f"{MOD}:bauxite_ore", f"{MOD}:deepslate_bauxite_ore", f"{MOD}:aluminum_block",
+                                   f"{MOD}:oil_shale", f"{MOD}:service_tower", f"{MOD}:fuel_refinery",
+                                   f"{MOD}:air_liquefier", f"{MOD}:mission_control_console"])
+    tag("item/refinery_input", [f"{MOD}:oil_shale"], namespace=MOD)
+    tag("item/liquefier_input", ["minecraft:ice", "minecraft:packed_ice", "minecraft:blue_ice", "minecraft:snow_block"], namespace=MOD)
+    tag("item/ingots/aero_alloy", [f"{MOD}:aero_alloy_ingot"], namespace="c")
+    tag("item/plates/aero_alloy", [f"{MOD}:aero_alloy_plate"], namespace="c")
+
+    # worldgen: oil shale in sedimentary bands
+    stone_ore_feature("ore_oil_shale", "oil_shale", 14, 7, 8, 72)
+
+    # recipes: alloy
+    shapeless("aero_alloy_blend", ["aluminum_ingot", "aluminum_ingot", "titanium_ingot"], "aero_alloy_blend", count=3)
+    cooking("aero_alloy_ingot_from_smelting", "smelting", "aero_alloy_blend", "aero_alloy_ingot", 0.8, 200)
+    cooking("aero_alloy_ingot_from_blasting", "blasting", "aero_alloy_blend", "aero_alloy_ingot", 0.8, 100)
+    shaped("aero_alloy_plate", ["#", "#"], {"#": "aero_alloy_ingot"}, "aero_alloy_plate")
+    # electronics
+    shaped("wiring_harness", ["SCS", "CRC", "SCS"],
+           {"S": "minecraft:string", "C": "minecraft:copper_ingot", "R": "minecraft:redstone"}, "wiring_harness", count=2)
+    # engine
+    shaped("combustion_chamber", ["P P", "PFP", "PPP"], {"P": "aero_alloy_plate", "F": "minecraft:fire_charge"}, "combustion_chamber")
+    shaped("engine_nozzle", ["T T", "TTT"], {"T": "titanium_plate"}, "engine_nozzle")
+    shaped("turbopump", ["A A", "CPC", "AVA"],
+           {"A": "aero_alloy_plate", "C": "minecraft:copper_ingot", "P": "minecraft:piston", "V": "vacuum_tube"}, "turbopump")
+    shaped("rocket_engine", [" C ", "TPT", " N "],
+           {"C": "combustion_chamber", "T": "titanium_plate", "P": "turbopump", "N": "engine_nozzle"}, "rocket_engine")
+    # structure
+    shaped("heat_shield", ["BBB", "TTT"], {"B": "minecraft:bricks", "T": "titanium_plate"}, "heat_shield")
+    shaped("fuel_tank", ["APA", "A A", "APA"], {"A": "aluminum_plate", "P": "aero_alloy_plate"}, "fuel_tank")
+    shaped("airframe", ["HTH", "HTH", "FAF"],
+           {"H": "hull_segment", "T": "fuel_tank", "F": "rocket_fin", "A": "aero_alloy_plate"}, "airframe")
+    # machines & launch complex
+    shaped("fuel_refinery", ["ACA", "AGA", "TFT"],
+           {"A": "aluminum_plate", "C": "minecraft:copper_ingot", "G": "minecraft:glass", "T": "titanium_plate",
+            "F": "minecraft:furnace"}, "fuel_refinery")
+    shaped("air_liquefier", ["ACA", "AVA", "TPT"],
+           {"A": "aluminum_plate", "C": "minecraft:copper_ingot", "V": "vacuum_tube", "T": "titanium_plate",
+            "P": "minecraft:piston"}, "air_liquefier")
+    shaped("mission_control_console", ["AGA", "VCV", "TRT"],
+           {"A": "aluminum_plate", "G": "minecraft:glass_pane", "V": "vacuum_tube", "C": "guidance_computer",
+            "T": "titanium_plate", "R": "minecraft:redstone"}, "mission_control_console")
+    shaped("service_tower", ["A A", "BBB", "A A"],
+           {"A": "aluminum_plate", "B": "minecraft:iron_bars"}, "service_tower", count=4, category="building")
+
+    # advancements
+    advancement("oil_shale", "oil_shale", "root", has_item("oil_shale"))
+    advancement("refinery", "fuel_refinery", "oil_shale", has_item("fuel_refinery"))
+    advancement("fuel", "rocket_fuel_canister", "refinery", has_item("rocket_fuel_canister"))
+    advancement("lox", "liquid_oxygen_canister", "refinery", has_item("liquid_oxygen_canister"))
+    advancement("aero_alloy", "aero_alloy_ingot", "titanium", has_item("aero_alloy_ingot"))
+    advancement("rocket_engine", "rocket_engine", "aero_alloy", has_item("rocket_engine"))
+    advancement("airframe", "airframe", "aero_alloy", has_item("airframe"))
+    advancement("rocket", "rocket", "airframe", has_item("rocket"), frame="goal")
+    advancement("launch_pad", "launch_pad", "titanium", has_count("launch_pad", 9))
+    advancement("launch_complex", "service_tower", "launch_pad", {"pad_complete": {"trigger": "minecraft:impossible"}})
+    advancement("console", "mission_control_console", "guidance_computer", has_item("mission_control_console"))
+    advancement("countdown", "rocket", "ready_for_launch", {"liftoff": {"trigger": "minecraft:impossible"}}, frame="challenge")
+
+
+EN_1B = {
+    "block.retrocosmos.oil_shale": "Oil Shale",
+    "block.retrocosmos.fuel_refinery": "Fuel Refinery",
+    "block.retrocosmos.air_liquefier": "Air Liquefier",
+    "block.retrocosmos.mission_control_console": "Mission Control Console",
+    "block.retrocosmos.service_tower": "Service Tower",
+    "item.retrocosmos.aero_alloy_blend": "Aero Alloy Blend",
+    "item.retrocosmos.aero_alloy_ingot": "Aero Alloy Ingot",
+    "item.retrocosmos.aero_alloy_plate": "Aero Alloy Plate",
+    "item.retrocosmos.wiring_harness": "Wiring Harness",
+    "item.retrocosmos.heat_shield": "Ablative Heat Shield",
+    "item.retrocosmos.fuel_tank": "Propellant Tank",
+    "item.retrocosmos.combustion_chamber": "Combustion Chamber",
+    "item.retrocosmos.engine_nozzle": "Engine Nozzle",
+    "item.retrocosmos.turbopump": "Turbopump",
+    "item.retrocosmos.airframe": "Liberty I Airframe",
+    "item.retrocosmos.rocket_fuel_canister": "RP-1 Kerosene Canister",
+    "item.retrocosmos.liquid_oxygen_canister": "Liquid Oxygen Canister",
+    "message.retrocosmos.rocket.fueled": "RP-1 tank: %s / %s",
+    "message.retrocosmos.rocket.oxidized": "LOX tank: %s / %s",
+    "message.retrocosmos.rocket.fuel_full": "That tank is already full!",
+    "message.retrocosmos.checklist.vehicle": "Vehicle on the stand",
+    "message.retrocosmos.checklist.pad": "Launch pad complete (%s / %s blocks, 3x3)",
+    "message.retrocosmos.checklist.tower": "Service tower beside the pad (%s / %s blocks tall)",
+    "message.retrocosmos.checklist.fuel": "RP-1 kerosene loaded (%s / %s)",
+    "message.retrocosmos.checklist.oxidizer": "Liquid oxygen loaded (%s / %s)",
+    "message.retrocosmos.checklist.go_to_console": "Proceed to the Mission Control console to start the countdown.",
+    "message.retrocosmos.console.no_go": "NO-GO: the pre-flight checklist is incomplete. Run the check.",
+    "message.retrocosmos.console.countdown_started": "Mission Control: countdown started. All stations, stand by.",
+    "message.retrocosmos.console.t_minus": "T-minus %s...",
+    "message.retrocosmos.console.ignition": "Ignition sequence start!",
+    "message.retrocosmos.console.liftoff": "Zero. We have liftoff!",
+    "message.retrocosmos.console.hold": "HOLD, HOLD, HOLD!",
+    "message.retrocosmos.console.abort_manual": "Countdown aborted by the flight director.",
+    "message.retrocosmos.console.abort_vehicle": "Countdown aborted: the vehicle or the launch complex is no longer GO.",
+    "gui.retrocosmos.console.header": "MISSION CONTROL  -  LIBERTY I",
+    "gui.retrocosmos.console.vehicle": "VEHICLE",
+    "gui.retrocosmos.console.vehicle_on_pad": "ON STAND, %sm",
+    "gui.retrocosmos.console.vehicle_missing": "NOT FOUND",
+    "gui.retrocosmos.console.pad": "LAUNCH PAD 3x3",
+    "gui.retrocosmos.console.tower": "SERVICE TOWER",
+    "gui.retrocosmos.console.fuel": "RP-1 KEROSENE",
+    "gui.retrocosmos.console.oxidizer": "LIQUID OXYGEN",
+    "gui.retrocosmos.console.suit": "ASTRONAUT SUIT",
+    "gui.retrocosmos.console.counting": "COUNTDOWN  %s",
+    "gui.retrocosmos.console.all_go": "ALL SYSTEMS GO - READY FOR COUNTDOWN",
+    "gui.retrocosmos.console.no_go": "NO-GO - CHECKLIST INCOMPLETE",
+    "gui.retrocosmos.console.standby": "STANDING BY - RUN PRE-FLIGHT CHECK",
+    "gui.retrocosmos.console.run_check": "RUN CHECK",
+    "gui.retrocosmos.console.countdown": "COUNTDOWN",
+    "gui.retrocosmos.console.abort": "ABORT",
+    "advancements.retrocosmos.oil_shale.title": "Black Gold",
+    "advancements.retrocosmos.oil_shale.description": "Mine oil shale, the source of rocket-grade kerosene",
+    "advancements.retrocosmos.refinery.title": "Refinery Row",
+    "advancements.retrocosmos.refinery.description": "Build a fuel refinery",
+    "advancements.retrocosmos.fuel.title": "Atomic-Age Kerosene",
+    "advancements.retrocosmos.fuel.description": "Refine a canister of RP-1 kerosene",
+    "advancements.retrocosmos.lox.title": "Colder Than Space",
+    "advancements.retrocosmos.lox.description": "Liquefy a canister of oxygen in the air liquefier",
+    "advancements.retrocosmos.aero_alloy.title": "Jet Age Alloy",
+    "advancements.retrocosmos.aero_alloy.description": "Smelt an aero alloy ingot from an aluminum-titanium blend",
+    "advancements.retrocosmos.rocket_engine.title": "Ignition Sequence Start",
+    "advancements.retrocosmos.rocket_engine.description": "Assemble a rocket engine from a chamber, a turbopump and a nozzle",
+    "advancements.retrocosmos.airframe.title": "Airframe",
+    "advancements.retrocosmos.airframe.description": "Rivet hull segments, propellant tanks and fins into an airframe",
+    "advancements.retrocosmos.launch_pad.title": "Nine Slabs of Steel",
+    "advancements.retrocosmos.launch_pad.description": "Collect nine launch pad blocks for a 3x3 pad",
+    "advancements.retrocosmos.launch_complex.title": "Launch Complex 1",
+    "advancements.retrocosmos.launch_complex.description": "Have Mission Control confirm a complete 3x3 launch pad",
+    "advancements.retrocosmos.console.title": "Mission Control",
+    "advancements.retrocosmos.console.description": "Build a Mission Control console",
+    "advancements.retrocosmos.ready_for_launch.title": "All Systems GO",
+    "advancements.retrocosmos.ready_for_launch.description": "Pass the pre-flight checklist: 3x3 pad, service tower, RP-1, LOX, suited up",
+    "advancements.retrocosmos.countdown.title": "We Have Liftoff!",
+    "advancements.retrocosmos.countdown.description": "Run the countdown to zero from the Mission Control console",
+}
+
+RU_1B = {
+    "block.retrocosmos.oil_shale": "Горючий сланец",
+    "block.retrocosmos.fuel_refinery": "Топливный завод",
+    "block.retrocosmos.air_liquefier": "Воздухоразделитель",
+    "block.retrocosmos.mission_control_console": "Пульт Центра управления",
+    "block.retrocosmos.service_tower": "Башня обслуживания",
+    "item.retrocosmos.aero_alloy_blend": "Смесь для аэросплава",
+    "item.retrocosmos.aero_alloy_ingot": "Слиток аэросплава",
+    "item.retrocosmos.aero_alloy_plate": "Пластина аэросплава",
+    "item.retrocosmos.wiring_harness": "Жгут проводов",
+    "item.retrocosmos.heat_shield": "Абляционный теплозащитный экран",
+    "item.retrocosmos.fuel_tank": "Топливный бак",
+    "item.retrocosmos.combustion_chamber": "Камера сгорания",
+    "item.retrocosmos.engine_nozzle": "Сопло двигателя",
+    "item.retrocosmos.turbopump": "Турбонасос",
+    "item.retrocosmos.airframe": "Планер «Либерти-1»",
+    "item.retrocosmos.rocket_fuel_canister": "Канистра керосина RP-1",
+    "item.retrocosmos.liquid_oxygen_canister": "Канистра жидкого кислорода",
+    "message.retrocosmos.rocket.fueled": "Бак RP-1: %s / %s",
+    "message.retrocosmos.rocket.oxidized": "Бак LOX: %s / %s",
+    "message.retrocosmos.rocket.fuel_full": "Этот бак уже полон!",
+    "message.retrocosmos.checklist.vehicle": "Ракета на стартовом столе",
+    "message.retrocosmos.checklist.pad": "Стартовая площадка собрана (%s / %s блоков, 3x3)",
+    "message.retrocosmos.checklist.tower": "Башня обслуживания рядом с площадкой (%s / %s блоков в высоту)",
+    "message.retrocosmos.checklist.fuel": "Керосин RP-1 заправлен (%s / %s)",
+    "message.retrocosmos.checklist.oxidizer": "Жидкий кислород заправлен (%s / %s)",
+    "message.retrocosmos.checklist.go_to_console": "Пройдите к пульту Центра управления, чтобы начать отсчёт.",
+    "message.retrocosmos.console.no_go": "NO-GO: предстартовая проверка не пройдена. Запустите проверку.",
+    "message.retrocosmos.console.countdown_started": "Центр управления: отсчёт начат. Всем постам — готовность.",
+    "message.retrocosmos.console.t_minus": "T-минус %s...",
+    "message.retrocosmos.console.ignition": "Зажигание!",
+    "message.retrocosmos.console.liftoff": "Ноль. Есть отрыв!",
+    "message.retrocosmos.console.hold": "СТОП, СТОП, СТОП!",
+    "message.retrocosmos.console.abort_manual": "Отсчёт прерван руководителем полёта.",
+    "message.retrocosmos.console.abort_vehicle": "Отсчёт прерван: ракета или стартовый комплекс больше не в готовности.",
+    "gui.retrocosmos.console.header": "ЦЕНТР УПРАВЛЕНИЯ  -  ЛИБЕРТИ-1",
+    "gui.retrocosmos.console.vehicle": "РАКЕТА",
+    "gui.retrocosmos.console.vehicle_on_pad": "НА СТОЛЕ, %s м",
+    "gui.retrocosmos.console.vehicle_missing": "НЕ НАЙДЕНА",
+    "gui.retrocosmos.console.pad": "ПЛОЩАДКА 3x3",
+    "gui.retrocosmos.console.tower": "БАШНЯ ОБСЛУЖ.",
+    "gui.retrocosmos.console.fuel": "КЕРОСИН RP-1",
+    "gui.retrocosmos.console.oxidizer": "ЖИДКИЙ КИСЛОРОД",
+    "gui.retrocosmos.console.suit": "СКАФАНДР",
+    "gui.retrocosmos.console.counting": "ОТСЧЁТ  %s",
+    "gui.retrocosmos.console.all_go": "ВСЕ СИСТЕМЫ GO - ГОТОВ К ОТСЧЁТУ",
+    "gui.retrocosmos.console.no_go": "NO-GO - ПРОВЕРКА НЕ ПРОЙДЕНА",
+    "gui.retrocosmos.console.standby": "ОЖИДАНИЕ - ЗАПУСТИТЕ ПРОВЕРКУ",
+    "gui.retrocosmos.console.run_check": "ПРОВЕРКА",
+    "gui.retrocosmos.console.countdown": "ОТСЧЁТ",
+    "gui.retrocosmos.console.abort": "СТОП",
+    "advancements.retrocosmos.oil_shale.title": "Чёрное золото",
+    "advancements.retrocosmos.oil_shale.description": "Добудьте горючий сланец — источник ракетного керосина",
+    "advancements.retrocosmos.refinery.title": "Нефтеперегонный ряд",
+    "advancements.retrocosmos.refinery.description": "Постройте топливный завод",
+    "advancements.retrocosmos.fuel.title": "Керосин атомной эры",
+    "advancements.retrocosmos.fuel.description": "Получите канистру керосина RP-1 на топливном заводе",
+    "advancements.retrocosmos.lox.title": "Холоднее космоса",
+    "advancements.retrocosmos.lox.description": "Получите канистру жидкого кислорода в воздухоразделителе",
+    "advancements.retrocosmos.aero_alloy.title": "Сплав реактивной эры",
+    "advancements.retrocosmos.aero_alloy.description": "Выплавьте слиток аэросплава из алюминиево-титановой смеси",
+    "advancements.retrocosmos.rocket_engine.title": "Зажигание",
+    "advancements.retrocosmos.rocket_engine.description": "Соберите двигатель из камеры сгорания, турбонасоса и сопла",
+    "advancements.retrocosmos.airframe.title": "Планер",
+    "advancements.retrocosmos.airframe.description": "Соберите планер из секций корпуса, баков и стабилизаторов",
+    "advancements.retrocosmos.launch_pad.title": "Девять стальных плит",
+    "advancements.retrocosmos.launch_pad.description": "Соберите девять блоков стартовой площадки для стола 3x3",
+    "advancements.retrocosmos.launch_complex.title": "Стартовый комплекс №1",
+    "advancements.retrocosmos.launch_complex.description": "Пусть Центр управления подтвердит собранную площадку 3x3",
+    "advancements.retrocosmos.console.title": "Центр управления",
+    "advancements.retrocosmos.console.description": "Постройте пульт Центра управления",
+    "advancements.retrocosmos.ready_for_launch.title": "Все системы — GO",
+    "advancements.retrocosmos.ready_for_launch.description": "Пройдите предстартовую проверку: площадка 3x3, башня, RP-1, LOX, скафандр",
+    "advancements.retrocosmos.countdown.title": "Есть отрыв!",
+    "advancements.retrocosmos.countdown.description": "Доведите отсчёт до нуля с пульта Центра управления",
+}
+
+
+# ----------------------------------------------------------------------------
 
 def main():
     # ---- textures ----
@@ -1115,7 +1964,6 @@ def main():
     save(rocket_fin_item(), "item", "rocket_fin")
     save(rocket_engine(), "item", "rocket_engine")
     save(canister(False), "item", "empty_fuel_canister")
-    save(canister(True), "item", "rocket_fuel_canister")
     save(rocket_item(), "item", "rocket")
     save(suit_icon("helmet"), "item", "space_helmet")
     save(suit_icon("suit"), "item", "space_suit")
@@ -1124,6 +1972,7 @@ def main():
     save(suit_layer(), "entity", "equipment", "humanoid", "space_suit")
     save(suit_leggings_layer(), "entity", "equipment", "humanoid_leggings", "space_suit")
     logo().save(os.path.join(ROOT, "retrocosmos_logo.png"))
+    stage1b_textures()
 
     # ---- models / blockstates / item definitions ----
     for b in ("bauxite_ore", "deepslate_bauxite_ore", "titanium_ore", "deepslate_titanium_ore",
@@ -1131,9 +1980,6 @@ def main():
         cube_all(b)
         simple_blockstate(b)
         item_def(b, f"{MOD}:block/{b}")
-    launch_pad_model()
-    simple_blockstate("launch_pad")
-    item_def("launch_pad", f"{MOD}:block/launch_pad")
     rocket_models()
     generated_item("rocket")
 
@@ -1159,8 +2005,6 @@ def main():
     # ---- tags ----
     all_blocks = [f"{MOD}:{b}" for b in ("bauxite_ore", "deepslate_bauxite_ore", "titanium_ore", "deepslate_titanium_ore",
                                           "aluminum_block", "titanium_block", "launch_pad", "rocket")]
-    tag("block/mineable/pickaxe", all_blocks)
-    tag("block/needs_stone_tool", [f"{MOD}:bauxite_ore", f"{MOD}:deepslate_bauxite_ore", f"{MOD}:aluminum_block"])
     tag("block/needs_iron_tool", [f"{MOD}:titanium_ore", f"{MOD}:deepslate_titanium_ore", f"{MOD}:titanium_block",
                                   f"{MOD}:launch_pad"])
     tag("item/repairs_space_suit", [f"{MOD}:titanium_ingot"], namespace=MOD)
@@ -1210,10 +2054,6 @@ def main():
            {"T": "titanium_plate", "F": "minecraft:fire_charge", "B": "minecraft:blast_furnace"}, "rocket_engine")
     shaped("empty_fuel_canister", [" I ", "A A", "AAA"],
            {"I": "minecraft:iron_nugget", "A": "aluminum_plate"}, "empty_fuel_canister", count=2)
-    shapeless("rocket_fuel_canister", ["empty_fuel_canister", "minecraft:coal", "minecraft:coal",
-                                       "minecraft:gunpowder", "minecraft:blaze_powder"], "rocket_fuel_canister")
-    shapeless("rocket_fuel_canister_charcoal", ["empty_fuel_canister", "minecraft:charcoal", "minecraft:charcoal",
-                                                "minecraft:gunpowder", "minecraft:blaze_powder"], "rocket_fuel_canister")
     shaped("launch_pad", ["YBY", "TTT", "III"],
            {"Y": "minecraft:yellow_concrete", "B": "minecraft:black_concrete", "T": "titanium_plate",
             "I": "minecraft:iron_block"}, "launch_pad", count=4, category="building")
@@ -1236,15 +2076,13 @@ def main():
     advancement("titanium", "titanium_ingot", "aluminum", has_item("titanium_ingot"))
     advancement("vacuum_tube", "vacuum_tube", "aluminum", has_item("vacuum_tube"))
     advancement("guidance_computer", "guidance_computer", "vacuum_tube", has_item("guidance_computer"))
-    advancement("rocket_engine", "rocket_engine", "titanium", has_item("rocket_engine"))
-    advancement("fuel", "rocket_fuel_canister", "aluminum", has_item("rocket_fuel_canister"))
     advancement("space_suit", "space_helmet", "titanium",
                 {f"has_{p}": {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": ing(p)}]}}
                  for p in ("space_helmet", "space_suit", "space_leggings", "space_boots")}, frame="goal")
-    advancement("launch_pad", "launch_pad", "titanium", has_item("launch_pad"))
-    advancement("rocket", "rocket", "rocket_engine", has_item("rocket"), frame="goal")
     advancement("ready_for_launch", "rocket", "rocket",
                 {"checklist_passed": {"trigger": "minecraft:impossible"}}, frame="challenge")
+
+    stage1b_data()
 
     # ---- lang ----
     write_lang()
@@ -1374,7 +2212,9 @@ RU = {
 
 
 def write_lang():
-    assert EN.keys() == RU.keys()
+    EN.update(EN_1B)
+    RU.update(RU_1B)
+    assert EN.keys() == RU.keys(), set(EN) ^ set(RU)
     write_json(os.path.join(ASSETS, "lang", "en_us.json"), EN)
     write_json(os.path.join(ASSETS, "lang", "ru_ru.json"), RU)
 

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "P P",
+    "PFP",
+    "PPP"
+  ],
+  "key": {
+    "P": "retrocosmos:aero_alloy_plate",
+    "F": "minecraft:fire_charge"
+  },
+  "result": {
+    "id": "retrocosmos:combustion_chamber",
+    "count": 1
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:liquid_oxygen_canister"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.lox.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.lox.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_liquid_oxygen_canister": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:liquid_oxygen_canister"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/refinery"
+}

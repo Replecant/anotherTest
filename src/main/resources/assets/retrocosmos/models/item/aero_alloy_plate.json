@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "retrocosmos:item/aero_alloy_plate"
+  }
+}

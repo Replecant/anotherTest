@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "APA",
+    "A A",
+    "APA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "P": "retrocosmos:aero_alloy_plate"
+  },
+  "result": {
+    "id": "retrocosmos:fuel_tank",
+    "count": 1
+  }
+}

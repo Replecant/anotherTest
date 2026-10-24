@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ACA",
+    "AVA",
+    "TPT"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "C": "minecraft:copper_ingot",
+    "V": "retrocosmos:vacuum_tube",
+    "T": "retrocosmos:titanium_plate",
+    "P": "minecraft:piston"
+  },
+  "result": {
+    "id": "retrocosmos:air_liquefier",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:service_tower"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.launch_complex.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.launch_complex.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "pad_complete": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "retrocosmos:stage1/launch_pad"
+}

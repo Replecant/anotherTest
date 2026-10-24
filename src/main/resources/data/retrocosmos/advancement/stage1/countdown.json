@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.countdown.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.countdown.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "liftoff": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "retrocosmos:stage1/ready_for_launch"
+}

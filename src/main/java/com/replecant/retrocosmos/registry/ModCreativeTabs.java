@@ -18,13 +18,18 @@ public final class ModCreativeTabs {
             .displayItems((params, output) -> {
                 for (DeferredItem<?> item : new DeferredItem<?>[] {
                         ModItems.BAUXITE_ORE, ModItems.DEEPSLATE_BAUXITE_ORE, ModItems.TITANIUM_ORE, ModItems.DEEPSLATE_TITANIUM_ORE,
+                        ModItems.OIL_SHALE,
                         ModItems.RAW_ALUMINUM, ModItems.RAW_TITANIUM, ModItems.ALUMINUM_INGOT, ModItems.TITANIUM_INGOT,
                         ModItems.ALUMINUM_PLATE, ModItems.TITANIUM_PLATE, ModItems.ALUMINUM_BLOCK, ModItems.TITANIUM_BLOCK,
-                        ModItems.VACUUM_TUBE, ModItems.GUIDANCE_COMPUTER,
-                        ModItems.NOSE_CONE, ModItems.HULL_SEGMENT, ModItems.ROCKET_FIN, ModItems.ROCKET_ENGINE,
-                        ModItems.EMPTY_FUEL_CANISTER, ModItems.ROCKET_FUEL_CANISTER,
+                        ModItems.AERO_ALLOY_BLEND, ModItems.AERO_ALLOY_INGOT, ModItems.AERO_ALLOY_PLATE,
+                        ModItems.VACUUM_TUBE, ModItems.WIRING_HARNESS, ModItems.GUIDANCE_COMPUTER,
+                        ModItems.HEAT_SHIELD, ModItems.NOSE_CONE, ModItems.HULL_SEGMENT, ModItems.FUEL_TANK, ModItems.ROCKET_FIN,
+                        ModItems.COMBUSTION_CHAMBER, ModItems.ENGINE_NOZZLE, ModItems.TURBOPUMP, ModItems.ROCKET_ENGINE,
+                        ModItems.AIRFRAME,
+                        ModItems.EMPTY_FUEL_CANISTER, ModItems.ROCKET_FUEL_CANISTER, ModItems.LIQUID_OXYGEN_CANISTER,
+                        ModItems.FUEL_REFINERY, ModItems.AIR_LIQUEFIER,
                         ModItems.SPACE_HELMET, ModItems.SPACE_SUIT, ModItems.SPACE_LEGGINGS, ModItems.SPACE_BOOTS,
-                        ModItems.LAUNCH_PAD, ModItems.ROCKET}) {
+                        ModItems.LAUNCH_PAD, ModItems.SERVICE_TOWER, ModItems.MISSION_CONTROL_CONSOLE, ModItems.ROCKET}) {
                     output.accept(item.get());
                 }
             })

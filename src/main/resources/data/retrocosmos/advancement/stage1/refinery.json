@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:fuel_refinery"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.refinery.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.refinery.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_fuel_refinery": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:fuel_refinery"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/oil_shale"
+}

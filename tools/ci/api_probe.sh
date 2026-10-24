@@ -4,8 +4,10 @@
 OUT="$1"; : > "$OUT"
 JAR=""
 for j in $(find ~/.gradle /home/runner/.gradle /root/.gradle -name '*.jar' -size +15M 2>/dev/null | sort -u); do
-  if unzip -l "$j" 2>/dev/null | grep -q 'net/minecraft/world/level/block/entity/BlockEntity.class'; then
-    echo "candidate: $j" >> "$OUT"; JAR="$j"
+  if unzip -l "$j" 2>/dev/null | grep -q 'net/neoforged/neoforge/common/NeoForge.class'; then
+    if unzip -l "$j" 2>/dev/null | grep -q 'net/minecraft/world/level/block/entity/BlockEntity.class'; then
+      echo "candidate: $j" >> "$OUT"; JAR="$j"
+    fi
   fi
 done
 echo "using: $JAR" >> "$OUT"

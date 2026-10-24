@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SCS",
+    "CRC",
+    "SCS"
+  ],
+  "key": {
+    "S": "minecraft:string",
+    "C": "minecraft:copper_ingot",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "retrocosmos:wiring_harness",
+    "count": 2
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:aero_alloy_ingot"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.aero_alloy.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.aero_alloy.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_aero_alloy_ingot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:aero_alloy_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/titanium"
+}

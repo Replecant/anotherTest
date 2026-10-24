@@ -20,7 +20,10 @@
       "conditions": {
         "items": [
           {
-            "items": "retrocosmos:launch_pad"
+            "items": "retrocosmos:launch_pad",
+            "count": {
+              "min": 9
+            }
           }
         ]
       }

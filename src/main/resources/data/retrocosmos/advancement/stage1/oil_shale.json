@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:oil_shale"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.oil_shale.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.oil_shale.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_oil_shale": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "retrocosmos:oil_shale"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "retrocosmos:stage1/root"
+}

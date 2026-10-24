@@ -143,7 +143,7 @@ public class FurnitureBlock extends Block {
                 boolean on = !state.getValue(LIT);
                 level.setBlock(pos, state.setValue(LIT, on), Block.UPDATE_ALL);
                 if (spec.toggleSound() != null) {
-                    level.playSound(null, pos, spec.toggleSound().value(), SoundSource.BLOCKS, 0.6F, on ? 1.2F : 0.8F);
+                    level.playSound(null, pos, spec.toggleSound(), SoundSource.BLOCKS, 0.6F, on ? 1.2F : 0.8F);
                 } else {
                     level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.4F, on ? 0.7F : 0.5F);
                 }

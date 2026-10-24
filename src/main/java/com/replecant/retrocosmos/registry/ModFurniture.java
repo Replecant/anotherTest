@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
@@ -55,7 +54,7 @@ public final class ModFurniture {
     public static final DeferredBlock<FurnitureBlock> ATOMIC_TV = furniture("atomic_tv",
             spec(Block.box(1, 0, 2, 15, 15, 14), true, false, true, 7, -1, SoundEvents.BEACON_POWER_SELECT), wood(MapColor.COLOR_BROWN));
     public static final DeferredBlock<FurnitureBlock> TUBE_RADIO = furniture("tube_radio",
-            spec(Block.box(2, 0, 5, 14, 9, 11), true, false, true, 3, -1, SoundEvents.NOTE_BLOCK_CHIME), wood(MapColor.TERRACOTTA_WHITE));
+            spec(Block.box(2, 0, 5, 14, 9, 11), true, false, true, 3, -1, SoundEvents.NOTE_BLOCK_CHIME.value()), wood(MapColor.TERRACOTTA_WHITE));
 
     // --- Wall decor ---
     public static final DeferredBlock<FurnitureBlock> STARBURST_CLOCK = furniture("starburst_clock",
@@ -78,7 +77,7 @@ public final class ModFurniture {
             p -> p.mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL).requiresCorrectToolForDrops());
 
     private static FurnitureSpec spec(VoxelShape shape, boolean facing, boolean wall, boolean toggle, int light, float seat,
-                                      @Nullable Holder<SoundEvent> sound) {
+                                      @Nullable SoundEvent sound) {
         return new FurnitureSpec(shape, facing, wall, toggle, light, seat, sound);
     }
 

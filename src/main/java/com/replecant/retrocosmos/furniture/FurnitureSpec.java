@@ -1,7 +1,6 @@
 package com.replecant.retrocosmos.furniture;
 
 import javax.annotation.Nullable;
-import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -17,7 +16,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * @param toggleSound sound played when switched, may be null
  */
 public record FurnitureSpec(VoxelShape shape, boolean facing, boolean wall, boolean toggleable, int lightOn,
-                            float seatHeight, @Nullable Holder<SoundEvent> toggleSound) {
+                            float seatHeight, @Nullable SoundEvent toggleSound) {
 
     public boolean isSeat() {
         return seatHeight >= 0;

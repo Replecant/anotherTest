@@ -7,6 +7,7 @@
     "nozzle_bottom": "retrocosmos:block/rocket_nozzle_bottom",
     "cone": "retrocosmos:block/rocket_cone",
     "antenna": "retrocosmos:block/rocket_antenna",
+    "chrome": "retrocosmos:block/rocket_chrome",
     "particle": "retrocosmos:block/rocket_cone"
   },
   "elements": [
@@ -18,7 +19,7 @@
       ],
       "to": [
         13,
-        2,
+        3,
         13
       ],
       "faces": {
@@ -35,19 +36,19 @@
           "texture": "#body"
         },
         "up": {
-          "texture": "#body"
+          "texture": "#chrome"
         }
       }
     },
     {
       "from": [
         4,
-        2,
+        3,
         4
       ],
       "to": [
         12,
-        6,
+        7,
         12
       ],
       "faces": {
@@ -64,22 +65,22 @@
           "texture": "#cone"
         },
         "up": {
-          "texture": "#cone"
+          "texture": "#chrome"
         },
         "down": {
-          "texture": "#cone"
+          "texture": "#chrome"
         }
       }
     },
     {
       "from": [
         5,
-        6,
+        7,
         5
       ],
       "to": [
         11,
-        11,
+        10,
         11
       ],
       "faces": {
@@ -96,22 +97,22 @@
           "texture": "#cone"
         },
         "up": {
-          "texture": "#cone"
+          "texture": "#chrome"
         },
         "down": {
-          "texture": "#cone"
+          "texture": "#chrome"
         }
       }
     },
     {
       "from": [
         6,
-        11,
+        10,
         6
       ],
       "to": [
         10,
-        14,
+        13,
         10
       ],
       "faces": {
@@ -128,17 +129,49 @@
           "texture": "#cone"
         },
         "up": {
-          "texture": "#cone"
+          "texture": "#chrome"
         },
         "down": {
+          "texture": "#chrome"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        13,
+        7
+      ],
+      "to": [
+        9,
+        15,
+        9
+      ],
+      "faces": {
+        "north": {
           "texture": "#cone"
+        },
+        "south": {
+          "texture": "#cone"
+        },
+        "east": {
+          "texture": "#cone"
+        },
+        "west": {
+          "texture": "#cone"
+        },
+        "up": {
+          "texture": "#chrome"
+        },
+        "down": {
+          "texture": "#chrome"
         }
       }
     },
     {
       "from": [
         7.5,
-        14,
+        15,
         7.5
       ],
       "to": [

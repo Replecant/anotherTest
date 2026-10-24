@@ -7,6 +7,7 @@
     "nozzle_bottom": "retrocosmos:block/rocket_nozzle_bottom",
     "cone": "retrocosmos:block/rocket_cone",
     "antenna": "retrocosmos:block/rocket_antenna",
+    "chrome": "retrocosmos:block/rocket_chrome",
     "particle": "retrocosmos:block/rocket_body"
   },
   "elements": [
@@ -33,6 +34,64 @@
         },
         "west": {
           "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        7,
+        2.5
+      ],
+      "to": [
+        12,
+        14,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#window"
+        },
+        "up": {
+          "texture": "#chrome"
+        },
+        "down": {
+          "texture": "#chrome"
+        },
+        "east": {
+          "texture": "#chrome"
+        },
+        "west": {
+          "texture": "#chrome"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        7,
+        13
+      ],
+      "to": [
+        12,
+        14,
+        13.5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#window"
+        },
+        "up": {
+          "texture": "#chrome"
+        },
+        "down": {
+          "texture": "#chrome"
+        },
+        "east": {
+          "texture": "#chrome"
+        },
+        "west": {
+          "texture": "#chrome"
         }
       }
     }

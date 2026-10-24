@@ -28,27 +28,35 @@ def save(img, *parts):
 
 
 # ----------------------------------------------------------------------------
-# Palette: 1950s "atomic age" retro-futurism
+# Palette: 1950s-60s American "atomic age" / Googie / Space Race retro-futurism
+# (chrome, white & silver rockets, cherry red, turquoise, cream, navy stars)
 # ----------------------------------------------------------------------------
-CREAM = (238, 228, 200)
-CREAM_D = (205, 192, 160)
-RED = (204, 62, 48)
-RED_D = (140, 38, 32)
-RED_L = (232, 102, 80)
-TEAL = (64, 168, 160)
-TEAL_D = (36, 108, 108)
-TEAL_L = (126, 214, 200)
+CREAM = (240, 232, 208)
+CREAM_D = (206, 194, 164)
+WHITE = (242, 242, 238)
+WHITE_D = (208, 208, 204)
+WHITE_DD = (176, 178, 176)
+RED = (208, 44, 48)
+RED_D = (142, 28, 34)
+RED_L = (236, 92, 86)
+NAVY = (42, 62, 118)
+NAVY_L = (78, 104, 170)
+TEAL = (72, 190, 182)
+TEAL_D = (38, 120, 118)
+TEAL_L = (140, 226, 216)
 ORANGE = (240, 150, 50)
 ORANGE_L = (255, 206, 110)
-CHROME = (200, 208, 214)
-CHROME_D = (130, 140, 150)
-CHROME_L = (240, 246, 250)
+CHROME = (204, 212, 220)
+CHROME_D = (132, 142, 154)
+CHROME_L = (244, 248, 252)
 STEEL = (92, 98, 108)
 STEEL_D = (58, 62, 70)
 YELLOW = (236, 196, 52)
 BLACK = (34, 32, 36)
 GLASS = (150, 210, 230)
 GLASS_L = (220, 244, 252)
+VISOR = (28, 48, 78)
+VISOR_L = (62, 110, 150)
 ALU = (190, 196, 204)
 ALU_D = (138, 146, 156)
 ALU_L = (228, 232, 238)
@@ -151,18 +159,25 @@ def riveted_panel(base, dark, light, seed):
     return img
 
 
+def star(img, cx, cy, color):
+    """Small 5-point-ish star (plus with corners) centred on (cx, cy)."""
+    px(img, [(cx, cy - 1), (cx - 1, cy), (cx, cy), (cx + 1, cy), (cx, cy + 1), (cx - 1, cy + 1), (cx + 1, cy + 1)], color)
+
+
 def launch_pad_top():
     img = new()
-    noise_fill(img, STEEL, 5, 99)
-    # hazard border
+    noise_fill(img, STEEL, 4, 99)
+    # hazard border (yellow / black)
     for y in range(16):
         for x in range(16):
             if x < 2 or y < 2 or x > 13 or y > 13:
                 px(img, [(x, y)], YELLOW if ((x + y) // 2) % 2 == 0 else BLACK)
-    # target circle
+    # white target ring with a red star in the middle (launch complex marking)
     d = ImageDraw.Draw(img)
-    d.ellipse((4, 4, 11, 11), outline=rgba(CREAM))
-    px(img, [(7, 7), (8, 8), (7, 8), (8, 7)], RED)
+    d.ellipse((3, 3, 12, 12), outline=rgba(WHITE))
+    d.ellipse((5, 5, 10, 10), fill=rgba(RED))
+    star(img, 7, 7, WHITE)
+    px(img, [(8, 7), (8, 8), (7, 8)], WHITE)
     return img
 
 
@@ -172,46 +187,61 @@ def launch_pad_side():
     for x in range(16):
         for y in range(0, 3):
             px(img, [(x, y)], YELLOW if ((x + y) // 2) % 2 == 0 else BLACK)
-    for x in range(16):
         px(img, [(x, 3)], STEEL)
-    for (x, y) in [(2, 7), (7, 7), (12, 7), (2, 12), (7, 12), (12, 12)]:
+    # red / white chevron stripe
+    for x in range(16):
+        px(img, [(x, 9)], WHITE if (x // 4) % 2 == 0 else RED)
+        px(img, [(x, 10)], WHITE if (x // 4) % 2 == 0 else RED)
+    for (x, y) in [(2, 6), (7, 6), (12, 6), (2, 13), (7, 13), (12, 13)]:
         px(img, [(x, y), (x + 1, y)], CHROME_D)
     return img
 
 
 def rocket_body():
+    """Sleek silver-white hull with panel seams, a cherry-red band and a navy star."""
     img = new()
-    noise_fill(img, CREAM, 3, 5)
+    noise_fill(img, WHITE, 2, 5)
     for y in range(16):
-        px(img, [(0, y)], CREAM_D)
-        px(img, [(15, y)], CREAM_D)
-    # red racing stripe band
+        px(img, [(0, y), (1, y)], WHITE_D)
+        px(img, [(14, y), (15, y)], WHITE_D)
+        px(img, [(15, y)], WHITE_DD)
+        px(img, [(2, y)], CHROME_L)
+    # horizontal panel seam
     for x in range(16):
+        px(img, [(x, 4)], WHITE_D)
+    # cherry red racing band with chrome trim
+    for x in range(16):
+        px(img, [(x, 10)], CHROME)
         for y in (11, 12, 13):
             px(img, [(x, y)], RED)
-        px(img, [(x, 14)], RED_D)
-    # rivet line
-    for x in range(1, 16, 3):
-        px(img, [(x, 2)], CREAM_D)
+        px(img, [(x, 13)], RED_D)
+        px(img, [(x, 14)], CHROME)
+    star(img, 7, 7, NAVY)
     return img
 
 
 def rocket_window():
     img = rocket_body()
     d = ImageDraw.Draw(img)
-    d.ellipse((3, 2, 12, 11), fill=rgba(CHROME_D), outline=rgba(CHROME_L))
-    d.ellipse((5, 4, 10, 9), fill=rgba(TEAL_D))
-    px(img, [(6, 5), (7, 5), (6, 6)], GLASS_L)
-    px(img, [(8, 7), (9, 7)], TEAL)
+    # chrome porthole, dark glass with a glint
+    d.ellipse((4, 2, 11, 9), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    d.ellipse((5, 3, 10, 8), fill=rgba(VISOR))
+    px(img, [(6, 4), (7, 4), (6, 5)], GLASS_L)
+    px(img, [(8, 6), (9, 7)], VISOR_L)
     return img
 
 
 def rocket_fin():
     img = new()
-    noise_fill(img, RED, 6, 11)
-    for i in range(16):
-        px(img, [(i, 15 - (i // 4))], RED_D)
-        px(img, [(i, 0)], RED_L)
+    noise_fill(img, RED, 4, 11)
+    for y in range(16):
+        for x in range(16):
+            if y < 4:
+                px(img, [(x, y)], RED_L)
+            elif y > 12:
+                px(img, [(x, y)], RED_D)
+    for x in range(16):
+        px(img, [(x, 15)], CHROME)
     return img
 
 
@@ -222,7 +252,7 @@ def rocket_nozzle():
         px(img, [(x, 0)], CHROME)
         px(img, [(x, 15)], STEEL_D)
     for y in range(16):
-        if y % 4 == 1:
+        if y % 3 == 1:
             for x in range(16):
                 px(img, [(x, y)], STEEL_D)
     return img
@@ -238,21 +268,40 @@ def rocket_nozzle_bottom():
 
 
 def rocket_cone():
+    """Projected texture: rows 0-5 chrome tip, white, red band, white skirt."""
     img = new()
-    noise_fill(img, RED, 5, 14)
-    for x in range(16):
-        px(img, [(x, 15)], CHROME)
-        px(img, [(x, 14)], CHROME_D)
-    for y in range(14):
-        px(img, [(0, y)], RED_D)
-        px(img, [(15, y)], RED_D)
-        px(img, [(4, y)], RED_L)
+    noise_fill(img, WHITE, 2, 14)
+    for y in range(16):
+        for x in range(16):
+            if y < 6:
+                c = CHROME_L if (x + y) % 5 == 0 else CHROME
+                if x in (0, 15):
+                    c = CHROME_D
+                px(img, [(x, y)], c)
+            elif 9 <= y <= 12:
+                px(img, [(x, y)], RED if y != 12 else RED_D)
+            elif y == 6:
+                px(img, [(x, y)], CHROME_D)
+        px(img, [(0, y), (15, y)], WHITE_D if y >= 6 else CHROME_D)
+    return img
+
+
+def rocket_chrome():
+    img = new()
+    noise_fill(img, CHROME, 5, 16)
+    for y in range(16):
+        for x in range(16):
+            if (x + y) % 6 == 0:
+                px(img, [(x, y)], CHROME_L)
+            elif (x + y) % 6 == 3:
+                px(img, [(x, y)], CHROME_D)
     return img
 
 
 def antenna():
-    img = new()
-    noise_fill(img, CHROME, 8, 15)
+    img = rocket_chrome()
+    for x in range(16):
+        px(img, [(x, 0), (x, 1)], RED)
     return img
 
 
@@ -347,16 +396,19 @@ def guidance_computer():
 
 
 def nose_cone():
+    """Chrome needle nose with a red band at the base."""
     img = new()
     for y in range(2, 14):
         half = (y - 1) // 2
         for x in range(8 - half, 8 + half):
-            px(img, [(x, y)], RED)
-        px(img, [(8 - half, y)], RED_L)
+            px(img, [(x, y)], RED if y >= 11 else CHROME)
+        px(img, [(8 - half, y)], RED_L if y >= 11 else CHROME_L)
+        if y < 11:
+            px(img, [(8 + half - 1, y)], CHROME_D)
     for x in range(2, 14):
-        px(img, [(x, 13)], CHROME)
-    px(img, [(7, 0), (7, 1)], CHROME)
-    outline(img, RED_D)
+        px(img, [(x, 13)], RED_D)
+    px(img, [(7, 0), (7, 1)], CHROME_D)
+    outline(img, STEEL_D)
     return img
 
 
@@ -364,28 +416,34 @@ def hull_segment():
     img = new()
     for y in range(1, 15):
         for x in range(4, 12):
-            px(img, [(x, y)], CREAM)
-        px(img, [(4, y)], CREAM_D)
-        px(img, [(11, y)], CREAM_D)
+            px(img, [(x, y)], WHITE)
+        px(img, [(4, y)], CHROME_L)
+        px(img, [(10, y)], WHITE_D)
+        px(img, [(11, y)], WHITE_DD)
     d = ImageDraw.Draw(img)
-    d.ellipse((5, 3, 10, 8), fill=rgba(CHROME_D))
-    d.ellipse((6, 4, 9, 7), fill=rgba(TEAL_D))
+    d.ellipse((5, 3, 10, 8), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    d.ellipse((6, 4, 9, 7), fill=rgba(VISOR))
     px(img, [(6, 4)], GLASS_L)
     for x in range(4, 12):
+        px(img, [(x, 10)], CHROME)
         px(img, [(x, 11), (x, 12)], RED)
-    outline(img, (90, 80, 60))
+        px(img, [(x, 13)], CHROME)
+    outline(img, STEEL_D)
     return img
 
 
 def rocket_fin_item():
+    """Swept-back cherry-red fin with a chrome trailing edge."""
     img = new()
-    for y in range(2, 15):
-        w = min(11, (y - 1))
+    for y in range(1, 15):
+        w = min(11, (y + 1) * 3 // 4 + 1)
         for x in range(3, 3 + w):
             px(img, [(x, y)], RED)
         px(img, [(3, y)], RED_L)
+        px(img, [(3 + w - 1, y)], RED_D)
     for x in range(3, 14):
         px(img, [(x, 14)], CHROME)
+    star(img, 6, 10, WHITE)
     outline(img, RED_D)
     return img
 
@@ -412,71 +470,112 @@ def canister(full):
     d.rounded_rectangle((3, 4, 12, 14), radius=2, fill=rgba(body), outline=rgba(dark))
     d.rectangle((6, 1, 9, 3), fill=rgba(STEEL))
     d.rectangle((5, 3, 10, 4), fill=rgba(STEEL_D))
-    # label with atom symbol
-    d.rectangle((4, 7, 11, 11), fill=rgba(CREAM))
-    px(img, [(7, 9), (8, 9)], RED if full else TEAL_D)
-    px(img, [(6, 8), (9, 10), (6, 10), (9, 8)], TEAL_D)
+    # label: white with a navy star (full) or a dashed "empty" mark
+    d.rectangle((4, 7, 11, 11), fill=rgba(WHITE))
+    if full:
+        star(img, 7, 9, NAVY)
+        px(img, [(10, 8), (10, 10)], RED)
+    else:
+        px(img, [(5, 9), (7, 9), (9, 9)], CHROME_D)
     outline(img, BLACK)
     return img
 
 
 def rocket_item():
+    """Raygun-gothic silhouette: chrome needle nose, white hull, red band, swept red fins."""
     img = new()
+    # chrome needle & nose
+    px(img, [(7, 0)], CHROME_D)
+    px(img, [(7, 1), (7, 2), (8, 2)], CHROME_L)
+    px(img, [(6, 3), (7, 3), (8, 3), (9, 3)], CHROME)
+    px(img, [(9, 3)], CHROME_D)
     # body
     for y in range(4, 13):
         for x in range(6, 10):
-            px(img, [(x, y)], CREAM)
-        px(img, [(6, y)], CREAM_D)
-    # cone
-    px(img, [(7, 1), (8, 1), (7, 2), (8, 2), (6, 3), (7, 3), (8, 3), (9, 3)], RED)
-    px(img, [(7, 0)], CHROME)
-    # window
-    px(img, [(7, 5), (8, 5), (7, 6), (8, 6)], TEAL)
+            px(img, [(x, y)], WHITE)
+        px(img, [(6, y)], CHROME_L)
+        px(img, [(9, y)], WHITE_D)
+    # porthole
+    px(img, [(7, 5), (8, 5), (7, 6), (8, 6)], VISOR)
     px(img, [(7, 5)], GLASS_L)
-    # stripe
+    # red band
     for x in range(6, 10):
         px(img, [(x, 9)], RED)
-    # fins
-    px(img, [(5, 10), (4, 11), (5, 11), (3, 12), (4, 12), (5, 12), (3, 13), (4, 13)], RED)
-    px(img, [(10, 10), (10, 11), (11, 11), (10, 12), (11, 12), (12, 12), (11, 13), (12, 13)], RED)
-    # nozzle & flame
+        px(img, [(x, 10)], RED_D)
+    # swept fins
+    px(img, [(5, 8), (5, 9), (5, 10), (4, 10), (5, 11), (4, 11), (3, 11), (5, 12), (4, 12), (3, 12), (2, 12),
+             (4, 13), (3, 13), (2, 13)], RED)
+    px(img, [(10, 8), (10, 9), (10, 10), (11, 10), (10, 11), (11, 11), (12, 11), (10, 12), (11, 12), (12, 12),
+             (13, 12), (11, 13), (12, 13), (13, 13)], RED)
+    px(img, [(5, 8), (10, 8), (2, 13), (13, 13)], RED_L)
+    # engine bell & flame
+    px(img, [(6, 13), (9, 13)], STEEL_D)
     px(img, [(7, 13), (8, 13)], STEEL)
-    px(img, [(7, 14), (8, 14)], ORANGE)
-    px(img, [(7, 15)], ORANGE_L)
+    px(img, [(6, 14), (7, 14), (8, 14), (9, 14)], ORANGE)
+    px(img, [(7, 15), (8, 15)], ORANGE_L)
     outline(img, BLACK)
     return img
 
 
 def suit_icon(kind):
+    """Space suit icons: white suit, red gloves / boots, chrome rings, turquoise chest unit."""
     img = new()
     d = ImageDraw.Draw(img)
     if kind == "helmet":
-        d.ellipse((2, 1, 13, 13), fill=rgba(GLASS, 150), outline=rgba(CHROME_L))
-        d.rectangle((3, 11, 12, 14), fill=rgba(CREAM), outline=rgba(CREAM_D))
-        px(img, [(5, 3), (4, 4), (4, 5)], GLASS_L)
-        px(img, [(6, 12), (7, 12), (8, 12), (9, 12)], ORANGE)
-        px(img, [(12, 2), (12, 1)], CHROME)
+        # white dome, chrome neck ring, dark faceplate with a glint
+        d.ellipse((2, 1, 13, 12), fill=rgba(WHITE), outline=rgba(WHITE_D))
+        d.rectangle((2, 11, 13, 14), fill=rgba(CHROME), outline=rgba(CHROME_D))
+        d.rectangle((4, 4, 11, 10), fill=rgba(VISOR))
+        px(img, [(4, 4), (11, 4), (4, 10), (11, 10)], WHITE)
+        px(img, [(5, 5), (6, 5), (5, 6)], GLASS_L)
+        px(img, [(9, 8), (10, 8), (10, 7)], VISOR_L)
+        for x in range(7, 9):
+            px(img, [(x, 1), (x, 2)], RED)
+        px(img, [(7, 13), (8, 13)], RED)
     elif kind == "suit":
-        d.rectangle((4, 2, 11, 14), fill=rgba(CREAM))
-        d.rectangle((1, 3, 3, 10), fill=rgba(CREAM))
-        d.rectangle((12, 3, 14, 10), fill=rgba(CREAM))
-        d.rectangle((6, 5, 9, 8), fill=rgba(TEAL))
-        px(img, [(7, 6)], ORANGE_L)
+        d.rectangle((4, 2, 11, 14), fill=rgba(WHITE))
+        d.rectangle((1, 3, 3, 11), fill=rgba(WHITE))
+        d.rectangle((12, 3, 14, 11), fill=rgba(WHITE))
+        d.rectangle((6, 1, 9, 2), fill=rgba(CHROME))
+        # chest control unit
+        d.rectangle((5, 4, 10, 8), fill=rgba(TEAL), outline=rgba(TEAL_D))
+        px(img, [(6, 5)], RED)
+        px(img, [(9, 5)], (120, 230, 120))
+        px(img, [(6, 7), (7, 7), (8, 7), (9, 7)], CREAM)
+        # belt
         for x in range(4, 12):
-            px(img, [(x, 11)], ORANGE)
-        px(img, [(1, 10), (2, 10), (3, 10), (12, 10), (13, 10), (14, 10)], RED)
+            px(img, [(x, 11)], CHROME)
+        px(img, [(7, 11), (8, 11)], RED)
+        # shoulder bands and red gloves
+        px(img, [(1, 3), (2, 3), (3, 3), (12, 3), (13, 3), (14, 3)], TEAL)
+        px(img, [(1, 9), (2, 9), (3, 9), (12, 9), (13, 9), (14, 9)], CHROME)
+        d.rectangle((1, 10, 3, 12), fill=rgba(RED))
+        d.rectangle((12, 10, 14, 12), fill=rgba(RED))
+        px(img, [(4, 3), (4, 13), (11, 13)], WHITE_D)
     elif kind == "leggings":
-        d.rectangle((4, 2, 11, 4), fill=rgba(CREAM_D))
-        d.rectangle((4, 5, 7, 14), fill=rgba(CREAM))
-        d.rectangle((8, 5, 11, 14), fill=rgba(CREAM))
-        px(img, [(5, 9), (6, 9), (9, 9), (10, 9)], ORANGE)
+        d.rectangle((4, 1, 11, 3), fill=rgba(WHITE))
+        for x in range(4, 12):
+            px(img, [(x, 2)], CHROME)
+        px(img, [(7, 2), (8, 2)], RED)
+        d.rectangle((4, 4, 7, 14), fill=rgba(WHITE))
+        d.rectangle((8, 4, 11, 14), fill=rgba(WHITE))
+        for y in range(4, 15):
+            px(img, [(7, y)], WHITE_D)
+            px(img, [(8, y)], WHITE_DD)
+        px(img, [(5, 9), (6, 9), (9, 9), (10, 9), (5, 10), (6, 10), (9, 10), (10, 10)], TEAL)
+        for y in range(4, 9):
+            px(img, [(4, y), (11, y)], RED)
     elif kind == "boots":
-        d.rectangle((2, 6, 6, 12), fill=rgba(CREAM))
-        d.rectangle((9, 6, 13, 12), fill=rgba(CREAM))
-        d.rectangle((1, 12, 7, 14), fill=rgba(RED))
-        d.rectangle((8, 12, 14, 14), fill=rgba(RED))
-        px(img, [(3, 8), (4, 8), (10, 8), (11, 8)], ORANGE)
-    outline(img, (70, 60, 50))
+        d.rectangle((2, 5, 6, 13), fill=rgba(RED))
+        d.rectangle((9, 5, 13, 13), fill=rgba(RED))
+        for x in range(2, 7):
+            px(img, [(x, 5)], CHROME)
+            px(img, [(x + 7, 5)], CHROME)
+        d.rectangle((1, 12, 7, 14), fill=rgba(CHROME_D))
+        d.rectangle((8, 12, 14, 14), fill=rgba(CHROME_D))
+        px(img, [(3, 7), (3, 8), (3, 9), (10, 7), (10, 8), (10, 9)], RED_L)
+        px(img, [(2, 13), (3, 13), (9, 13), (10, 13)], CHROME)
+    outline(img, STEEL_D)
     return img
 
 
@@ -484,8 +583,25 @@ def suit_icon(kind):
 # Armor (equipment) layer textures, 64x32 humanoid UV layout
 # ----------------------------------------------------------------------------
 
-def fill_box(img, u, v, w, h, d, color_fn):
-    """Fills the UV net of a cuboid (w x h x d) whose net starts at (u, v)."""
+# Face indices of a cuboid net: 0 top, 1 bottom, 2 right (outer side of right limbs),
+# 3 front, 4 left, 5 back.
+TOP, BOTTOM, RIGHT, FRONT, LEFT, BACK = range(6)
+FACE_SHADE = {TOP: 14, BOTTOM: -34, RIGHT: -14, FRONT: 0, LEFT: -14, BACK: -8}
+GREEN_LAMP = (120, 230, 120)
+
+
+def shade(c, delta):
+    return tuple(max(0, min(255, v + delta)) for v in c)
+
+
+def fill_box(img, u, v, w, h, d, color_fn, shading=True):
+    """Fills the UV net of a cuboid (w x h x d) whose net starts at (u, v).
+
+    color_fn(face, x, y, w, h) returns an RGB colour or None (transparent).
+    Faces get consistent lighting: top lighter, bottom darkest, sides darker than the front.
+    Armour is rendered with a cutout render type, so every pixel is either fully opaque or
+    fully transparent - never semi-transparent.
+    """
     regions = [
         (u + d, v, w, d),              # top
         (u + d + w, v, w, d),          # bottom
@@ -497,105 +613,256 @@ def fill_box(img, u, v, w, h, d, color_fn):
     for idx, (x0, y0, rw, rh) in enumerate(regions):
         for y in range(y0, y0 + rh):
             for x in range(x0, x0 + rw):
-                img.putpixel((x, y), rgba(color_fn(idx, x - x0, y - y0, rw, rh)))
+                c = color_fn(idx, x - x0, y - y0, rw, rh)
+                if c is None:
+                    img.putpixel((x, y), (0, 0, 0, 0))
+                else:
+                    img.putpixel((x, y), rgba(shade(c, FACE_SHADE[idx]) if shading else c))
+
+
+def front_dist(face, x, w):
+    """Distance of column x from the front edge on a side face (0 = touches the front face)."""
+    return (w - 1 - x) if face == RIGHT else x
 
 
 def suit_layer():
+    """Outer layer (64x32): helmet (head + hat overlay), suit (body + arms), boots (legs)."""
     img = new(64, 32)
-    rnd = random.Random(3)
 
-    def fabric(face, x, y, w, h):
-        c = CREAM if rnd.random() > 0.12 else CREAM_D
-        return c
-
-    # helmet: head cube (8x8x8) at (0,0) - glass visor on the front
+    # --- helmet: white shell, red top stripe, dark faceplate with a glint, chrome neck ring
     def helmet(face, x, y, w, h):
-        if face == 3:  # front
-            if 1 <= x <= 6 and 1 <= y <= 5:
-                return GLASS_L if (x == 1 or y == 1) else TEAL_D
+        if face == BOTTOM:
+            return CHROME_D
+        if face == TOP:
+            return RED if x in (3, 4) else WHITE
+        if y == 6:
             return CHROME
-        if face in (0,):
-            return CHROME_L
-        return CHROME if y < h - 2 else ORANGE
+        if y == 7:
+            return CHROME_D
+        if face == FRONT:
+            if y == 0:
+                return RED if x in (3, 4) else WHITE
+            if x in (0, 7):
+                return CHROME
+            if (x, y) in ((1, 1), (2, 1), (1, 2)):
+                return GLASS_L
+            if (x, y) in ((2, 2), (3, 1)):
+                return VISOR_L
+            if (x, y) in ((5, 4), (6, 4), (6, 3)):
+                return VISOR_L
+            return VISOR
+        if face == BACK:
+            if x in (3, 4) and y <= 2:
+                return RED
+            if 2 <= x <= 5 and y in (3, 5):
+                return CHROME_D
+            if x in (0, 7):
+                return WHITE_D
+            return WHITE
+        # sides: comms earpiece (chrome disc with a red light) behind the faceplate
+        fd = front_dist(face, x, w)
+        if 2 <= fd <= 4 and 2 <= y <= 4:
+            return RED if (fd, y) == (3, 3) else CHROME
+        if fd == 0 and y <= 5:
+            return CHROME_D
+        return WHITE
 
     fill_box(img, 0, 0, 8, 8, 8, helmet)
-    # hat overlay (32,0) - glass bubble, mostly transparent
-    for y in range(0, 16):
-        for x in range(32, 64):
-            img.putpixel((x, y), (190, 230, 245, 70))
 
-    # body (16,16): 8x12x4 - teal chest panel and orange belt
+    # --- hat overlay (rendered 0.5px further out): only the raised chrome faceplate rim,
+    #     everything else transparent so the shell and the visor below show through
+    def rim(face, x, y, w, h):
+        if face == FRONT:
+            if y == 0:
+                return CHROME_L
+            if y == 6:
+                return CHROME
+            if x in (0, 7) and y < 6:
+                return CHROME
+            return None
+        if face == TOP:
+            return CHROME_L if y == h - 1 else None
+        if face in (RIGHT, LEFT):
+            fd = front_dist(face, x, w)
+            if fd == 0 and y <= 6:
+                return CHROME
+            if fd == 1 and y == 3:
+                return RED
+            return None
+        return None
+
+    fill_box(img, 32, 0, 8, 8, 8, rim)
+
+    # --- suit body: collar ring, turquoise chest control unit, chrome belt, life-support pack
     def body(face, x, y, w, h):
-        if face == 3 and 2 <= x <= 5 and 2 <= y <= 5:
-            return TEAL if not (x == 3 and y == 3) else ORANGE_L
-        if y in (8, 9):
-            return ORANGE
-        if face == 5 and 1 <= x <= 6 and 1 <= y <= 6:  # oxygen pack on the back
-            return CHROME if x not in (3, 4) else CHROME_D
-        return fabric(face, x, y, w, h)
+        if face == TOP:
+            return CHROME if 2 <= x <= 5 else WHITE
+        if face == BOTTOM:
+            return WHITE_D
+        if y == 0:
+            return CHROME_D if (face in (FRONT, BACK) and x in (0, 7)) else CHROME
+        if y == 8:
+            if face == FRONT and x in (3, 4):
+                return RED
+            return CHROME
+        if y == 9:
+            return RED_D if face == FRONT and x in (3, 4) else CHROME_D
+        if face == FRONT:
+            if 2 <= x <= 5 and 2 <= y <= 6:
+                if x in (2, 5) or y in (2, 6):
+                    return TEAL_D
+                if y == 3:
+                    return RED if x == 3 else GREEN_LAMP
+                if y == 4:
+                    return TEAL_L
+                return CREAM
+            if y == 1 and x in (0, 1, 6, 7):
+                return RED
+            if x in (0, 7):
+                return WHITE_D
+            return WHITE
+        if face == BACK:
+            if 1 <= x <= 6 and 1 <= y <= 7:
+                if x in (1, 6) or y in (1, 7):
+                    return CHROME_D
+                if y == 2:
+                    return RED
+                if y == 7:
+                    return CHROME_D
+                return CHROME_L if x in (2, 5) else CHROME
+            if x in (0, 7):
+                return WHITE_D
+            return WHITE
+        # sides: an orange oxygen hose running from the back pack to the chest unit
+        fd = front_dist(face, x, w)
+        if fd == 1 and 2 <= y <= 6:
+            return ORANGE_L if y == 2 else ORANGE
+        if fd == 3:
+            return WHITE_D
+        return WHITE
 
     fill_box(img, 16, 16, 8, 12, 4, body)
 
-    # arms (40,16): 4x12x4 with red cuffs
+    # --- arms: turquoise shoulder band, stars & stripes patch on the outer side,
+    #     chrome wrist ring, cherry-red gloves
     def arm(face, x, y, w, h):
-        if y >= h - 3:
-            return RED
-        if y == 4:
-            return ORANGE
-        return fabric(face, x, y, w, h)
+        if face == TOP:
+            return TEAL
+        if face == BOTTOM:
+            return RED_D
+        if y == 0:
+            return TEAL
+        if y == 1:
+            return TEAL_D
+        if y == 8:
+            return CHROME
+        if y >= 9:
+            return RED_L if (face == FRONT and y == 9 and x == 0) else RED
+        if face == RIGHT and 2 <= y <= 5:
+            patch = [[NAVY, NAVY, RED, RED], [NAVY, NAVY, WHITE, WHITE], [RED, RED, RED, RED], [WHITE] * 4]
+            c = patch[y - 2][x]
+            return NAVY_L if (x, y) == (1, 3) else c
+        if face in (FRONT, BACK) and x == 3:
+            return WHITE_D
+        return WHITE
 
     fill_box(img, 40, 16, 4, 12, 4, arm)
 
-    # legs (0,16): 4x12x4 with red boots
-    def leg(face, x, y, w, h):
-        if y >= h - 4:
-            return RED if y != h - 4 else RED_L
-        return fabric(face, x, y, w, h)
+    # --- boots (legs region of the outer layer): only the bottom four rows are opaque
+    def boot(face, x, y, w, h):
+        if face == TOP:
+            return None
+        if face == BOTTOM:
+            return RED_D
+        if y < 8:
+            return None
+        if y == 8:
+            return CHROME
+        if y == 11:
+            return RED_D
+        if face == FRONT and y == 9 and x == 0:
+            return RED_L
+        return RED
 
-    fill_box(img, 0, 16, 4, 12, 4, leg)
+    fill_box(img, 0, 16, 4, 12, 4, boot)
     return img
 
 
 def suit_leggings_layer():
+    """Inner layer (64x32): trousers - waist with belt on the body, white legs with a red
+    racing stripe on the outer side and turquoise knee pads."""
     img = new(64, 32)
-    rnd = random.Random(4)
 
-    def fabric(face, x, y, w, h):
-        return CREAM if rnd.random() > 0.12 else CREAM_D
+    def waist(face, x, y, w, h):
+        if face == TOP:
+            return None
+        if face == BOTTOM:
+            return WHITE_D
+        if y < 7:
+            return None
+        if y == 8:
+            return RED if (face == FRONT and x in (3, 4)) else CHROME
+        if y == 9:
+            return RED_D if (face == FRONT and x in (3, 4)) else CHROME_D
+        if face in (FRONT, BACK) and x in (0, 7):
+            return WHITE_D
+        return WHITE
 
-    def body(face, x, y, w, h):
-        if y >= 7:
-            return ORANGE if y in (8, 9) else fabric(face, x, y, w, h)
-        return (0, 0, 0)
-
-    fill_box(img, 16, 16, 8, 12, 4, body)
-    # clear the non-waist part of the body
-    for y in range(16, 32):
-        for x in range(16, 40):
-            p = img.getpixel((x, y))
-            if p[:3] == (0, 0, 0):
-                img.putpixel((x, y), (0, 0, 0, 0))
+    fill_box(img, 16, 16, 8, 12, 4, waist)
 
     def leg(face, x, y, w, h):
-        if y == 5:
-            return ORANGE
-        return fabric(face, x, y, w, h)
+        if face == TOP:
+            return WHITE_D
+        if face == BOTTOM:
+            return WHITE_DD
+        if face == RIGHT and x == 1 and y <= 8:
+            return RED
+        if face == FRONT and y in (5, 6):
+            return TEAL_D if y == 6 else TEAL
+        if face == BACK and x == 3:
+            return WHITE_D
+        if face == LEFT and x == 3:
+            return WHITE_D
+        return WHITE
 
     fill_box(img, 0, 16, 4, 12, 4, leg)
     return img
 
 
 def logo():
-    img = Image.new("RGBA", (128, 128), rgba((26, 30, 52)))
+    """Googie-style mod logo: turquoise sky, cream starburst, a silver rocket with red fins."""
+    import math
+    img = Image.new("RGBA", (128, 128), rgba(TEAL))
     d = ImageDraw.Draw(img)
+    cx, cy = 64, 64
+    # starburst rays
+    for i in range(16):
+        a = i * math.pi / 8
+        r1, r2 = 30, 90
+        d.line((cx + r1 * math.cos(a), cy + r1 * math.sin(a), cx + r2 * math.cos(a), cy + r2 * math.sin(a)),
+               fill=rgba(CREAM), width=3 if i % 2 == 0 else 1)
+    d.ellipse((cx - 34, cy - 34, cx + 34, cy + 34), fill=rgba(NAVY), outline=rgba(CREAM), width=3)
     rnd = random.Random(42)
-    for _ in range(40):
-        x, y = rnd.randrange(128), rnd.randrange(128)
-        img.putpixel((x, y), rgba(CREAM))
-    d.ellipse((70, 14, 118, 62), fill=rgba(ORANGE), outline=rgba(ORANGE_L))
-    d.ellipse((60, 32, 128, 44), outline=rgba(CREAM), width=2)
-    big = rocket_item().resize((96, 96), Image.NEAREST)
-    img.alpha_composite(big, (8, 24))
+    for _ in range(30):
+        x, y = rnd.randrange(cx - 30, cx + 30), rnd.randrange(cy - 30, cy + 30)
+        if (x - cx) ** 2 + (y - cy) ** 2 < 28 ** 2:
+            img.putpixel((x, y), rgba(WHITE))
+    # boomerang swoosh (orbit) around the globe
+    d.arc((cx - 52, cy - 16, cx + 52, cy + 16), start=150, end=390, fill=rgba(RED), width=4)
+    # rocket (tilted to the upper right, drawn as polygons)
+    body = [(52, 92), (60, 40), (70, 34), (80, 40), (86, 92), (69, 100)]
+    d.polygon(body, fill=rgba(WHITE), outline=rgba(WHITE_DD))
+    d.polygon([(60, 40), (70, 22), (80, 40)], fill=rgba(CHROME), outline=rgba(CHROME_D))
+    d.polygon([(56, 76), (82, 76), (84, 86), (54, 86)], fill=rgba(RED))
+    d.ellipse((63, 46, 77, 60), fill=rgba(CHROME), outline=rgba(CHROME_D))
+    d.ellipse((66, 49, 74, 57), fill=rgba(VISOR))
+    img.putpixel((68, 51), rgba(GLASS_L))
+    d.polygon([(54, 70), (40, 100), (54, 94)], fill=rgba(RED), outline=rgba(RED_D))
+    d.polygon([(84, 70), (98, 100), (84, 94)], fill=rgba(RED), outline=rgba(RED_D))
+    d.polygon([(60, 100), (78, 100), (74, 108), (64, 108)], fill=rgba(STEEL))
+    d.polygon([(62, 108), (76, 108), (69, 124)], fill=rgba(ORANGE))
+    d.polygon([(66, 108), (72, 108), (69, 118)], fill=rgba(ORANGE_L))
+    d.line((70, 10, 70, 22), fill=rgba(CHROME_D), width=2)
     return img
 
 
@@ -629,20 +896,39 @@ def element(frm, to, tex, faces=("north", "south", "east", "west", "up", "down")
             "faces": {f: {"texture": face_tex.get(f, tex)} for f in faces}}
 
 
+def swept_fin(axis, side):
+    """Three stepped slabs forming a swept-back fin: tall at the hull, short at the tip."""
+    steps = [(2, 10), (1, 7), (0, 4)]  # (offset from the block edge, height)
+    out = []
+    for off, height in steps:
+        lo = off if side < 0 else 15 - off
+        hi = lo + 1
+        if axis == "x":
+            out.append(element((lo, 0, 7.5), (hi, height, 8.5), "#fin"))
+        else:
+            out.append(element((7.5, 0, lo), (8.5, height, hi), "#fin"))
+    return out
+
+
 def rocket_models():
+    """Raygun-gothic 'Liberty I': chrome needle nose, white hull with red band, swept red fins.
+
+    Block textures are projected onto the elements (an element's face samples the texture at
+    its own block coordinates), so the cone texture is painted as a vertical strip:
+    chrome tip, white, red band."""
     t = {"body": f"{MOD}:block/rocket_body", "window": f"{MOD}:block/rocket_window",
          "fin": f"{MOD}:block/rocket_fin", "nozzle": f"{MOD}:block/rocket_nozzle",
          "nozzle_bottom": f"{MOD}:block/rocket_nozzle_bottom", "cone": f"{MOD}:block/rocket_cone",
-         "antenna": f"{MOD}:block/rocket_antenna"}
+         "antenna": f"{MOD}:block/rocket_antenna", "chrome": f"{MOD}:block/rocket_chrome"}
+    chrome_caps = {"up": "#chrome", "down": "#chrome"}
     bottom = {
         "textures": dict(t, particle=t["body"]),
         "elements": [
-            element((3, 3, 3), (13, 16, 13), "#body", faces=("north", "south", "east", "west", "down")),
-            element((5, 0, 5), (11, 3, 11), "#nozzle", face_tex={"down": "#nozzle_bottom"}),
-            element((0, 0, 7), (3, 9, 9), "#fin"),
-            element((13, 0, 7), (16, 9, 9), "#fin"),
-            element((7, 0, 0), (9, 9, 3), "#fin"),
-            element((7, 0, 13), (9, 9, 16), "#fin"),
+            element((3, 3, 3), (13, 16, 13), "#body", faces=("north", "south", "east", "west", "down"),
+                    face_tex={"down": "#chrome"}),
+            element((4, 1, 4), (12, 3, 12), "#chrome", faces=("north", "south", "east", "west", "down")),
+            element((5, 0, 5), (11, 1, 11), "#nozzle", face_tex={"down": "#nozzle_bottom"}),
+            *swept_fin("x", -1), *swept_fin("x", 1), *swept_fin("z", -1), *swept_fin("z", 1),
         ],
     }
     middle = {
@@ -650,16 +936,23 @@ def rocket_models():
         "elements": [
             element((3, 0, 3), (13, 16, 13), "#body", faces=("north", "south", "east", "west"),
                     face_tex={"north": "#window", "south": "#window"}),
+            # porthole mounting plates, raised half a pixel off the hull
+            element((4, 7, 2.5), (12, 14, 3), "#chrome", faces=("north", "up", "down", "east", "west"),
+                    face_tex={"north": "#window"}),
+            element((4, 7, 13), (12, 14, 13.5), "#chrome", faces=("south", "up", "down", "east", "west"),
+                    face_tex={"south": "#window"}),
         ],
     }
     top = {
         "textures": dict(t, particle=t["cone"]),
         "elements": [
-            element((3, 0, 3), (13, 2, 13), "#body", faces=("north", "south", "east", "west", "up")),
-            element((4, 2, 4), (12, 6, 12), "#cone"),
-            element((5, 6, 5), (11, 11, 11), "#cone"),
-            element((6, 11, 6), (10, 14, 10), "#cone"),
-            element((7.5, 14, 7.5), (8.5, 16, 8.5), "#antenna"),
+            element((3, 0, 3), (13, 3, 13), "#body", faces=("north", "south", "east", "west", "up"),
+                    face_tex={"up": "#chrome"}),
+            element((4, 3, 4), (12, 7, 12), "#cone", face_tex=chrome_caps),
+            element((5, 7, 5), (11, 10, 11), "#cone", face_tex=chrome_caps),
+            element((6, 10, 6), (10, 13, 10), "#cone", face_tex=chrome_caps),
+            element((7, 13, 7), (9, 15, 9), "#cone", face_tex=chrome_caps),
+            element((7.5, 15, 7.5), (8.5, 16, 8.5), "#antenna"),
         ],
     }
     for part, model in (("bottom", bottom), ("middle", middle), ("top", top)):
@@ -807,6 +1100,7 @@ def main():
     save(rocket_nozzle_bottom(), "block", "rocket_nozzle_bottom")
     save(rocket_cone(), "block", "rocket_cone")
     save(antenna(), "block", "rocket_antenna")
+    save(rocket_chrome(), "block", "rocket_chrome")
 
     save(raw_lump(BAUX_D, BAUX, BAUX_L, 1), "item", "raw_aluminum")
     save(raw_lump(TI_D, TI, TI_L, 2), "item", "raw_titanium")
@@ -965,7 +1259,7 @@ EN = {
     "block.retrocosmos.aluminum_block": "Block of Aluminum",
     "block.retrocosmos.titanium_block": "Block of Titanium",
     "block.retrocosmos.launch_pad": "Launch Pad",
-    "block.retrocosmos.rocket": "Rocket \"Zarya-1\"",
+    "block.retrocosmos.rocket": "\"Liberty I\" Rocket",
     "item.retrocosmos.raw_aluminum": "Raw Aluminum",
     "item.retrocosmos.raw_titanium": "Raw Titanium",
     "item.retrocosmos.aluminum_ingot": "Aluminum Ingot",
@@ -980,21 +1274,21 @@ EN = {
     "item.retrocosmos.rocket_engine": "Rocket Engine",
     "item.retrocosmos.empty_fuel_canister": "Empty Fuel Canister",
     "item.retrocosmos.rocket_fuel_canister": "Rocket Fuel Canister",
-    "item.retrocosmos.space_helmet": "Space Helmet",
-    "item.retrocosmos.space_suit": "Space Suit",
-    "item.retrocosmos.space_leggings": "Space Suit Trousers",
+    "item.retrocosmos.space_helmet": "Astronaut Helmet",
+    "item.retrocosmos.space_suit": "Pressure Suit",
+    "item.retrocosmos.space_leggings": "Pressure Suit Trousers",
     "item.retrocosmos.space_boots": "Magnetic Boots",
     "message.retrocosmos.rocket.fueled": "Fuel tanks: %s / %s",
     "message.retrocosmos.rocket.fuel_full": "Fuel tanks are full!",
-    "message.retrocosmos.checklist.title": "=== PRE-FLIGHT CHECKLIST ===",
+    "message.retrocosmos.checklist.title": "=== MISSION CONTROL: PRE-FLIGHT CHECKLIST ===",
     "message.retrocosmos.checklist.pad": "Rocket stands on a launch pad",
     "message.retrocosmos.checklist.fuel": "Fuel tanks filled (%s / %s)",
-    "message.retrocosmos.checklist.suit": "Cosmonaut wears the full space suit",
-    "message.retrocosmos.checklist.ready": "All systems nominal. Ready for launch!",
-    "message.retrocosmos.checklist.stage2": "Mission control is still calculating trajectories to other worlds... (Stage 2)",
-    "message.retrocosmos.checklist.not_ready": "Launch aborted: checklist incomplete.",
+    "message.retrocosmos.checklist.suit": "Astronaut wears the full pressure suit",
+    "message.retrocosmos.checklist.ready": "All systems are GO. T-minus zero, ready for liftoff!",
+    "message.retrocosmos.checklist.stage2": "Mission Control is still plotting trajectories to other worlds... (Stage 2)",
+    "message.retrocosmos.checklist.not_ready": "Launch scrubbed: checklist incomplete.",
     "advancements.retrocosmos.root.title": "Retro Cosmos: Preparation",
-    "advancements.retrocosmos.root.description": "Find ore for the space age: bauxite or titanium",
+    "advancements.retrocosmos.root.description": "Find ore for the Space Age: bauxite or titanium",
     "advancements.retrocosmos.aluminum.title": "Winged Metal",
     "advancements.retrocosmos.aluminum.description": "Smelt an aluminum ingot",
     "advancements.retrocosmos.titanium.title": "Stronger Than Steel",
@@ -1003,18 +1297,18 @@ EN = {
     "advancements.retrocosmos.vacuum_tube.description": "Craft a vacuum tube",
     "advancements.retrocosmos.guidance_computer.title": "Electronic Brain",
     "advancements.retrocosmos.guidance_computer.description": "Assemble an analog guidance computer",
-    "advancements.retrocosmos.rocket_engine.title": "Ignition Sequence",
+    "advancements.retrocosmos.rocket_engine.title": "Ignition Sequence Start",
     "advancements.retrocosmos.rocket_engine.description": "Build a rocket engine",
     "advancements.retrocosmos.fuel.title": "Atomic-Age Kerosene",
     "advancements.retrocosmos.fuel.description": "Fill a rocket fuel canister",
-    "advancements.retrocosmos.space_suit.title": "Dressed for the Void",
-    "advancements.retrocosmos.space_suit.description": "Obtain every piece of the space suit",
-    "advancements.retrocosmos.launch_pad.title": "Cosmodrome",
+    "advancements.retrocosmos.space_suit.title": "The Right Stuff",
+    "advancements.retrocosmos.space_suit.description": "Obtain every piece of the pressure suit",
+    "advancements.retrocosmos.launch_pad.title": "Launch Complex 1",
     "advancements.retrocosmos.launch_pad.description": "Craft a launch pad",
-    "advancements.retrocosmos.rocket.title": "Zarya-1",
+    "advancements.retrocosmos.rocket.title": "Liberty I",
     "advancements.retrocosmos.rocket.description": "Assemble your first rocket",
-    "advancements.retrocosmos.ready_for_launch.title": "Ready for Launch!",
-    "advancements.retrocosmos.ready_for_launch.description": "Pass the pre-flight checklist: rocket on a pad, tanks full, suit on",
+    "advancements.retrocosmos.ready_for_launch.title": "We Have Liftoff!",
+    "advancements.retrocosmos.ready_for_launch.description": "Pass the pre-flight checklist: rocket on the pad, tanks full, suited up",
 }
 
 RU = {
@@ -1026,7 +1320,7 @@ RU = {
     "block.retrocosmos.aluminum_block": "Алюминиевый блок",
     "block.retrocosmos.titanium_block": "Титановый блок",
     "block.retrocosmos.launch_pad": "Стартовая площадка",
-    "block.retrocosmos.rocket": "Ракета «Заря-1»",
+    "block.retrocosmos.rocket": "Ракета «Либерти-1»",
     "item.retrocosmos.raw_aluminum": "Необработанный алюминий",
     "item.retrocosmos.raw_titanium": "Необработанный титан",
     "item.retrocosmos.aluminum_ingot": "Алюминиевый слиток",
@@ -1041,19 +1335,19 @@ RU = {
     "item.retrocosmos.rocket_engine": "Ракетный двигатель",
     "item.retrocosmos.empty_fuel_canister": "Пустая топливная канистра",
     "item.retrocosmos.rocket_fuel_canister": "Канистра ракетного топлива",
-    "item.retrocosmos.space_helmet": "Гермошлем",
+    "item.retrocosmos.space_helmet": "Шлем астронавта",
     "item.retrocosmos.space_suit": "Скафандр",
     "item.retrocosmos.space_leggings": "Штаны скафандра",
     "item.retrocosmos.space_boots": "Магнитные ботинки",
     "message.retrocosmos.rocket.fueled": "Топливные баки: %s / %s",
     "message.retrocosmos.rocket.fuel_full": "Баки полны!",
-    "message.retrocosmos.checklist.title": "=== ПРЕДСТАРТОВАЯ ПРОВЕРКА ===",
+    "message.retrocosmos.checklist.title": "=== ЦЕНТР УПРАВЛЕНИЯ: ПРЕДСТАРТОВАЯ ПРОВЕРКА ===",
     "message.retrocosmos.checklist.pad": "Ракета установлена на стартовую площадку",
     "message.retrocosmos.checklist.fuel": "Баки заправлены (%s / %s)",
-    "message.retrocosmos.checklist.suit": "Космонавт в полном скафандре",
-    "message.retrocosmos.checklist.ready": "Все системы в норме. К старту готов!",
-    "message.retrocosmos.checklist.stage2": "ЦУП ещё рассчитывает траектории к другим мирам... (Этап 2)",
-    "message.retrocosmos.checklist.not_ready": "Старт отменён: проверка не пройдена.",
+    "message.retrocosmos.checklist.suit": "Астронавт в полном скафандре",
+    "message.retrocosmos.checklist.ready": "Все системы — GO. Отсчёт окончен, готовность к старту!",
+    "message.retrocosmos.checklist.stage2": "Центр управления полётом ещё рассчитывает траектории к другим мирам... (Этап 2)",
+    "message.retrocosmos.checklist.not_ready": "Старт отложен: проверка не пройдена.",
     "advancements.retrocosmos.root.title": "Ретрокосмос: Подготовка",
     "advancements.retrocosmos.root.description": "Найдите руду космической эры: боксит или титан",
     "advancements.retrocosmos.aluminum.title": "Крылатый металл",
@@ -1064,17 +1358,17 @@ RU = {
     "advancements.retrocosmos.vacuum_tube.description": "Соберите радиолампу",
     "advancements.retrocosmos.guidance_computer.title": "Электронный мозг",
     "advancements.retrocosmos.guidance_computer.description": "Соберите аналоговый вычислитель наведения",
-    "advancements.retrocosmos.rocket_engine.title": "Ключ на старт",
+    "advancements.retrocosmos.rocket_engine.title": "Зажигание",
     "advancements.retrocosmos.rocket_engine.description": "Постройте ракетный двигатель",
     "advancements.retrocosmos.fuel.title": "Керосин атомной эры",
     "advancements.retrocosmos.fuel.description": "Наполните канистру ракетного топлива",
-    "advancements.retrocosmos.space_suit.title": "Одет для пустоты",
+    "advancements.retrocosmos.space_suit.title": "Парень что надо",
     "advancements.retrocosmos.space_suit.description": "Добудьте все части скафандра",
-    "advancements.retrocosmos.launch_pad.title": "Космодром",
+    "advancements.retrocosmos.launch_pad.title": "Стартовый комплекс №1",
     "advancements.retrocosmos.launch_pad.description": "Создайте стартовую площадку",
-    "advancements.retrocosmos.rocket.title": "«Заря-1»",
+    "advancements.retrocosmos.rocket.title": "«Либерти-1»",
     "advancements.retrocosmos.rocket.description": "Соберите свою первую ракету",
-    "advancements.retrocosmos.ready_for_launch.title": "Поехали!",
+    "advancements.retrocosmos.ready_for_launch.title": "Есть отрыв!",
     "advancements.retrocosmos.ready_for_launch.description": "Пройдите предстартовую проверку: ракета на площадке, баки полны, скафандр надет",
 }
 

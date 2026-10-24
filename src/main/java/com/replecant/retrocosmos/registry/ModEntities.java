@@ -1,6 +1,7 @@
 package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.furniture.SeatEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +19,15 @@ public final class ModEntities {
                     .noSummon()
                     .noSave()
                     .clientTrackingRange(8)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<RocketEntity>> ROCKET = ENTITIES.register("rocket",
+            id -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 9.0F)
+                    .noSummon()
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     private ModEntities() {}

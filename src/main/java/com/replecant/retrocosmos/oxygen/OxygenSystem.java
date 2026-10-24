@@ -1,6 +1,7 @@
 package com.replecant.retrocosmos.oxygen;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.launch.LaunchSite;
 import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModBlocks;
@@ -9,15 +10,15 @@ import com.replecant.retrocosmos.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -72,6 +73,9 @@ public final class OxygenSystem {
         }
         if (player.isSpectator() || player.isDeadOrDying() || !settings(player).airless()) {
             return;
+        }
+        if (player.getVehicle() instanceof RocketEntity) {
+            return; // pressurised cabin
         }
         if (player.tickCount % 20 != 0) {
             return;

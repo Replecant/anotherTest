@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:guidance_computer"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.orbit.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.orbit.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "orbit": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "retrocosmos:stage2/root"
+}

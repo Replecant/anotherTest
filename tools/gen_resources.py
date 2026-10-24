@@ -2214,6 +2214,8 @@ def main():
     # ---- lang ----
     import furniture
     furniture.generate()
+    import flight
+    flight.generate()
     try:
         import furniture_art
     except ImportError:
@@ -2221,6 +2223,8 @@ def main():
         print("furniture_art.py not found - furniture models/textures not generated")
     if furniture_art:
         furniture_art.generate()
+    import space_art
+    space_art.generate()
     write_lang()
 
 
@@ -2353,6 +2357,9 @@ def write_lang():
     RU.update(RU_1B)
     EN.update(furniture.EN)
     RU.update(furniture.RU)
+    import flight
+    EN.update(flight.EN)
+    RU.update(flight.RU)
     assert EN.keys() == RU.keys(), set(EN) ^ set(RU)
     write_json(os.path.join(ASSETS, "lang", "en_us.json"), EN)
     write_json(os.path.join(ASSETS, "lang", "ru_ru.json"), RU)

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:heat_shield"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.splashdown.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.splashdown.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "landed": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "retrocosmos:stage2/orbit"
+}

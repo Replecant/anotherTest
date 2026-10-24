@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.root.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:gui/advancements/backgrounds/end"
+  },
+  "criteria": {
+    "liftoff": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

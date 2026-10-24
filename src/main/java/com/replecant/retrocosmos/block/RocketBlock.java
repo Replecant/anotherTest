@@ -1,7 +1,9 @@
 package com.replecant.retrocosmos.block;
 
+import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.launch.LaunchSite;
 import com.replecant.retrocosmos.registry.ModItems;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -199,13 +201,17 @@ public class RocketBlock extends Block {
         LaunchSite.sendChecklist(player, status);
 
         if (status.go(LaunchSite.suitBits(player))) {
-            player.displayClientMessage(Component.translatable("message.retrocosmos.checklist.go_to_console").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), false);
             level.playSound(null, base, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.2F);
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
                         base.getX() + 0.5, base.getY() + 0.2, base.getZ() + 0.5, 20, 0.6, 0.1, 0.6, 0.02);
                 if (player instanceof ServerPlayer serverPlayer) {
                     LaunchSite.award(serverPlayer, "stage1/ready_for_launch", "checklist_passed");
+                }
+                if (!player.isPassenger()) {
+                    // all GO: climb aboard, the rocket runs its own T-10 countdown (sneak to scrub)
+                    player.displayClientMessage(Component.translatable("message.retrocosmos.flight.boarded").withStyle(ChatFormatting.AQUA), false);
+                    RocketEntity.launchFrom(serverLevel, base, List.of(player), true);
                 }
             }
         } else {

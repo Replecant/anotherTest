@@ -1,5 +1,6 @@
 package com.replecant.retrocosmos.console;
 
+import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.launch.LaunchSite;
 import com.replecant.retrocosmos.registry.ModBlockEntities;
 import com.replecant.retrocosmos.registry.ModMenus;
@@ -42,6 +43,9 @@ public class ConsoleBlockEntity extends BlockEntity implements MenuProvider {
 
     private LaunchSite.Status status = LaunchSite.Status.NONE;
     private long lastScan = Long.MIN_VALUE;
+    /** Astronauts within this many blocks of the rocket board it at T-0. */
+    private static final int CREW_RANGE = 6;
+
     /** Ticks left in the countdown, or -1 when idle. */
     private int countdown = -1;
     private int lastCheck = CHECK_NONE;
@@ -214,14 +218,16 @@ public class ConsoleBlockEntity extends BlockEntity implements MenuProvider {
     private void liftoff(Level level) {
         countdown = -1;
         lastCheck = CHECK_GO;
-        broadcast(Component.translatable("message.retrocosmos.console.liftoff").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD));
-        broadcast(Component.translatable("message.retrocosmos.checklist.stage2").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         BlockPos base = status.base() != null ? status.base() : worldPosition;
-        level.playSound(null, base, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.BLOCKS, 2.0F, 0.5F);
         level.playSound(null, worldPosition, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.2F);
-        if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.FLAME, base.getX() + 0.5, base.getY() + 0.1, base.getZ() + 0.5, 120, 0.5, 0.3, 0.5, 0.12);
-            serverLevel.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, base.getX() + 0.5, base.getY() + 0.3, base.getZ() + 0.5, 80, 1.5, 0.3, 1.5, 0.03);
+        if (level instanceof ServerLevel serverLevel && status.base() != null) {
+            // astronauts in full suits standing on or next to the pad ride along
+            List<ServerPlayer> crew = serverLevel.players().stream()
+                    .filter(p -> !p.isPassenger() && LaunchSite.suitBits(p) == LaunchSite.SUIT_FULL)
+                    .filter(p -> p.distanceToSqr(base.getX() + 0.5, base.getY() + 0.5, base.getZ() + 0.5) <= CREW_RANGE * CREW_RANGE)
+                    .limit(2)
+                    .toList();
+            RocketEntity.launchFrom(serverLevel, base, crew, false);
         }
         for (ServerPlayer player : nearbyPlayers()) {
             LaunchSite.award(player, "stage1/countdown", "liftoff");

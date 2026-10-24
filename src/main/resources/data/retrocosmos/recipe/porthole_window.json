@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " A ",
+    "AGA",
+    " A "
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "G": "minecraft:glass"
+  },
+  "result": {
+    "id": "retrocosmos:porthole_window",
+    "count": 2
+  }
+}

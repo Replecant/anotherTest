@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "C  ",
+    "CCC",
+    "A A"
+  ],
+  "key": {
+    "C": "minecraft:cyan_wool",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:googie_sofa",
+    "count": 2
+  }
+}

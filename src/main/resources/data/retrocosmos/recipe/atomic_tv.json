@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AVA",
+    "PGP",
+    "P P"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "V": "retrocosmos:vacuum_tube",
+    "P": "#minecraft:planks",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "retrocosmos:atomic_tv",
+    "count": 1
+  }
+}

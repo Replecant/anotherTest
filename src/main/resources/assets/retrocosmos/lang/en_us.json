@@ -148,5 +148,22 @@
   "gui.retrocosmos.hud.suit_breach": "! SUIT INCOMPLETE !",
   "message.retrocosmos.oxygen.creative": "You are in creative mode: oxygen does not drain and cannot hurt you. Switch to survival to test.",
   "death.attack.retrocosmos.suffocation": "%1$s ran out of oxygen",
-  "death.attack.retrocosmos.suffocation.player": "%1$s ran out of oxygen whilst fighting %2$s"
+  "death.attack.retrocosmos.suffocation.player": "%1$s ran out of oxygen whilst fighting %2$s",
+  "itemGroup.retrocosmos.home": "Retro Cosmos: Atomic Home",
+  "block.retrocosmos.atomic_floor_lamp": "Atomic Floor Lamp",
+  "block.retrocosmos.rocket_table_lamp": "Rocket Table Lamp",
+  "block.retrocosmos.sputnik_chandelier": "Satellite Chandelier",
+  "block.retrocosmos.diner_stool": "Diner Stool",
+  "block.retrocosmos.egg_chair": "Egg Chair",
+  "block.retrocosmos.googie_sofa": "Googie Sofa",
+  "block.retrocosmos.boomerang_table": "Boomerang Coffee Table",
+  "block.retrocosmos.atomic_tv": "Atomic Age Television",
+  "block.retrocosmos.tube_radio": "Tube Radio",
+  "block.retrocosmos.starburst_clock": "Starburst Wall Clock",
+  "block.retrocosmos.neon_rocket_sign": "Neon Rocket Sign",
+  "block.retrocosmos.porthole_window": "Porthole Window",
+  "block.retrocosmos.checkered_tile": "Checkered Diner Tile",
+  "block.retrocosmos.turquoise_panel": "Turquoise Panel",
+  "block.retrocosmos.cream_panel": "Cream Panel",
+  "block.retrocosmos.chrome_trim": "Chrome Trim"
 }

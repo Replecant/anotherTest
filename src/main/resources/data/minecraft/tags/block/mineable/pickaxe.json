@@ -13,6 +13,18 @@
     "retrocosmos:aluminum_block",
     "retrocosmos:titanium_block",
     "retrocosmos:launch_pad",
-    "retrocosmos:rocket"
+    "retrocosmos:rocket",
+    "retrocosmos:atomic_floor_lamp",
+    "retrocosmos:rocket_table_lamp",
+    "retrocosmos:sputnik_chandelier",
+    "retrocosmos:diner_stool",
+    "retrocosmos:boomerang_table",
+    "retrocosmos:starburst_clock",
+    "retrocosmos:neon_rocket_sign",
+    "retrocosmos:porthole_window",
+    "retrocosmos:checkered_tile",
+    "retrocosmos:turquoise_panel",
+    "retrocosmos:cream_panel",
+    "retrocosmos:chrome_trim"
   ]
 }

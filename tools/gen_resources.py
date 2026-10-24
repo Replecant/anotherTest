@@ -2212,6 +2212,15 @@ def main():
     stage1b_data()
 
     # ---- lang ----
+    import furniture
+    furniture.generate()
+    try:
+        import furniture_art
+    except ImportError:
+        furniture_art = None
+        print("furniture_art.py not found - furniture models/textures not generated")
+    if furniture_art:
+        furniture_art.generate()
     write_lang()
 
 
@@ -2339,8 +2348,11 @@ RU = {
 
 
 def write_lang():
+    import furniture
     EN.update(EN_1B)
     RU.update(RU_1B)
+    EN.update(furniture.EN)
+    RU.update(furniture.RU)
     assert EN.keys() == RU.keys(), set(EN) ^ set(RU)
     write_json(os.path.join(ASSETS, "lang", "en_us.json"), EN)
     write_json(os.path.join(ASSETS, "lang", "ru_ru.json"), RU)

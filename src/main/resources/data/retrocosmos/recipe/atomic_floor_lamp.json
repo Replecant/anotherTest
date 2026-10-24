@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GAG",
+    " A ",
+    " I "
+  ],
+  "key": {
+    "G": "minecraft:glowstone",
+    "A": "retrocosmos:aluminum_plate",
+    "I": "retrocosmos:aluminum_ingot"
+  },
+  "result": {
+    "id": "retrocosmos:atomic_floor_lamp",
+    "count": 1
+  }
+}

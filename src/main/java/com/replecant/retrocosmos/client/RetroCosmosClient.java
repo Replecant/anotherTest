@@ -1,10 +1,13 @@
 package com.replecant.retrocosmos.client;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModMenus;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
@@ -15,6 +18,11 @@ public class RetroCosmosClient {
     public RetroCosmosClient(IEventBus modEventBus) {
         modEventBus.addListener(RetroCosmosClient::registerScreens);
         modEventBus.addListener(RetroCosmosClient::registerGuiLayers);
+        modEventBus.addListener(RetroCosmosClient::registerRenderers);
+    }
+
+    private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.SEAT.get(), NoopRenderer::new);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

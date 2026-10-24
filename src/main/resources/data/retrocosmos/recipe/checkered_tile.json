@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "WB",
+    "BW"
+  ],
+  "key": {
+    "W": "minecraft:white_concrete",
+    "B": "minecraft:black_concrete"
+  },
+  "result": {
+    "id": "retrocosmos:checkered_tile",
+    "count": 4
+  }
+}

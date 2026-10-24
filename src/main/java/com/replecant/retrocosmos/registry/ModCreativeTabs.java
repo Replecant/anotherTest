@@ -35,5 +35,12 @@ public final class ModCreativeTabs {
             })
             .build());
 
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> HOME = TABS.register("home", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.retrocosmos.home"))
+            .icon(() -> new ItemStack(ModFurniture.ATOMIC_TV.get()))
+            .withTabsBefore(MAIN.getKey())
+            .displayItems((params, output) -> ModFurniture.items().forEach(item -> output.accept(item.get())))
+            .build());
+
     private ModCreativeTabs() {}
 }

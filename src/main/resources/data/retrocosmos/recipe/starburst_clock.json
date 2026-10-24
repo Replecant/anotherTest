@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " G ",
+    "GCG",
+    " G "
+  ],
+  "key": {
+    "G": "minecraft:gold_nugget",
+    "C": "minecraft:clock"
+  },
+  "result": {
+    "id": "retrocosmos:starburst_clock",
+    "count": 1
+  }
+}

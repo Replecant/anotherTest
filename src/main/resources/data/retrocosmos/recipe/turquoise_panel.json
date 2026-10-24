@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "CC",
+    "CC"
+  ],
+  "key": {
+    "C": "minecraft:cyan_concrete"
+  },
+  "result": {
+    "id": "retrocosmos:turquoise_panel",
+    "count": 4
+  }
+}

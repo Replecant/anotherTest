@@ -148,5 +148,22 @@
   "gui.retrocosmos.hud.suit_breach": "! СКАФАНДР НЕ ПОЛОН !",
   "message.retrocosmos.oxygen.creative": "Вы в творческом режиме: кислород не расходуется и не вредит. Для теста перейдите в выживание.",
   "death.attack.retrocosmos.suffocation": "У %1$s кончился кислород",
-  "death.attack.retrocosmos.suffocation.player": "У %1$s кончился кислород в бою с %2$s"
+  "death.attack.retrocosmos.suffocation.player": "У %1$s кончился кислород в бою с %2$s",
+  "itemGroup.retrocosmos.home": "Ретрокосмос: Атомный дом",
+  "block.retrocosmos.atomic_floor_lamp": "Атомный торшер",
+  "block.retrocosmos.rocket_table_lamp": "Настольная лампа «Ракета»",
+  "block.retrocosmos.sputnik_chandelier": "Люстра «Спутник связи»",
+  "block.retrocosmos.diner_stool": "Табурет закусочной",
+  "block.retrocosmos.egg_chair": "Кресло-яйцо",
+  "block.retrocosmos.googie_sofa": "Диван в стиле гуги",
+  "block.retrocosmos.boomerang_table": "Журнальный столик «Бумеранг»",
+  "block.retrocosmos.atomic_tv": "Телевизор атомной эры",
+  "block.retrocosmos.tube_radio": "Ламповый радиоприёмник",
+  "block.retrocosmos.starburst_clock": "Настенные часы «Звёздный взрыв»",
+  "block.retrocosmos.neon_rocket_sign": "Неоновая вывеска «Ракета»",
+  "block.retrocosmos.porthole_window": "Окно-иллюминатор",
+  "block.retrocosmos.checkered_tile": "Шахматная плитка закусочной",
+  "block.retrocosmos.turquoise_panel": "Бирюзовая панель",
+  "block.retrocosmos.cream_panel": "Кремовая панель",
+  "block.retrocosmos.chrome_trim": "Хромированный молдинг"
 }

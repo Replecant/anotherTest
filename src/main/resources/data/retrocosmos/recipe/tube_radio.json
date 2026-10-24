@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "VNV",
+    "PPP"
+  ],
+  "key": {
+    "P": "#minecraft:planks",
+    "V": "retrocosmos:vacuum_tube",
+    "N": "minecraft:note_block"
+  },
+  "result": {
+    "id": "retrocosmos:tube_radio",
+    "count": 1
+  }
+}

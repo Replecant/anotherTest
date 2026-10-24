@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SSS",
+    " A ",
+    "A A"
+  ],
+  "key": {
+    "S": "minecraft:birch_slab",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:boomerang_table",
+    "count": 1
+  }
+}

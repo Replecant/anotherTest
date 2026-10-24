@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "RRR",
+    " A ",
+    " A "
+  ],
+  "key": {
+    "R": "minecraft:red_wool",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:diner_stool",
+    "count": 2
+  }
+}

@@ -7,6 +7,8 @@ import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModBlockEntities;
 import com.replecant.retrocosmos.registry.ModDataComponents;
 import com.replecant.retrocosmos.registry.ModBlocks;
+import com.replecant.retrocosmos.registry.ModEntities;
+import com.replecant.retrocosmos.registry.ModFurniture;
 import com.replecant.retrocosmos.registry.ModCreativeTabs;
 import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.registry.ModMenus;
@@ -27,7 +29,9 @@ public class RetroCosmos {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public RetroCosmos(IEventBus modEventBus, ModContainer modContainer) {
+        ModFurniture.init();
         ModBlocks.BLOCKS.register(modEventBus);
+        ModEntities.ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModBlockEntities.TYPES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);

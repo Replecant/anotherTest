@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "retrocosmos:block/venus_redstone_ore"
+    },
+    "lit=true": {
+      "model": "retrocosmos:block/venus_redstone_ore"
+    }
+  }
+}

@@ -14,11 +14,18 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ColorRGBA;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ColoredFallingBlock;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.HugeMushroomBlock;
+import net.minecraft.world.level.block.RedStoneOreBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -73,6 +80,27 @@ public final class ModVenus {
             p -> p.mapColor(MapColor.WARPED_NYLIUM).strength(0.6F).sound(SoundType.MOSS));
     public static final DeferredBlock<TarBlock> VENUS_TAR = block("venus_tar", TarBlock::new,
             p -> p.mapColor(MapColor.COLOR_BLACK).strength(0.6F).sound(SoundType.HONEY_BLOCK).speedFactor(0.3F).jumpFactor(0.4F));
+
+    public static final DeferredBlock<ColoredFallingBlock> VENUS_SAND = block("venus_sand",
+            p -> new ColoredFallingBlock(new ColorRGBA(0xFF5A4A44), p),
+            p -> p.mapColor(MapColor.TERRACOTTA_GRAY).instrument(NoteBlockInstrument.SNARE).strength(0.5F).sound(SoundType.SAND));
+
+    // ---------------- Ores: stranded explorers can mine everything a rocket needs ----------------
+    public static final DeferredBlock<Block> VENUS_COAL_ORE = ore("venus_coal_ore", UniformInt.of(0, 2), 3.0F);
+    public static final DeferredBlock<Block> VENUS_IRON_ORE = ore("venus_iron_ore", ConstantInt.of(0), 3.0F);
+    public static final DeferredBlock<Block> VENUS_COPPER_ORE = ore("venus_copper_ore", ConstantInt.of(0), 3.0F);
+    public static final DeferredBlock<Block> VENUS_GOLD_ORE = ore("venus_gold_ore", ConstantInt.of(0), 3.0F);
+    public static final DeferredBlock<RedStoneOreBlock> VENUS_REDSTONE_ORE = block("venus_redstone_ore", RedStoneOreBlock::new,
+            p -> p.mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                    .randomTicks().lightLevel(s -> s.getValue(RedStoneOreBlock.LIT) ? 9 : 0).strength(3.0F, 3.0F));
+    public static final DeferredBlock<Block> VENUS_DIAMOND_ORE = ore("venus_diamond_ore", UniformInt.of(3, 7), 3.0F);
+    public static final DeferredBlock<Block> VENUS_BAUXITE_ORE = ore("venus_bauxite_ore", UniformInt.of(0, 2), 3.0F);
+    public static final DeferredBlock<Block> VENUS_TITANIUM_ORE = ore("venus_titanium_ore", UniformInt.of(1, 3), 3.5F);
+    public static final DeferredBlock<Block> VENUS_OIL_SHALE = ore("venus_oil_shale", UniformInt.of(0, 1), 2.5F);
+    public static final DeferredBlock<Block> VENUS_CRYOLITE_ORE = block("venus_cryolite_ore",
+            p -> new DropExperienceBlock(UniformInt.of(1, 3), p),
+            p -> p.mapColor(MapColor.ICE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                    .strength(3.0F, 3.0F).sound(SoundType.AMETHYST).lightLevel(s -> 3));
 
     // ---------------- Giant jungle tree ----------------
     public static final DeferredBlock<RotatedPillarBlock> VENUS_LOG = block("venus_log", RotatedPillarBlock::new,
@@ -152,6 +180,9 @@ public final class ModVenus {
     public static final DeferredHolder<Feature<?>, HotSpringFeature> HOT_SPRING =
             FEATURES.register("hot_spring", () -> new HotSpringFeature(NoneFeatureConfiguration.CODEC));
 
+    /** Pale-blue cryogenic coolant crystal: the Air Liquefier's coolant on a planet without ice. */
+    public static final DeferredItem<Item> CRYOLITE_CRYSTAL = item("cryolite_crystal");
+
     private ModVenus() {}
 
     /** Called from the mod constructor before the deferred registers are attached. */
@@ -168,6 +199,19 @@ public final class ModVenus {
     private static BlockBehaviour.Properties grassy(BlockBehaviour.Properties p) {
         return p.mapColor(MapColor.PLANT).replaceable().noCollision().instabreak().sound(SoundType.GRASS)
                 .offsetType(BlockBehaviour.OffsetType.XZ).ignitedByLava().pushReaction(PushReaction.DESTROY);
+    }
+
+    private static DeferredBlock<Block> ore(String name, IntProvider xp, float hardness) {
+        return block(name, p -> new DropExperienceBlock(xp, p),
+                p -> p.mapColor(MapColor.TERRACOTTA_PURPLE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                        .strength(hardness, 3.0F));
+    }
+
+    private static DeferredItem<Item> item(String name) {
+        DeferredItem<Item> item = ModItems.ITEMS.register(name,
+                id -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
+        ITEMS.add(item);
+        return item;
     }
 
     private static <B extends Block> DeferredBlock<B> block(String name, Function<BlockBehaviour.Properties, B> factory,

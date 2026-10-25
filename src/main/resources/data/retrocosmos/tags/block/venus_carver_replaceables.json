@@ -7,6 +7,17 @@
     "retrocosmos:venus_moss",
     "retrocosmos:venus_mud",
     "retrocosmos:venus_tar",
-    "minecraft:water"
+    "minecraft:water",
+    "retrocosmos:venus_coal_ore",
+    "retrocosmos:venus_iron_ore",
+    "retrocosmos:venus_copper_ore",
+    "retrocosmos:venus_gold_ore",
+    "retrocosmos:venus_redstone_ore",
+    "retrocosmos:venus_diamond_ore",
+    "retrocosmos:venus_bauxite_ore",
+    "retrocosmos:venus_titanium_ore",
+    "retrocosmos:venus_oil_shale",
+    "retrocosmos:venus_cryolite_ore",
+    "retrocosmos:venus_sand"
   ]
 }

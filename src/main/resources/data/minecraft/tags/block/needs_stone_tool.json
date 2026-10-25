@@ -9,6 +9,11 @@
     "retrocosmos:fuel_refinery",
     "retrocosmos:air_liquefier",
     "retrocosmos:mission_control_console",
+    "retrocosmos:venus_iron_ore",
+    "retrocosmos:venus_copper_ore",
+    "retrocosmos:venus_bauxite_ore",
+    "retrocosmos:venus_oil_shale",
+    "retrocosmos:venus_cryolite_ore",
     "retrocosmos:oinstein_riveted_steel",
     "retrocosmos:oinstein_hazard_steel"
   ]

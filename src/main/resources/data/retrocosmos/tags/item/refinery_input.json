@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "retrocosmos:oil_shale"
+    "retrocosmos:oil_shale",
+    "retrocosmos:venus_oil_shale",
+    "retrocosmos:venus_tar"
   ]
 }

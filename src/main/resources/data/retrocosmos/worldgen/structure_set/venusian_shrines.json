@@ -7,12 +7,12 @@
   ],
   "placement": {
     "type": "minecraft:random_spread",
-    "spacing": 20,
-    "separation": 8,
+    "spacing": 40,
+    "separation": 16,
     "salt": 471103224,
     "exclusion_zone": {
       "other_set": "retrocosmos:venusian_ruined_villages",
-      "chunk_count": 3
+      "chunk_count": 5
     }
   }
 }

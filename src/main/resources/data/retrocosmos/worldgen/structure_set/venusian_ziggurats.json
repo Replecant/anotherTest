@@ -7,12 +7,12 @@
   ],
   "placement": {
     "type": "minecraft:random_spread",
-    "spacing": 48,
-    "separation": 16,
+    "spacing": 96,
+    "separation": 40,
     "salt": 471103222,
     "exclusion_zone": {
       "other_set": "retrocosmos:venusian_pyramids",
-      "chunk_count": 6
+      "chunk_count": 10
     }
   }
 }

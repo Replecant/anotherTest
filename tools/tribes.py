@@ -1424,7 +1424,8 @@ def write_camps():
         "terrain_adaptation": "beard_thin",
         "use_expansion_hack": False})
     write_json(os.path.join(DATA, "worldgen", "structure_set", "tribal_camps.json"), {
-        "placement": {"type": "minecraft:random_spread", "salt": 581273921, "separation": 10, "spacing": 28},
+        "placement": {"type": "minecraft:random_spread", "salt": 581273921, "separation": 22, "spacing": 52,
+                      "exclusion_zone": {"other_set": f"{MOD}:venusian_ruined_villages", "chunk_count": 6}},
         "structures": [{"structure": f"{MOD}:tribal_camp", "weight": 1}]})
     write_json(os.path.join(DATA, "tags", "worldgen", "biome", "has_structure", "tribal_camp.json"), {
         "replace": False, "values": [f"{MOD}:venus_jungle", f"{MOD}:venus_cycad_plains", f"{MOD}:venus_fern_swamp"]})

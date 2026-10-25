@@ -16,6 +16,9 @@ import java.io.Reader;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
@@ -24,6 +27,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -126,7 +130,7 @@ public final class VenusLanding {
                 int z = (int) Math.round(Math.sin(angle) * r);
                 var biome = level.getUncachedNoiseBiome(x >> 2, level.getSeaLevel() >> 2, z >> 2);
                 String id = biome.unwrapKey().map(k -> k.identifier().getPath()).orElse("");
-                if (id.contains("sea") || id.contains("ocean")) {
+                if (id.contains("sea") || id.contains("ocean") || structureNear(level, x, z)) {
                     continue;
                 }
                 if (id.contains("plains")) {
@@ -141,6 +145,30 @@ public final class VenusLanding {
             }
         }
         return firstLand != null ? firstLand : BlockPos.ZERO;
+    }
+
+    /** Chunks around a candidate site that must be free of ruins and tribal camps. */
+    private static final int STRUCTURE_FREE_CHUNKS = 5;
+
+    /**
+     * Whether any of the mod's structures (ruins, tribal camps) would generate within a few chunks of a candidate
+     * camp site. Uses the structure placement maths, so nothing has to be generated to answer.
+     */
+    private static boolean structureNear(ServerLevel level, int x, int z) {
+        var registry = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+        var ours = registry.listElements().filter(h -> h.key().identifier().getNamespace().equals(RetroCosmos.MODID))
+                .map(h -> (Holder<Structure>) h).toList();
+        if (ours.isEmpty()) {
+            return false;
+        }
+        var nearest = level.getChunkSource().getGenerator().findNearestMapStructure(level, HolderSet.direct(ours),
+                new BlockPos(x, level.getSeaLevel(), z), STRUCTURE_FREE_CHUNKS, false);
+        if (nearest == null) {
+            return false;
+        }
+        BlockPos found = nearest.getFirst();
+        int dx = (found.getX() >> 4) - (x >> 4), dz = (found.getZ() >> 4) - (z >> 4);
+        return Math.abs(dx) <= STRUCTURE_FREE_CHUNKS && Math.abs(dz) <= STRUCTURE_FREE_CHUNKS;
     }
 
     /** Builds a camp on the surface at the given column and returns the rocket's engine position on its pad. */

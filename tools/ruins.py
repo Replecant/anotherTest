@@ -2329,13 +2329,14 @@ def structure_set(name, structure_, spacing, separation, salt, exclusion=None):
 
 STRUCTURES = {
     # name: (biomes, start height, terrain adaptation, jigsaw depth, spacing, separation, salt, exclusion)
-    "venusian_pyramid": (("venus_jungle", "venus_cycad_plains"), -3, "beard_box", 1, 32, 12, 471103221, None),
-    "venusian_ziggurat": (("venus_cycad_plains", "venus_volcanic_highlands"), -3, "beard_box", 1, 48, 16, 471103222,
-                          ("venusian_pyramids", 6)),
-    "venusian_ruined_village": (("venus_jungle", "venus_cycad_plains"), 0, "beard_thin", 5, 40, 14, 471103223,
-                                ("venusian_pyramids", 5)),
-    "venusian_shrine": (("venus_jungle", "venus_fern_swamp", "venus_glowcap_hollows"), -1, "beard_thin", 1, 20, 8,
-                        471103224, ("venusian_ruined_villages", 3)),
+    # spacing in chunks, roughly doubled after play-testing: ruins should be finds, not a city
+    "venusian_pyramid": (("venus_jungle", "venus_cycad_plains"), -3, "beard_box", 1, 64, 28, 471103221, None),
+    "venusian_ziggurat": (("venus_cycad_plains", "venus_volcanic_highlands"), -3, "beard_box", 1, 96, 40, 471103222,
+                          ("venusian_pyramids", 10)),
+    "venusian_ruined_village": (("venus_jungle", "venus_cycad_plains"), 0, "beard_thin", 5, 72, 32, 471103223,
+                                ("venusian_pyramids", 8)),
+    "venusian_shrine": (("venus_jungle", "venus_fern_swamp", "venus_glowcap_hollows"), -1, "beard_thin", 1, 40, 16,
+                        471103224, ("venusian_ruined_villages", 5)),
 }
 SET_NAMES = {"venusian_pyramid": "venusian_pyramids", "venusian_ziggurat": "venusian_ziggurats",
              "venusian_ruined_village": "venusian_ruined_villages", "venusian_shrine": "venusian_shrines"}

@@ -7,7 +7,6 @@
     "teal": "retrocosmos:block/st_teal",
     "particle": "retrocosmos:block/computer_side"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [

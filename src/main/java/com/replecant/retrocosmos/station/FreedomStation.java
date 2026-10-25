@@ -37,7 +37,7 @@ public final class FreedomStation {
     /** Height of the structure's lowest layer. */
     private static final int BASE_Y = 96;
     /** Bump when the station design changes: older stations are cleared and rebuilt on the next flight there. */
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
     /** Region wiped before a rebuild (covers every station version so far). */
     private static final int CLEAR_RADIUS = 72, CLEAR_MIN_Y = BASE_Y - 16, CLEAR_MAX_Y = BASE_Y + 64;
 

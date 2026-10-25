@@ -1,33 +1,63 @@
 {
   "variants": {
-    "facing=north,lit=false": {
-      "model": "retrocosmos:block/vending_machine"
+    "facing=north,half=lower,lit=false": {
+      "model": "retrocosmos:block/vending_machine_lower"
     },
-    "facing=north,lit=true": {
-      "model": "retrocosmos:block/vending_machine_on"
+    "facing=north,half=lower,lit=true": {
+      "model": "retrocosmos:block/vending_machine_lower_on"
     },
-    "facing=east,lit=false": {
-      "model": "retrocosmos:block/vending_machine",
+    "facing=north,half=upper,lit=false": {
+      "model": "retrocosmos:block/vending_machine_upper"
+    },
+    "facing=north,half=upper,lit=true": {
+      "model": "retrocosmos:block/vending_machine_upper_on"
+    },
+    "facing=east,half=lower,lit=false": {
+      "model": "retrocosmos:block/vending_machine_lower",
       "y": 90
     },
-    "facing=east,lit=true": {
-      "model": "retrocosmos:block/vending_machine_on",
+    "facing=east,half=lower,lit=true": {
+      "model": "retrocosmos:block/vending_machine_lower_on",
       "y": 90
     },
-    "facing=south,lit=false": {
-      "model": "retrocosmos:block/vending_machine",
+    "facing=east,half=upper,lit=false": {
+      "model": "retrocosmos:block/vending_machine_upper",
+      "y": 90
+    },
+    "facing=east,half=upper,lit=true": {
+      "model": "retrocosmos:block/vending_machine_upper_on",
+      "y": 90
+    },
+    "facing=south,half=lower,lit=false": {
+      "model": "retrocosmos:block/vending_machine_lower",
       "y": 180
     },
-    "facing=south,lit=true": {
-      "model": "retrocosmos:block/vending_machine_on",
+    "facing=south,half=lower,lit=true": {
+      "model": "retrocosmos:block/vending_machine_lower_on",
       "y": 180
     },
-    "facing=west,lit=false": {
-      "model": "retrocosmos:block/vending_machine",
+    "facing=south,half=upper,lit=false": {
+      "model": "retrocosmos:block/vending_machine_upper",
+      "y": 180
+    },
+    "facing=south,half=upper,lit=true": {
+      "model": "retrocosmos:block/vending_machine_upper_on",
+      "y": 180
+    },
+    "facing=west,half=lower,lit=false": {
+      "model": "retrocosmos:block/vending_machine_lower",
       "y": 270
     },
-    "facing=west,lit=true": {
-      "model": "retrocosmos:block/vending_machine_on",
+    "facing=west,half=lower,lit=true": {
+      "model": "retrocosmos:block/vending_machine_lower_on",
+      "y": 270
+    },
+    "facing=west,half=upper,lit=false": {
+      "model": "retrocosmos:block/vending_machine_upper",
+      "y": 270
+    },
+    "facing=west,half=upper,lit=true": {
+      "model": "retrocosmos:block/vending_machine_upper_on",
       "y": 270
     }
   }

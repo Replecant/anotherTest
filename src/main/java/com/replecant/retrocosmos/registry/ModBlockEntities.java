@@ -2,6 +2,8 @@ package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.console.ConsoleBlockEntity;
+import com.replecant.retrocosmos.furniture.GalleyStoveBlockEntity;
+import com.replecant.retrocosmos.furniture.StorageBlockEntity;
 import com.replecant.retrocosmos.machine.MachineKind;
 import com.replecant.retrocosmos.machine.ProcessingBlockEntity;
 import java.util.Set;
@@ -21,6 +23,12 @@ public final class ModBlockEntities {
                     Set.of(ModBlocks.AIR_LIQUEFIER.get())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConsoleBlockEntity>> MISSION_CONTROL_CONSOLE = TYPES.register("mission_control_console",
             () -> new BlockEntityType<>(ConsoleBlockEntity::new, Set.of(ModBlocks.MISSION_CONTROL_CONSOLE.get())));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StorageBlockEntity>> STORAGE = TYPES.register("storage",
+            () -> new BlockEntityType<>(StorageBlockEntity::new, Set.of(ModFurniture.CREW_LOCKER.get(), ModFurniture.CARGO_CRATE.get(),
+                    ModFurniture.SUPPLY_CABINET.get())));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GalleyStoveBlockEntity>> GALLEY_STOVE = TYPES.register("galley_stove",
+            () -> new BlockEntityType<>(GalleyStoveBlockEntity::new, Set.of(ModFurniture.GALLEY_STOVE.get())));
 
     private ModBlockEntities() {}
 }

@@ -8,7 +8,6 @@
     "particle": "retrocosmos:block/brass"
   },
   "render_type": "minecraft:cutout",
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [

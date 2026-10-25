@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AAA",
+    "ASA",
+    "AAA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "S": "minecraft:smoker"
+  },
+  "result": {
+    "id": "retrocosmos:galley_stove",
+    "count": 1
+  }
+}

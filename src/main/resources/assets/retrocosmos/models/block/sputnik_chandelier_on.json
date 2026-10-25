@@ -5,7 +5,6 @@
     "bulb_off": "retrocosmos:block/bulb_off",
     "particle": "retrocosmos:block/furn_chrome"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [

@@ -513,8 +513,7 @@
           ],
           "texture": "#lamp"
         }
-      },
-      "shade": false
+      }
     }
   ]
 }

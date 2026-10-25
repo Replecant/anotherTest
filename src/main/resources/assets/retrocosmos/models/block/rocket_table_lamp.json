@@ -7,7 +7,6 @@
     "ribbed": "retrocosmos:block/chrome_trim",
     "particle": "retrocosmos:block/furn_chrome"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [

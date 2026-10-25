@@ -8,6 +8,7 @@ import com.replecant.retrocosmos.block.LaunchPadBlock;
 import com.replecant.retrocosmos.launch.LaunchSite;
 import com.replecant.retrocosmos.registry.ModBlocks;
 import java.io.Reader;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
@@ -70,7 +71,25 @@ public final class StationSmokeTest {
             }
         }
         boolean arrivalOk = layout.isPressurized(layout.arrival().getX() + 0.5, layout.arrival().getY() + 1.5, layout.arrival().getZ() + 0.5);
-        var problems = FreedomStation.audit(level, layout);
+        var problems = new java.util.ArrayList<>(FreedomStation.audit(level, layout));
+        // the supply room must actually hold propellant for the trip home (checks the storage block entity data)
+        int fuel = 0, lox = 0;
+        for (BlockPos p : BlockPos.betweenClosed(layout.origin(), layout.origin().offset(layout.size()).offset(-1, -1, -1))) {
+            if (level.getBlockEntity(p) instanceof net.minecraft.world.Container container) {
+                for (int i = 0; i < container.getContainerSize(); i++) {
+                    var stack = container.getItem(i);
+                    if (stack.is(com.replecant.retrocosmos.registry.ModItems.ROCKET_FUEL_CANISTER.get())) {
+                        fuel += stack.getCount();
+                    } else if (stack.is(com.replecant.retrocosmos.registry.ModItems.LIQUID_OXYGEN_CANISTER.get())) {
+                        lox += stack.getCount();
+                    }
+                }
+            }
+        }
+        RetroCosmos.LOGGER.info("Retro Cosmos smoke: station supplies RP-1={} LOX={}", fuel, lox);
+        if (fuel < 16 || lox < 16) {
+            problems.add("not enough propellant stored: RP-1 " + fuel + ", LOX " + lox);
+        }
         problems.stream().limit(200).forEach(problem -> RetroCosmos.LOGGER.warn("STATION AUDIT {}", problem));
         boolean ok = pad >= LaunchSite.PAD_SIZE && tower >= 6 && blocked == 0 && arrivalOk && problems.isEmpty();
         RetroCosmos.LOGGER.info("STATION SMOKE {}: origin={} pad={}/9 tower={} blockedAbovePad={} arrivalPressurized={} compartments={} auditProblems={}",

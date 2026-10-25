@@ -42,6 +42,15 @@
     "retrocosmos:floor_grate",
     "retrocosmos:hull_panel",
     "retrocosmos:hull_panel_striped",
-    "retrocosmos:hull_window"
+    "retrocosmos:hull_window",
+    "retrocosmos:crew_locker",
+    "retrocosmos:cargo_crate",
+    "retrocosmos:supply_cabinet",
+    "retrocosmos:retro_workbench",
+    "retrocosmos:galley_stove",
+    "retrocosmos:lab_sink",
+    "retrocosmos:tape_archive",
+    "retrocosmos:station_door",
+    "retrocosmos:airlock_door"
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/supply_cabinet"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/supply_cabinet",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/supply_cabinet",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/supply_cabinet",
+      "y": 270
+    }
+  }
+}

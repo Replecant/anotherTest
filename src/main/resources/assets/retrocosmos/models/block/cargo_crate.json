@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "retrocosmos:block/cargo_crate_top",
+    "side": "retrocosmos:block/cargo_crate_side"
+  }
+}

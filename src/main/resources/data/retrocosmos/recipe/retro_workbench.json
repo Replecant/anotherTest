@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "TTT",
+    "ACA",
+    "A A"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "A": "retrocosmos:aluminum_plate",
+    "C": "minecraft:crafting_table"
+  },
+  "result": {
+    "id": "retrocosmos:retro_workbench",
+    "count": 1
+  }
+}

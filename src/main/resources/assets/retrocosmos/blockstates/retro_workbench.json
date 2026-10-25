@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/retro_workbench"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/retro_workbench",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/retro_workbench",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/retro_workbench",
+      "y": 270
+    }
+  }
+}

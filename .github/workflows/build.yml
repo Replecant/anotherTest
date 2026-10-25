@@ -52,6 +52,12 @@ jobs:
           grep "STATION SMOKE" server.log || true
           grep -q "STATION SMOKE OK" server.log || { echo "::error::Freedom Station smoke test failed"; exit 1; }
 
+      - name: API probe (probe branch only)
+        if: always() && github.ref == 'refs/heads/probe'
+        run: |
+          mkdir -p /tmp/logs
+          bash tools/ci/api_probe.sh /tmp/logs/api.txt || true
+
       - name: Publish build log (for debugging)
         if: always()
         run: |

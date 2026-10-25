@@ -14,6 +14,7 @@ import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModFurniture;
 import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.registry.ModMenus;
+import com.replecant.retrocosmos.station.StationProtection;
 import com.replecant.retrocosmos.station.StationSmokeTest;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -45,6 +46,8 @@ public class RetroCosmos {
         NeoForge.EVENT_BUS.addListener(OxygenSystem::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(FlightEvents::onMount);
         NeoForge.EVENT_BUS.addListener(StationSmokeTest::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(StationProtection::onBreak);
+        NeoForge.EVENT_BUS.addListener(StationProtection::onBreakSpeed);
         NeoForge.EVENT_BUS.addListener(RetroCosmosCommands::register);
         LOGGER.info("Retro Cosmos: countdown initiated. Stage 1 - preparation.");
     }

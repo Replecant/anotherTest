@@ -1833,7 +1833,7 @@ def stage1b_data():
 
     # suffocation damage type (armour does not help; shows its own death message)
     write_json(os.path.join(DATA, "damage_type", "suffocation.json"),
-               {"message_id": "retrocosmos.suffocation", "exhaustion": 0.0, "scaling": "never", "effects": "drowning"})
+               {"message_id": "retrocosmos.suffocation", "exhaustion": 0.0, "scaling": "never"})
     tag("damage_type/bypasses_armor", [f"{MOD}:suffocation"])
 
 

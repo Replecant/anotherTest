@@ -9,7 +9,6 @@
     "particle": "retrocosmos:block/hydro_top"
   },
   "render_type": "minecraft:cutout",
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [
@@ -363,7 +362,21 @@
             9
           ],
           "texture": "#ctop"
-        },
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        13,
+        7
+      ],
+      "to": [
+        15.5,
+        13,
+        9
+      ],
+      "faces": {
         "down": {
           "uv": [
             0.5,

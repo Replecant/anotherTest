@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "A A",
+    "AWA",
+    " A "
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "W": "minecraft:water_bucket"
+  },
+  "result": {
+    "id": "retrocosmos:lab_sink",
+    "count": 1
+  }
+}

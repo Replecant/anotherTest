@@ -11,9 +11,23 @@ import os
 
 from PIL import Image, ImageDraw
 
-from gen_resources import (ASSETS, MOD, BLACK, CHROME, CHROME_D, CHROME_L, CREAM, CREAM_D, GLASS, GLASS_L, NAVY,
-                           ORANGE, ORANGE_L, RED, RED_D, RED_L, STEEL, STEEL_D, TEAL, TEAL_D, TEAL_L, WHITE, WHITE_D,
-                           WHITE_DD, YELLOW, item_def, new, noise_fill, outline, px, rgba, save, shade, write_json)
+from gen_resources import (ASSETS, MOD, BLACK, GLASS, GLASS_L, NAVY, ORANGE, ORANGE_L, RED, RED_D, RED_L, STEEL,
+                           STEEL_D, TEAL, TEAL_D, TEAL_L, YELLOW, item_def, new, noise_fill, outline, px, rgba, save,
+                           shade, write_json)
+
+# Furniture palette: the shared cream / white / chrome tones are toned down here so large enamel and
+# chrome areas sit at vanilla quartz / white-concrete brightness (<= ~226) instead of glowing next to
+# vanilla blocks. Only small specular glints and emissive (lit) textures go brighter.
+CREAM = (226, 216, 190)
+CREAM_D = (192, 180, 150)
+CREAM_L = (234, 226, 204)
+WHITE = (224, 224, 220)
+WHITE_D = (196, 196, 192)
+WHITE_DD = (166, 168, 166)
+WHITE_L = (230, 230, 226)
+CHROME = (194, 202, 210)
+CHROME_D = (128, 138, 150)
+CHROME_L = (226, 232, 238)
 
 # extra palette for furniture
 WALNUT = (122, 76, 46)
@@ -163,7 +177,7 @@ def cream_bakelite():
     img = new()
     noise_fill(img, CREAM, 2, 44)
     for x in range(16):
-        px(img, [(x, 0)], (250, 244, 224))
+        px(img, [(x, 0)], CREAM_L)
         px(img, [(x, 15)], CREAM_D)
     return img
 
@@ -184,7 +198,7 @@ def bulb(on):
         noise_fill(img, BULB_OFF, 3, 46)
         d = ImageDraw.Draw(img)
         d.ellipse((3, 3, 12, 12), fill=rgba((222, 224, 220)))
-        px(img, [(4, 4), (5, 4)], (240, 240, 238))
+        px(img, [(4, 4), (5, 4)], (236, 236, 234))
     return img
 
 
@@ -430,9 +444,9 @@ def checkered_tile():
     for y in range(16):
         for x in range(16):
             white = ((x // 4) + (y // 4)) % 2 == 0
-            c = (236, 236, 230) if white else (34, 32, 36)
+            c = (222, 222, 216) if white else (34, 32, 36)
             if x % 4 == 3 or y % 4 == 3:
-                c = (210, 210, 204) if white else (22, 20, 24)
+                c = (198, 198, 192) if white else (22, 20, 24)
             px(img, [(x, y)], c)
     return img
 
@@ -459,7 +473,7 @@ def cream_panel_side():
     img = new()
     noise_fill(img, CREAM, 3, 111)
     for x in range(16):
-        px(img, [(x, 0)], (250, 244, 224))
+        px(img, [(x, 0)], CREAM_L)
         px(img, [(x, 15)], CREAM_D)
         px(img, [(x, 10)], CHROME_L)
         px(img, [(x, 11)], CHROME)
@@ -471,7 +485,7 @@ def cream_panel_end():
     img = new()
     noise_fill(img, CREAM, 3, 112)
     for i in range(16):
-        px(img, [(i, 0), (0, i)], (250, 244, 224))
+        px(img, [(i, 0), (0, i)], CREAM_L)
         px(img, [(i, 15), (15, i)], CREAM_D)
     return img
 
@@ -555,7 +569,7 @@ def shell_white_top():
     img = new()
     for y in range(16):
         for x in range(16):
-            px(img, [(x, y)], (250, 250, 248))
+            px(img, [(x, y)], WHITE_L)
     return img
 
 
@@ -643,8 +657,10 @@ class Model:
         self.render_type = render_type
         self.display = display
 
-    def box(self, frm, to, tex, faces=ALL_FACES, face_tex=None, uv=None, face_uv=None, rot=None, shade=None, name=None):
-        """Adds a cuboid. tex / face_tex are texture keys (without '#'). rot = (axis, angle, origin)."""
+    def box(self, frm, to, tex, faces=ALL_FACES, face_tex=None, uv=None, face_uv=None, rot=None, shade=None, name=None,
+            cull=False):
+        """Adds a cuboid. tex / face_tex are texture keys (without '#'). rot = (axis, angle, origin).
+        cull=True adds a cullface to every face lying on the block boundary (full-block pieces)."""
         face_tex = face_tex or {}
         face_uv = face_uv or {}
         out = {}
@@ -656,6 +672,9 @@ class Model:
                 continue
             u = face_uv.get(f, uv) or default_uv(f, frm, to)
             out[f] = {"uv": [num(v) for v in u], "texture": "#" + face_tex.get(f, tex)}
+            if cull and not rot and {"north": frm[2] == 0, "south": to[2] == 16, "west": frm[0] == 0,
+                                     "east": to[0] == 16, "down": frm[1] == 0, "up": to[1] == 16}[f]:
+                out[f]["cullface"] = f
         e = {"from": [num(v) for v in frm], "to": [num(v) for v in to], "faces": out}
         if name:
             e["name"] = name
@@ -666,6 +685,11 @@ class Model:
             e["shade"] = False
         self.elements.append(e)
         return e
+
+    def glow(self, frm, to, tex, face="north", uv=None, lit=True):
+        """A single-face plane for an emissive detail (screen, oven window, dial glass). Only this face
+        carries shade:false (and only when lit), so the surrounding casing keeps normal shading."""
+        return self.box(frm, to, tex, faces=(face,), face_uv={face: uv} if uv else None, shade=False if lit else None)
 
     def octagon(self, frm, to, tex, axis="y", **kw):
         """A box plus a slightly smaller copy rotated 45 degrees: reads as a round disc / cylinder."""
@@ -765,7 +789,7 @@ def sputnik_rods(m, center, rods, bulb_size, bulb_tex, rod_tex="chrome", rod_w=0
 def atomic_floor_lamp(lit):
     b = "bulb_on" if lit else "bulb_off"
     m = Model({"chrome": "furn_chrome", "ribbed": "chrome_trim", "bulb_on": "bulb_on", "bulb_off": "bulb_off",
-               "red": "lamp_cone_red"}, "furn_chrome", ao=False)
+               "red": "lamp_cone_red"}, "furn_chrome")
     m.octagon((5, 0, 5), (11, 0.75, 11), "chrome")
     m.box((7.5, 0.75, 7.5), (8.5, 12, 8.5), "ribbed")
     c = (8, 13, 8)
@@ -785,7 +809,7 @@ def atomic_floor_lamp(lit):
 def rocket_table_lamp(lit):
     body = "lava_on" if lit else "lava_off"
     m = Model({"chrome": "furn_chrome", "lava_on": "lava_lamp_on", "lava_off": "lava_lamp_off", "red": "lamp_cone_red",
-               "ribbed": "chrome_trim"}, "furn_chrome", ao=False)
+               "ribbed": "chrome_trim"}, "furn_chrome")
     m.octagon((5, 0, 5), (11, 0.75, 11), "chrome")
     m.box((6.5, 0.75, 6.5), (9.5, 2, 9.5), "ribbed")
     # glass body: 2 texels per block unit of the lava texture (uv 4..12 horizontally, full height)
@@ -805,7 +829,7 @@ def rocket_table_lamp(lit):
 
 def sputnik_chandelier(lit):
     b = "bulb_on" if lit else "bulb_off"
-    m = Model({"chrome": "furn_chrome", "bulb_on": "bulb_on", "bulb_off": "bulb_off"}, "furn_chrome", ao=False)
+    m = Model({"chrome": "furn_chrome", "bulb_on": "bulb_on", "bulb_off": "bulb_off"}, "furn_chrome")
     m.box((7.5, 13, 7.5), (8.5, 16, 8.5), "chrome")
     m.octagon((6, 9, 6), (10, 13, 10), "chrome")
     c = (8, 11, 8)
@@ -904,13 +928,13 @@ def boomerang_table():
 def atomic_tv(lit):
     screen = "screen_on" if lit else "screen_off"
     m = Model({"walnut": "walnut", "front": "tv_front", "screen_on": "tv_screen_on", "screen_off": "tv_screen_off",
-               "teal": "teal_plastic", "chrome": "furn_chrome", "black": "neon_back"}, "walnut", ao=False)
+               "teal": "teal_plastic", "chrome": "furn_chrome", "black": "neon_back"}, "walnut")
     for (x, z, ang) in ((2, 4, -22.5), (13, 4, 22.5), (2, 11, -22.5), (13, 11, 22.5)):
         m.box((x, 0, z), (x + 1, 3, z + 1), "chrome", rot=("z", ang, (x + 0.5, 3, z + 0.5)))
     m.box((1, 3, 3), (15, 14, 13), "walnut", face_tex={"north": "front"})
     # CRT box protruding from the cabinet with a teal bezel
-    m.box((2, 4, 2), (12, 13, 3), "teal", face_tex={"north": screen}, face_uv={"north": [0, 0, 16, 16]},
-          shade=False if lit else None)
+    m.box((2, 4, 2), (12, 13, 3), "teal", faces=("east", "west", "up", "down"))
+    m.glow((2, 4, 2), (12, 13, 2), screen, uv=[0, 0, 16, 16], lit=lit)
     # rabbit-ear antenna
     m.box((7.5, 14, 7.5), (8.5, 14.75, 8.5), "black")
     m.box((7.75, 14.5, 7.75), (8.25, 17.5, 8.25), "chrome", rot=("z", 22.5, (8, 14.5, 8)))
@@ -921,9 +945,10 @@ def atomic_tv(lit):
 def tube_radio(lit):
     front = "front_on" if lit else "front"
     m = Model({"side": "radio_side", "front": "radio_front", "front_on": "radio_front_on", "cream": "cream_bakelite",
-               "red": "lamp_cone_red", "chrome": "furn_chrome"}, "cream_bakelite", ao=False)
-    m.box((2, 0, 5), (14, 7, 11), "side", face_tex={"north": front, "up": "cream", "down": "cream"},
-          shade=False if lit else None)
+               "red": "lamp_cone_red", "chrome": "furn_chrome"}, "cream_bakelite")
+    m.box((2, 0, 5), (14, 7, 11), "side", face_tex={"north": front, "up": "cream", "down": "cream"})
+    if lit:   # glowing dial window (texels 9..13 x 9..11 of the front = x 2..7, y 4..7)
+        m.glow((2, 4, 4.8), (7, 7, 4.8), front, uv=[9, 9, 14, 12])
     m.box((3, 7, 5), (13, 9, 11), "side", face_tex={"north": front, "up": "cream"})
     m.box((4, 9, 5.5), (12, 9.5, 10.5), "cream")
     # two red knobs under the dial and a chrome carrying handle
@@ -935,7 +960,7 @@ def tube_radio(lit):
 
 def starburst_clock():
     m = Model({"brass": "brass", "chrome": "furn_chrome", "face": "clock_face", "rim": "clock_rim",
-               "seconds": "clock_seconds"}, "brass", ao=False, render_type="minecraft:cutout")
+               "seconds": "clock_seconds"}, "brass", render_type="minecraft:cutout")
     c = (8, 8, 15.25)
     m.octagon((6.5, 6.5, 15.25), (9.5, 9.5, 16), "chrome", axis="z")
     # 16 rays: 8 long (axis + diagonals) with chrome tips, 8 short in between
@@ -959,7 +984,7 @@ def starburst_clock():
 def neon_rocket_sign(lit):
     tubes = "tubes_on" if lit else "tubes_off"
     m = Model({"back": "neon_back", "tubes_on": "neon_tubes_on", "tubes_off": "neon_tubes_off", "chrome": "furn_chrome"},
-              "neon_back", ao=False, render_type="minecraft:cutout")
+              "neon_back", render_type="minecraft:cutout")
     m.box((2, 1, 15.25), (14, 15, 16), "back", face_uv={"north": [2, 1, 14, 15]})
     for (x, y) in ((3, 2), (12, 2), (3, 13), (12, 13)):
         m.box((x, y, 14.6), (x + 1, y + 1, 15.25), "chrome")

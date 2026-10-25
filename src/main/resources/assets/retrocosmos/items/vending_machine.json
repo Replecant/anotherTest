@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "retrocosmos:block/vending_machine_on"
+    "model": "retrocosmos:item/vending_machine"
   }
 }

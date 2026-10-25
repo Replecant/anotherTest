@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/lab_sink"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/lab_sink",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/lab_sink",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/lab_sink",
+      "y": 270
+    }
+  }
+}

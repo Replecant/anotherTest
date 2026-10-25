@@ -298,12 +298,25 @@ STRIPED = rc("hull_panel_striped")
 WINDOW = rc("hull_window")
 PORTHOLE = rc("porthole_window")
 REACTOR = rc("reactor_core")
+# v4 station furniture (ids and properties fixed by the design brief)
+SUPPLY_CABINET = rc("supply_cabinet")     # facing; storage
+CARGO_CRATE = rc("cargo_crate")           # no properties; storage
+CREW_LOCKER = rc("crew_locker")           # facing, half; two blocks tall; storage on the lower half
+WORKBENCH = rc("retro_workbench")         # facing
+STOVE = rc("galley_stove")                # facing, lit
+SINK = rc("lab_sink")                     # facing
+TAPE = rc("tape_archive")                 # facing
+STATION_DOOR = rc("station_door")         # vanilla door properties, opens by hand
+AIRLOCK_DOOR = rc("airlock_door")         # vanilla door properties, opens by hand
+P_LIFTOFF, P_VESPER, P_SPACE_POP, P_SUIT_CHECK, P_HOMESTEAD, P_FREEDOM = (
+    rc("poster_" + n) for n in ("liftoff", "vesper", "space_pop", "suit_check", "homestead", "freedom"))
+POSTERS = (P_LIFTOFF, P_VESPER, P_SPACE_POP, P_SUIT_CHECK, P_HOMESTEAD, P_FREEDOM)
 
 # Full opaque building cubes: what walls, floors and ceilings are made of (supports wall decor and lights).
 WALL_BLOCKS = {WHITE, LGRAY, GRAY, RED, YELLOW, BLACK, CYAN_TERRA, QUARTZ, SQUARTZ, BIRCH, SPRUCE, DARK_OAK, IRON_BLOCK,
                SEA_LANTERN, ALU, TI, CREAM, TURQ, CHROME, CHECKER, HULL, STRIPED, TOWER, LAUNCH_PAD, BOOKSHELF}
 # Other full cubes (sturdy faces): workstations, containers, glass.
-FULL_CUBES = WALL_BLOCKS | {BARREL, CRAFTING, SMITHING, CARTOGRAPHY, FLETCHING, JUKEBOX, SMOKER, FURNACE,
+FULL_CUBES = WALL_BLOCKS | {CARGO_CRATE, TAPE, WORKBENCH, BARREL, CRAFTING, SMITHING, CARTOGRAPHY, FLETCHING, JUKEBOX, SMOKER, FURNACE,
                             BLAST_FURNACE, GLASS, TINTED_GLASS, LBLUE_GLASS, GRATE, WINDOW, PORTHOLE,
                             REFINERY, LIQUEFIER}
 WINDOWS = {WINDOW, PORTHOLE, GLASS, LBLUE_GLASS}
@@ -313,12 +326,15 @@ DESK_SLABS = {SQUARTZ_SLAB, SPRUCE_SLAB, DARK_OAK_SLAB, QUARTZ_SLAB}
 # Items that belong on a desk/counter, never on the bare floor.
 ON_DESK = {RADAR_SCOPE, RADIO, LAMP, GLOBE, BREWING, POTTED_FERN, LANTERN}
 # Wall-mounted decor: facing points away from the wall, which must be a wall block.
-WALL_DECOR = {CONTROL_PANEL, STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN}
+WALL_DECOR = {CONTROL_PANEL, STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN} | set(POSTERS)
 # Hung from the ceiling: a wall block must be directly above.
 CEILING_HUNG = {CEILING_LIGHT, CHANDELIER}
 SEATS_FACING = {CAPTAIN_CHAIR, EGG_CHAIR, SOFA}
-CONTAINERS = {CHEST, BARREL}
-NO_COLLISION_DECOR = {STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN, CEILING_LIGHT}
+CONTAINERS = {CHEST, BARREL, SUPPLY_CABINET, CARGO_CRATE, CREW_LOCKER}
+STORAGE_BLOCKS = {SUPPLY_CABINET, CARGO_CRATE, CREW_LOCKER}
+NO_COLLISION_DECOR = {STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN, CEILING_LIGHT} | set(POSTERS)
+TALL = {CREW_LOCKER, VENDING} | set(POSTERS)
+DOORS = {IRON_DOOR, BIRCH_DOOR, STATION_DOOR, AIRLOCK_DOOR}
 BEDS = {bed_id(c) for c in COLORS} | {CREW_BUNK}
 
 HORIZ = ("north", "east", "south", "west")
@@ -365,6 +381,17 @@ _V.update({
     IRON_TRAPDOOR: {"facing": HORIZ, "half": ("top", "bottom"), "open": BOOL, "powered": BOOL, "waterlogged": BOOL},
 })
 VANILLA_PROPS = _V
+# Schemas of mod blocks whose blockstate files may not be drawn yet (used when the file is missing/outdated).
+_DOOR = {"facing": HORIZ, "half": ("lower", "upper"), "hinge": ("left", "right"), "open": BOOL, "powered": BOOL}
+_HALF = ("lower", "upper")
+MOD_SCHEMAS = {
+    SUPPLY_CABINET: {"facing": HORIZ}, CARGO_CRATE: {}, CREW_LOCKER: {"facing": HORIZ, "half": _HALF},
+    WORKBENCH: {"facing": HORIZ}, STOVE: {"facing": HORIZ, "lit": BOOL}, SINK: {"facing": HORIZ},
+    TAPE: {"facing": HORIZ}, STATION_DOOR: _DOOR, AIRLOCK_DOOR: _DOOR,
+    VENDING: {"facing": HORIZ, "lit": BOOL, "half": _HALF},
+}
+for _p in POSTERS:
+    MOD_SCHEMAS[_p] = {"facing": HORIZ, "half": _HALF}
 
 # ----------------------------------------------------------------------------
 # Geometry
@@ -522,16 +549,43 @@ class Room(Region):
         ok &= self.put(hu, hv, 0, bed_id(color), {"facing": f, "part": "head", "occupied": "false"})
         return ok
 
-    def barrel(self, u, v, h, facing="front"):
-        return self.put(u, v, h, BARREL, {"facing": self.wdir(facing), "open": "false"})
+    def tall(self, u, v, h, name, facing, lit=None, nbt=None):
+        """Two-block-tall furniture: lower half at h, upper half at h + 1 (same facing / lit)."""
+        props = {"facing": self.wdir(facing)}
+        if lit is not None:
+            props["lit"] = "true" if lit else "false"
+        if not (self.free(u, v, h) and self.free(u, v, h + 1)):
+            self.st.error(f"{self.key}: no room for two-tall {name} at local {(u, v, h)}")
+            return False
+        self.put(u, v, h, name, dict(props, half="lower"), nbt)
+        self.put(u, v, h + 1, name, dict(props, half="upper"))
+        return True
 
-    def locker(self, u, v, facing="front", height=2):
-        for h in range(height):
-            self.barrel(u, v, h, facing)
+    def locker(self, u, v, facing="front", items=()):
+        """Crew locker (two blocks tall), one per crew member."""
+        return self.tall(u, v, 0, CREW_LOCKER, facing, nbt=storage_nbt(items))
+
+    def vending(self, u, v, facing, lit):
+        return self.tall(u, v, 0, VENDING, facing, lit=lit)
+
+    def poster(self, u, v, h, name, wall):
+        """Two-block-tall wall poster; both halves need the wall behind them."""
+        du, dv = LOCAL_OFF[wall]
+        for hh in (h, h + 1):
+            if self.st.get(self.at(u + du, v + dv, hh)) not in WALL_BLOCKS:
+                self.st.error(f"{self.key}: poster {name} at local {(u, v, hh)} has no wall {wall}")
+                return False
+        return self.tall(u, v, h, name, LOCAL_OPP[wall])
 
     def chest(self, u, v, h, facing, items=()):
-        return self.put(u, v, h, CHEST, {"facing": self.wdir(facing), "type": "single", "waterlogged": "false"},
-                        chest_nbt(items))
+        """Supply cabinet along a wall."""
+        return self.put(u, v, h, SUPPLY_CABINET, {"facing": self.wdir(facing)}, storage_nbt(items))
+
+    def cabinet(self, u, v, h, facing, items=()):
+        return self.chest(u, v, h, facing, items)
+
+    def crate(self, u, v, h, items=()):
+        return self.put(u, v, h, CARGO_CRATE, None, storage_nbt(items))
 
     def light(self, u, v, name=CEILING_LIGHT):
         h = self.height - 1
@@ -569,10 +623,15 @@ class Room(Region):
         return self.st.wall_sign(self.at(u, v, h), self.wdir(LOCAL_OPP[wall]), lines, self.at(u + du, v + dv, h))
 
 
-def chest_nbt(items):
+def storage_nbt(items):
+    """Block entity of the station storage blocks (27 slots)."""
+    assert len(items) <= 27
     stacks = List([Compound({"Slot": Byte(i), "id": Str(item), "count": Int(n)}) for i, (item, n) in enumerate(items)],
                   TAG_COMPOUND)
-    return Compound({"id": Str("minecraft:chest"), "Items": stacks})
+    return Compound({"id": Str("retrocosmos:storage"), "Items": stacks})
+
+
+chest_nbt = storage_nbt
 
 
 def sign_nbt(lines):
@@ -677,19 +736,19 @@ class Station:
         self.put(c, STANDING_SIGN, {"rotation": str(rot), "waterlogged": "false"}, sign_nbt(lines))
         self.signs.append((c, [s for s in lines if s]))
 
-    def iron_door(self, c, facing, hinge="left"):
+    def door(self, c, facing, hinge="left", name=STATION_DOOR):
+        """Hand-opened station door (lower + upper half) on a solid floor."""
         if self.get(self.below(c)) not in FULL_CUBES:
             self.error(f"door at {c} has no floor")
         base = {"facing": facing, "hinge": hinge, "open": "false", "powered": "false"}
-        self.put(c, IRON_DOOR, dict(base, half="lower"))
-        self.put(self.above(c), IRON_DOOR, dict(base, half="upper"))
+        self.put(c, name, dict(base, half="lower"))
+        self.put(self.above(c), name, dict(base, half="upper"))
 
     def wood_door(self, c, facing, hinge="left"):
-        if self.get(self.below(c)) not in FULL_CUBES:
-            self.error(f"door at {c} has no floor")
-        base = {"facing": facing, "hinge": hinge, "open": "false", "powered": "false"}
-        self.put(c, BIRCH_DOOR, dict(base, half="lower"))
-        self.put(self.above(c), BIRCH_DOOR, dict(base, half="upper"))
+        self.door(c, facing, hinge, STATION_DOOR)
+
+    def airlock_door(self, c, facing, hinge="left"):
+        self.door(c, facing, hinge, AIRLOCK_DOOR)
 
     def button(self, c, facing):
         dx, dz = DIRS[facing]
@@ -991,25 +1050,26 @@ for _i, (_z0, _z1) in enumerate(CABIN_Z):
     BAND_ROOMS.append((f"cabin_{_i + 1}", "cabin", "living", f"Crew cabin {_i + 1}",
                        ["DECK D", f"CREW CABIN {_i + 1}", "2 BERTHS", ""], (-36, _z0, -29, _z1), "west", [(2, 1, "birch")]))
 
-# What each kind of room must contain (checked).
+# What each kind of room must contain (checked).  "locker", "poster" and "vending" count whole two-tall pieces.
 REQUIRED = {
     "bridge": {CONSOLE: 1, CAPTAIN_CHAIR: 1, CONTROL_PANEL: 4, RADAR_SCOPE: 2, COMPUTER: 6, STAR_CHART: 1, WINDOW: 10},
-    "cabin": {"bed": 2, BARREL: 2, LAMP: 1, STOOL: 1, PORTHOLE: 1, "wall_clock_or_chart": 1, "carpet": 1},
-    "commander": {"bed": 1, GLOBE: 1, CAPTAIN_CHAIR: 1, BARREL: 1, PORTHOLE: 1, BOOKSHELF: 2},
-    "mess": {"seats": 12, SMOKER: 1, FURNACE: 1, CAULDRON: 1, VENDING: 2, CHEST: 1, RADIO: 1, TV: 1, EGG_CHAIR: 2},
-    "washroom": {CAULDRON: 2, BIRCH_DOOR: 2, TINTED_GLASS: 1},
-    "medical": {"bed": 2, BREWING: 1, CONTROL_PANEL: 1, CHEST: 1, BARREL: 2},
-    "laboratory": {REFINERY: 1, LIQUEFIER: 1, CHROME: 4, BREWING: 1, CAULDRON: 1, COMPUTER: 4, O2_RACK: 1},
+    "cabin": {"bed": 2, "locker": 2, LAMP: 1, STOOL: 1, PORTHOLE: 1, "wall_clock_or_chart": 1, "carpet": 1, "poster": 1},
+    "commander": {"bed": 1, GLOBE: 1, CAPTAIN_CHAIR: 1, "locker": 1, PORTHOLE: 1, TAPE: 2},
+    "mess": {"seats": 12, STOVE: 2, SINK: 1, "vending": 2, SUPPLY_CABINET: 1, RADIO: 1, TV: 1, EGG_CHAIR: 2,
+             "poster": 2},
+    "washroom": {SINK: 2, STATION_DOOR: 2, TINTED_GLASS: 1, "locker": 2},
+    "medical": {"bed": 2, BREWING: 1, CONTROL_PANEL: 1, SUPPLY_CABINET: 2, SINK: 1},
+    "laboratory": {REFINERY: 1, LIQUEFIER: 1, CHROME: 4, BREWING: 1, SINK: 1, COMPUTER: 4, O2_RACK: 1},
     "hydroponics": {PLANTER: 20, CEILING_LIGHT: 6, COMPOSTER: 1},
-    "reactor": {REACTOR: 2, CHROME: 8, CONTROL_PANEL: 2, STRIPED: 1},
+    "reactor": {REACTOR: 2, CHROME: 8, CONTROL_PANEL: 2, STRIPED: 1, "locker": 3},
     "observation": {TELESCOPE: 1, GLOBE: 1, EGG_CHAIR: 3, WINDOW: 10},
-    "storage": {CHEST: 4, BARREL: 4},
-    "workshop": {CRAFTING: 1, SMITHING: 1, STONECUTTER: 1, BLAST_FURNACE: 1, CHEST: 1},
-    "radio": {RADIO: 3, CONTROL_PANEL: 3, COMPUTER: 3},
-    "recreation": {BOOKSHELF: 6, JUKEBOX: 1, TABLE: 2, SOFA: 2},
-    "eva": {O2_RACK: 4, BARREL: 4, SOFA: 2},
-    "supply": {CHEST: 6},
-    "lobby": {SOFA: 2, CONTROL_PANEL: 1},
+    "storage": {CARGO_CRATE: 8},
+    "workshop": {WORKBENCH: 1, SMITHING: 1, STONECUTTER: 1, STOVE: 1, SUPPLY_CABINET: 2},
+    "radio": {RADIO: 3, CONTROL_PANEL: 3, COMPUTER: 3, TAPE: 2},
+    "recreation": {TAPE: 6, JUKEBOX: 1, TABLE: 2, SOFA: 2, "poster": 1},
+    "eva": {O2_RACK: 4, "locker": 13, SOFA: 2, P_SUIT_CHECK: 2},
+    "supply": {CARGO_CRATE: 6},
+    "lobby": {SOFA: 2, CONTROL_PANEL: 1, P_FREEDOM: 2, P_VESPER: 2},
 }
 # Beds, planters and the like only where they belong.
 ALLOWED_KINDS = {
@@ -1018,10 +1078,12 @@ ALLOWED_KINDS = {
     POTTED_FERN: {"hydroponics"},
     REACTOR: {"reactor"},
 }
+CABIN_POSTERS = (P_LIFTOFF, P_HOMESTEAD, P_SPACE_POP, P_VESPER, P_FREEDOM, P_LIFTOFF)
 
 
 class Furnisher:
-    """Room furnishing, one method per kind of room, all in room-local coordinates."""
+    """Room furnishing, one method per kind of room, all in room-local coordinates.
+    Lighting: ceiling lights roughly every 4-5 blocks; screens, radios and machines mostly switched off."""
 
     def __init__(self, st):
         self.st = st
@@ -1031,11 +1093,10 @@ class Furnisher:
         # windscreen above the instrument consoles, full height behind the commander's console
         r.window(range(1, 16), (2, 3), "back")
         r.window(range(7, 10), (1,), "back")
-        # mission control console at the head of the room, the commander's chair right behind it
         r.fput(8, 7, 0, CONSOLE, "front")
         r.seat(8, 6, CAPTAIN_CHAIR, "back")
-        # two tiers of operator stations: the window row (panels on the hull under the windscreen) and a second
-        # row whose panels hang on a low console backboard; each station = desk + panel, scope or radio, stool.
+        # two tiers of operator stations: window row (panels on the hull under the windscreen) and a second row
+        # whose panels hang on a low console backboard; each station = desk + panel, scope or radio, stool.
         # Aisles run behind both rows (v = 5 and v = 1).
         for side in (range(2, 7), range(10, 15)):
             for i, u in enumerate(side):
@@ -1046,122 +1107,111 @@ class Furnisher:
                 for v in (7, 3):
                     r.desk(u, v)
                     if panel:
-                        r.wall(u, v, 1, CONTROL_PANEL, "back")
+                        r.wall(u, v, 1, CONTROL_PANEL, "back", lit=(v == 7 or i == 2))
                         r.stool(u, v - 1)
                     else:
-                        r.item(u, v, 1, gear)
-        # computer walls on both sides, star charts and the station clock on the back wall
+                        r.item(u, v, 1, gear, lit=(gear == RADAR_SCOPE and v == 7))
         for v in range(1, 7):
-            r.fput(0, v, 0, COMPUTER, "right", lit=True)
-            r.fput(16, v, 0, COMPUTER, "left", lit=True)
+            r.fput(0, v, 0, COMPUTER, "right", lit=v % 2 == 1)
+            r.fput(16, v, 0, COMPUTER, "left", lit=v % 2 == 0)
         r.wall(3, 0, 2, STAR_CHART, "front")
-        r.wall(13, 0, 2, STAR_CHART, "front")
+        r.wall(13, 0, 2, STAR_CHART, "front", lit=False)
         r.wall(8, 0, 2, CLOCK, "front")
         r.carpet("blue", [8], range(0, 6))
-        r.lights_grid((3, 8, 13), (2, 6))
+        r.lights_grid((4, 12), (1, 5))
+        r.light(8, 2)
 
     def commander(self, r):
         r.window([2, 5], [1], "back", PORTHOLE)
         r.bed(0, 6, "back", "red")                 # berth along the left wall, head at the hull
         r.desk(1, 7, LAMP, mat=DARK_OAK)            # nightstand with reading lamp
         r.desk(4, 7, GLOBE, mat=DARK_OAK)           # writing desk under the porthole
-        r.desk(5, 7, RADIO, mat=DARK_OAK)
+        r.desk(5, 7, RADIO, mat=DARK_OAK, lit=False)
         r.seat(4, 6, CAPTAIN_CHAIR, "back")
-        for v in (3, 4, 5):                         # bookcase
-            r.block(7, v, 0, BOOKSHELF)
-            r.block(7, v, 1, BOOKSHELF)
-        r.locker(0, 0, "right")
-        r.locker(0, 1, "right")
+        for v in (3, 4, 5):                         # tape / document archive
+            r.fput(7, v, 0, TAPE, "left")
+            r.fput(7, v, 1, TAPE, "left")
+        r.locker(0, 0, "right", [("minecraft:paper", 8), ("minecraft:book", 2)])
         r.seat(2, 3, SOFA, "right")                 # sitting corner
         r.fput(3, 3, 0, TABLE, "front")
         r.seat(4, 3, EGG_CHAIR, "left")
-        r.wall(0, 4, 2, STAR_CHART, "left")
+        r.wall(0, 4, 2, STAR_CHART, "left", lit=False)
         r.wall(4, 0, 2, CLOCK, "front")
         r.wall(7, 6, 2, SCONCE, "right")
         r.carpet("red", range(1, 7), range(1, 6))
         r.light(4, 4, CHANDELIER)
-        r.light(4, 1)
 
     def radio(self, r):
-        # radio operator stations along the hull wall
-        for u0 in (1, 5, 9, 13):
+        for k, u0 in enumerate((1, 5, 9, 13)):
             r.desk(u0, 7)
-            r.wall(u0, 7, 1, CONTROL_PANEL, "back")
-            r.desk(u0 + 1, 7, RADIO)
+            r.wall(u0, 7, 1, CONTROL_PANEL, "back", lit=k % 2 == 0)
+            r.desk(u0 + 1, 7, RADIO, lit=k % 2 == 0)
             r.stool(u0, 6)
         r.window([3, 12], [1], "back", PORTHOLE)
-        # receiver / tape racks: a back-to-back island and a row on the right wall
         for u in (7, 8):
-            r.fput(u, 3, 0, COMPUTER, "front", lit=True)
-            r.fput(u, 4, 0, COMPUTER, "back", lit=True)
+            r.fput(u, 3, 0, COMPUTER, "front", lit=u == 7)
+            r.fput(u, 4, 0, COMPUTER, "back", lit=u == 8)
         for v in range(1, 6):
-            r.fput(15, v, 0, COMPUTER, "left", lit=True)
-        # log books and the frequency chart on the left wall
-        for v in (2, 3, 4):
-            r.block(0, v, 0, BOOKSHELF)
+            r.fput(15, v, 0, COMPUTER, "left", lit=v % 2 == 1)
+        for v in (2, 3, 4):                         # log tapes on the left wall
+            r.fput(0, v, 0, TAPE, "right")
         r.wall(0, 3, 2, STAR_CHART, "left")
         r.wall(8, 0, 2, CLOCK, "front")
-        r.lights_grid((3, 8, 12), (2, 5))
+        r.lights_grid((4, 11), (2, 5))
 
     # corner rooms are trapezoids: the chamfered hull runs diagonally from (3, 0) to (10, 7)
     def observation(self, r):
         r.window(range(r.U), (1, 2, 3), "back")
         r.window(range(r.V), (1, 2, 3), "left")
         r.fput(9, 5, 0, TELESCOPE, "back")
-        # egg chairs looking out of the panorama window, side tables between them
         for u, kind in ((11, "chair"), (12, "table"), (13, "chair"), (14, "table"), (15, "chair")):
             if kind == "chair":
                 r.seat(u, 5, EGG_CHAIR, "back")
             else:
                 r.fput(u, 5, 0, TABLE, "back")
-        # sofa looking out of the diagonal window
         r.seat(6, 1, SOFA, "left")
         r.seat(7, 2, SOFA, "left")
         r.fput(5, 1, 0, TABLE, "left")
-        # model globe on a chrome pedestal
         r.trim(10, 2, 0, "y")
         r.item(10, 2, 1, GLOBE, "front")
-        # coffee bar by the door
         r.desk(15, 0, RADIO, facing="left")
-        r.desk(15, 1, LAMP, facing="left")
+        r.desk(15, 1, LAMP, facing="left", lit=False)
         r.stool(14, 1)
         r.wall(15, 3, 2, SCONCE, "right")
         r.wall(15, 7, 2, SCONCE, "right")
         r.wall(13, 0, 2, CLOCK, "front")
         r.carpet("light_blue", range(8, 16), range(3, 7))
         r.light(11, 3, CHANDELIER)
-        r.lights_grid((7, 14), (2,))
+        r.light(7, 2)
 
+    # ------------------------------------------------------------- DECK B
     def machine_shop(self, r):
-        # work line along the hull wall
-        r.block(10, 7, 0, CRAFTING)
+        r.fput(10, 7, 0, WORKBENCH, "front")
         r.block(11, 7, 0, SMITHING)
         r.desk(12, 7, mat=IRON_BLOCK)
-        r.wall(12, 7, 1, CONTROL_PANEL, "back")
+        r.wall(12, 7, 1, CONTROL_PANEL, "back", lit=False)
         r.stool(12, 6)
         r.fput(13, 7, 0, STONECUTTER, "front")
         r.chest(14, 7, 0, "front", [(rc("titanium_plate"), 16), (rc("aluminum_plate"), 16), ("minecraft:iron_ingot", 16)])
         r.chest(15, 7, 0, "front", [(rc("vacuum_tube"), 12), (rc("wiring_harness"), 8), ("minecraft:redstone", 32)])
-        # forge along the diagonal hull
-        r.fput(6, 3, 0, BLAST_FURNACE, "right", lit=False)
-        r.fput(7, 4, 0, FURNACE, "right", lit=False)
+        # heat-treat ovens along the diagonal hull
+        r.fput(6, 3, 0, STOVE, "right", lit=False)
+        r.fput(7, 4, 0, STOVE, "right", lit=False)
         r.desk(8, 5, LANTERN, mat=IRON_BLOCK)
-        r.wall(8, 5, 2, STAR_CHART, "back")
-        # heavy bench in the middle
+        r.wall(8, 5, 2, STAR_CHART, "back", lit=False)
         for u in (10, 11, 12):
             r.desk(u, 3, mat=IRON_BLOCK)
         r.item(11, 3, 1, LANTERN)
         r.stool(11, 2)
-        # parts bins along the front wall
+        # parts cabinets along the front wall
         for u in range(4, 11):
-            r.barrel(u, 0, 0, "back")
-            r.barrel(u, 0, 1, "back")
-        # spare oxygen bottles and a drafting table on the right wall
+            r.chest(u, 0, 0, "back", [("minecraft:iron_nugget", 32)])
+            r.chest(u, 0, 1, "back", [("minecraft:copper_ingot", 8)])
         for v in (1, 2, 3):
             r.fput(15, v, 0, O2_RACK, "left")
         r.block(15, 5, 0, CARTOGRAPHY)
         r.stool(14, 5)
-        r.lights_grid((6, 11), (2, 5))
+        r.lights_grid((6, 12), (2, 5))
 
     def storage(self, r, food=False):
         if food:
@@ -1181,18 +1231,14 @@ class Furnisher:
                      [("minecraft:torch", 32), ("minecraft:paper", 16)],
                      [(rc("aero_alloy_plate"), 4), (rc("aluminum_plate"), 12)]]
         k = 0
-        for u, facing in ((0, "right"), (r.U - 1, "left")):
-            for v in range(1, r.V - 1):
-                r.chest(u, v, 0, facing, goods[k % len(goods)])
-                r.barrel(u, v, 1, facing)
-                k += 1
-        for u in range(1, r.U - 1):
-            r.barrel(u, r.V - 1, 0, "front")
-            r.barrel(u, r.V - 1, 1, "front")
+        cells = [(u, v) for u in (0, r.U - 1) for v in range(1, r.V - 1)] + [(u, r.V - 1) for u in range(1, r.U - 1)]
+        for u, v in cells:                          # crates stacked two high in runs along the walls
+            r.crate(u, v, 0, goods[k % len(goods)])
+            r.crate(u, v, 1, goods[(k + 3) % len(goods)])
+            k += 1
         r.lights_grid((3,), (2, 5))
 
     def laboratory(self, r):
-        # process line on the hull wall: refinery and liquefier with chrome exhaust stacks and a manifold
         for u in (1, 2, 14, 15):
             r.fput(u, 7, 0, O2_RACK, "front")
         r.desk(3, 7)
@@ -1200,12 +1246,12 @@ class Furnisher:
         r.fput(4, 7, 0, REFINERY, "front", lit=False)
         r.desk(5, 7, RADAR_SCOPE)
         r.desk(7, 7, BREWING)
-        r.block(8, 7, 0, CAULDRON)
+        r.fput(8, 7, 0, SINK, "front")
         r.desk(9, 7, BREWING)
-        r.desk(11, 7, RADAR_SCOPE)
+        r.desk(11, 7, RADAR_SCOPE, lit=False)
         r.fput(12, 7, 0, LIQUEFIER, "front", lit=False)
         r.desk(13, 7)
-        r.wall(13, 7, 1, CONTROL_PANEL, "back")
+        r.wall(13, 7, 1, CONTROL_PANEL, "back", lit=False)
         for u in (4, 12):
             for h in (1, 2):
                 r.trim(u, 7, h, "y")
@@ -1213,28 +1259,27 @@ class Furnisher:
             r.trim(u, 7, 3, "u")
         for u in (3, 5, 11, 13):
             r.stool(u, 6)
-        # island bench
         for u in range(5, 12):
             for v in (3, 4):
                 r.desk(u, v, mat=WHITE)
         r.item(6, 4, 1, BREWING)
-        r.item(8, 3, 1, LAMP)
-        r.item(10, 4, 1, RADIO)
+        r.item(8, 3, 1, LAMP, lit=False)
+        r.item(10, 4, 1, RADIO, lit=False)
         r.stool(6, 2)
         r.stool(10, 2)
-        # computer wall on the left, sample cabinets on the right
         for v in range(1, 7):
-            r.fput(0, v, 0, COMPUTER, "right", lit=True)
+            r.fput(0, v, 0, COMPUTER, "right", lit=v % 2 == 0)
         r.chest(16, 1, 0, "left", [(EMPTY_CAN, 6), ("minecraft:glass_bottle", 8), ("minecraft:coal", 16)])
         r.chest(16, 2, 0, "left", [("minecraft:redstone", 16), ("minecraft:quartz", 16)])
-        r.locker(16, 4, "left")
+        r.locker(16, 4, "left")                     # lab coats
         r.locker(16, 5, "left")
-        r.wall(16, 3, 2, STAR_CHART, "right")
+        r.wall(16, 3, 2, STAR_CHART, "right", lit=False)
         r.wall(8, 0, 2, CLOCK, "front")
-        r.lights_grid((2, 8, 14), (2, 5))
+        r.lights_grid((3, 13), (2,))
+        r.light(8, 5)
+        r.light(8, 1)
 
     def reactor(self, r):
-        # reactor pit behind a chrome railing; glowing grate floor inside, yellow/black hazard band outside
         for u in range(4, 12):
             r.trim(u, 3, 0, "u")
         for v in range(4, 8):
@@ -1253,32 +1298,29 @@ class Furnisher:
             for h in range(4):
                 r.put(u, 5, h, REACTOR, {"lit": "true"})
         self.st.standing_sign(r.at(7, 3, 1), r.wdir("front"), ["DANGER", "REACTOR CORE", "KEEP BEHIND", "THE RAIL"])
-        # control desk on the left wall
         r.desk(0, 2)
         r.wall(0, 2, 1, CONTROL_PANEL, "left")
         r.desk(0, 3, RADAR_SCOPE, facing="right")
         r.desk(0, 4)
-        r.wall(0, 4, 1, CONTROL_PANEL, "left")
+        r.wall(0, 4, 1, CONTROL_PANEL, "left", lit=False)
         r.stool(1, 3)
-        # computers and a second panel desk on the right wall
         for v in (1, 2, 3):
-            r.fput(15, v, 0, COMPUTER, "left", lit=True)
+            r.fput(15, v, 0, COMPUTER, "left", lit=v == 2)
         r.desk(15, 5)
         r.wall(15, 5, 1, CONTROL_PANEL, "right")
         r.stool(14, 5)
-        # radiation suit lockers by the door
-        for u in (1, 2, 3):
+        for u in (1, 2, 3):                         # radiation suit lockers by the door
             r.locker(u, 0, "back")
         r.wall(12, 0, 2, CLOCK, "front")
-        r.lights_grid((2, 7, 13), (1,))
-        r.lights_grid((1, 14), (6,))
+        r.lights_grid((2, 13), (1, 6))
 
+    # ------------------------------------------------------------- DECK C
     def hydroponics(self, r):
         rows = [(7, range(10, 15)), (5, range(9, 14)), (4, range(7, 14)), (1, range(4, 11))]
         for v, us in rows:
             for u in us:
                 r.put(u, v, 0, PLANTER, {"lit": "true"})
-        for v, us in rows:
+        for v, us in rows:                          # grow lights over the rows, every other block
             if v == 5:
                 continue
             for u in us:
@@ -1286,89 +1328,83 @@ class Furnisher:
                     r.light(u, v)
         r.window(range(r.U), (2, 3), "back")
         r.window(range(r.V), (2, 3), "left")
-        # potting / tool counter on the right wall
         r.block(15, 1, 0, COMPOSTER, {"level": "0"})
         r.desk(15, 2, POTTED_FERN)
         r.desk(15, 3, LANTERN)
-        r.block(15, 4, 0, CAULDRON)
-        r.barrel(15, 5, 0, "left")
-        r.chest(15, 7, 0, "left", [("minecraft:wheat_seeds", 32), ("minecraft:bone_meal", 32), ("minecraft:shears", 1)])
+        r.fput(15, 4, 0, SINK, "left")
+        r.chest(15, 5, 0, "left", [("minecraft:bone_meal", 32)])
+        r.chest(15, 6, 0, "left", [("minecraft:wheat_seeds", 32), ("minecraft:shears", 1)])
         r.wall(15, 4, 2, CLOCK, "right")
 
     def mess(self, r):
         r.window(range(1, 16), (1, 2), "back")
-        # three diner booths under the window band: sofa - table - sofa, four seats each
-        for u0 in (5, 9, 13):
+        for u0 in (5, 9, 13):                       # diner booths under the window band
             for v in (6, 7):
                 r.seat(u0, v, SOFA, "right")
                 r.fput(u0 + 1, v, 0, TABLE, "front")
                 r.seat(u0 + 2, v, SOFA, "left")
             r.light(u0 + 1, 6, CHANDELIER)
-        # the long wardroom table in the middle
-        for u in range(6, 11):
+        for u in range(6, 11):                      # the long wardroom table
             r.fput(u, 3, 0, TABLE, "front")
             r.stool(u, 2)
             r.stool(u, 4)
-        # galley along the left wall: food chest, smoker, counter, sink, counter, stove, pantry
+        r.light(8, 3, CHANDELIER)
+        # galley along the left wall: food cabinet, two stoves, counter, sink, counter, pantry cabinets
         r.chest(0, 0, 0, "right", [("minecraft:bread", 16), ("minecraft:cooked_beef", 8), ("minecraft:apple", 12)])
-        r.fput(0, 1, 0, SMOKER, "right", lit=False)
+        r.fput(0, 1, 0, STOVE, "right", lit=False)
         r.desk(0, 2)
-        r.block(0, 3, 0, CAULDRON)
+        r.fput(0, 3, 0, SINK, "right")
         r.desk(0, 4)
-        r.fput(0, 5, 0, FURNACE, "right", lit=False)
-        r.locker(0, 6, "right")
-        r.locker(0, 7, "right")
-        # serving counter with diner stools
-        for v in (1, 2, 3, 4):
+        r.fput(0, 5, 0, STOVE, "right", lit=False)
+        for v in (6, 7):
+            r.chest(0, v, 0, "right", [("minecraft:sugar", 16), ("minecraft:wheat", 16)])
+            r.chest(0, v, 1, "right", [("minecraft:cocoa_beans", 16)])
+        for v in (1, 2, 3, 4):                      # serving counter with diner stools
             r.desk(2, v)
             r.stool(3, v)
-        r.wall(2, 0, 2, NEON, "front")
-        # vending machines and the evening corner (TV, radio, egg chairs)
-        r.fput(16, 0, 0, VENDING, "left", lit=True)
-        r.fput(16, 1, 0, VENDING, "left", lit=True)
+        r.wall(2, 0, 2, NEON, "front", lit=False)
+        r.vending(16, 0, "left", True)
+        r.vending(16, 1, "left", False)
         r.fput(16, 3, 0, TV, "left", lit=True)
-        r.desk(16, 4, RADIO, facing="left")
+        r.desk(16, 4, RADIO, facing="left", lit=False)
         r.seat(13, 3, EGG_CHAIR, "right")
         r.seat(13, 4, EGG_CHAIR, "right")
+        r.poster(5, 0, 1, P_SPACE_POP, "front")
+        r.poster(12, 0, 1, P_HOMESTEAD, "front")
         r.wall(8, 0, 2, CLOCK, "front")
-        r.lights_grid((1, 4, 8, 12, 15), (1, 4))
+        r.lights_grid((3, 13), (1,))
 
     def medical(self, r):
         r.window([10, 13], [1], "back", PORTHOLE)
-        # two sickbay beds, heads at the hull, monitor panel between them
         r.bed(10, 6, "back", "white")
         r.bed(13, 6, "back", "white")
         r.desk(11, 7)
         r.wall(11, 7, 1, CONTROL_PANEL, "back")
-        r.desk(12, 7, LAMP)
+        r.desk(12, 7, LAMP, lit=False)
         r.wall(10, 7, 2, SCONCE, "back")
-        r.wall(13, 7, 2, SCONCE, "back")
-        # treatment counter: medicine chest, brewing stand, sink, panel
+        r.wall(13, 7, 2, SCONCE, "back", lit=False)
         r.chest(1, 7, 0, "front", [("minecraft:golden_apple", 4), ("minecraft:glistering_melon_slice", 4),
                                    ("minecraft:glass_bottle", 8)])
         r.desk(2, 7, BREWING)
-        r.block(3, 7, 0, CAULDRON)
+        r.fput(3, 7, 0, SINK, "front")
         r.desk(4, 7)
-        r.wall(4, 7, 1, CONTROL_PANEL, "back")
+        r.wall(4, 7, 1, CONTROL_PANEL, "back", lit=False)
         r.chest(5, 7, 0, "front", [("minecraft:paper", 16), ("minecraft:honey_bottle", 6), ("minecraft:milk_bucket", 1)])
-        # examination couch under the surgery lamp, instrument trolley and the doctor's stool
-        r.fput(7, 4, 0, CREW_BUNK, "front")
+        r.fput(7, 4, 0, CREW_BUNK, "front")         # examination couch under the surgery lamp
         r.light(7, 4, CHANDELIER)
-        r.desk(6, 4, RADAR_SCOPE, facing="right")
+        r.desk(6, 4, RADAR_SCOPE, facing="right", lit=False)
         r.stool(6, 3)
-        # medicine cabinets on the left wall
-        for v in (2, 3, 4, 5):
-            r.locker(0, v, "right")
-        # doctor's desk by the door
+        for v in (2, 3, 4, 5):                      # medicine cabinets on the left wall
+            r.chest(0, v, 0, "right", [("minecraft:glass_bottle", 4)])
+            r.chest(0, v, 1, "right", [("minecraft:paper", 4)])
         r.desk(2, 0, LAMP, facing="back")
-        r.desk(3, 0, RADIO, facing="back")
+        r.desk(3, 0, RADIO, facing="back", lit=False)
         r.seat(2, 1, CAPTAIN_CHAIR, "front")
-        # medical oxygen on the right wall
         for v in (2, 3):
             r.fput(15, v, 0, O2_RACK, "left")
-        r.wall(15, 5, 2, STAR_CHART, "right")
+        r.wall(15, 5, 2, STAR_CHART, "right", lit=False)
         r.wall(8, 0, 2, CLOCK, "front")
-        r.lights_grid((3, 11, 14), (3,))
+        r.lights_grid((3, 12), (3,))
 
     # ------------------------------------------------------------- DECK D
     def cabin(self, r, n):
@@ -1378,19 +1414,19 @@ class Furnisher:
         r.bed(1, 7, "left", c1)            # two berths along the hull, heads to the side walls
         r.bed(3, 7, "right", c2)
         r.wall(2, 7, 1, CLOCK, "back")      # clock between the berths
-        r.desk(0, 4, LAMP, facing="right", mat=SPRUCE_SLAB)
+        r.desk(0, 4, LAMP, facing="right", mat=SPRUCE_SLAB, lit=n % 2 == 1)
         r.stool(1, 4)
-        r.desk(4, 4, RADIO, facing="left", mat=SPRUCE_SLAB)
+        r.desk(4, 4, RADIO, facing="left", mat=SPRUCE_SLAB, lit=False)
         r.stool(3, 4)
-        r.wall(0, 4, 2, STAR_CHART, "left")
-        r.wall(4, 4, 2, SCONCE, "right")
-        r.locker(0, 0, "right")
-        r.locker(4, 0, "left")
+        r.wall(0, 4, 2, STAR_CHART, "left", lit=False)
+        r.wall(4, 4, 2, SCONCE, "right", lit=n % 2 == 0)
+        r.locker(0, 0, "right", [("minecraft:paper", 4)])     # one locker per crew member
+        r.locker(4, 0, "left", [("minecraft:paper", 4)])
+        r.poster(0, 2, 1, CABIN_POSTERS[n - 1], "left")       # a personal poster
         r.carpet(rug, (1, 2, 3), range(1, 7))
         r.light(2, 2)
 
     def washroom(self, r):
-        # three stalls along the hull wall: shower, toilet, shower
         for u in (2, 5):
             for v in (5, 6, 7):
                 for h in (0, 1, 2):
@@ -1399,7 +1435,7 @@ class Furnisher:
             for h in (0, 1, 2):
                 self.st.seal(r.at(u, 5, h), WHITE)
             self.st.seal(r.at(u + 1, 5, 2), WHITE)
-            self.st.wood_door(r.at(u + 1, 5), r.wdir("front"), "right")
+            self.st.door(r.at(u + 1, 5), r.wdir("front"), "right")
         for u in (0, 6):                  # showers: drain grate, shower head from the ceiling
             for uu in (u, u + 1):
                 for v in (6, 7):
@@ -1408,46 +1444,42 @@ class Furnisher:
             r.light(u + 1, 6)
         r.put(4, 7, 0, SQUARTZ_STAIRS, {"facing": r.wdir("back"), "half": "bottom", "shape": "straight",
                                          "waterlogged": "false"})
-        r.light(3, 6)
-        # wash basins on a counter along the door wall with mirrors above
         for u, sink in ((0, False), (1, True), (2, False), (6, True), (7, False)):
             if sink:
-                r.block(u, 0, 0, CAULDRON)
+                r.fput(u, 0, 0, SINK, "back")
                 self.st.put(r.at(u, -1, 1), TINTED_GLASS)
             else:
                 r.desk(u, 0)
-        r.locker(0, 2, "right")
-        r.locker(7, 2, "left")
+        r.locker(0, 2, "right", [("minecraft:white_wool", 8)])    # towel lockers
+        r.locker(7, 2, "left", [("minecraft:white_wool", 8)])
         r.wall(7, 3, 2, CLOCK, "right")
-        r.lights_grid((2, 5), (2,))
+        r.light(3, 2)
 
     def recreation(self, r):
         r.window(range(r.U), (1, 2), "back")
         r.window(range(r.V), (1, 2), "left")
-        # library wall with a reading nook
-        for v in range(1, 7):
+        for v in range(1, 7):                       # library: tape and book archive
             for h in (0, 1, 2):
-                r.block(15, v, h, BOOKSHELF)
-        r.seat(12, 3, EGG_CHAIR, "right")
-        r.fput(13, 3, 0, TABLE, "front")
-        r.seat(14, 3, EGG_CHAIR, "left")
-        # card tables
-        for (tu, tv) in ((6, 1), (9, 2)):
+                r.fput(15, v, h, TAPE, "left")
+        r.seat(11, 3, EGG_CHAIR, "right")
+        r.fput(12, 3, 0, TABLE, "front")
+        r.seat(13, 3, EGG_CHAIR, "left")
+        for (tu, tv) in ((6, 1), (9, 2)):           # card tables
             r.fput(tu, tv, 0, TABLE, "front")
             for du, dv in ((-1, 0), (1, 0), (0, 1)):
                 r.stool(tu + du, tv + dv)
-        # sofas facing the view, low table in front, floor lamp
         for u in (9, 10, 11):
             r.seat(u, 5, SOFA, "back")
         r.fput(10, 6, 0, TABLE, "front")
         r.put(12, 5, 0, FLOOR_LAMP, {"lit": "true"})
-        # jukebox under the neon sign
         r.block(11, 0, 0, JUKEBOX, {"has_record": "false"})
         r.wall(11, 0, 2, NEON, "front")
         r.wall(10, 0, 2, CLOCK, "front")
+        r.poster(7, 0, 1, P_LIFTOFF, "front")
         r.carpet("red", range(8, 13), range(4, 7))
         r.light(10, 3, CHANDELIER)
-        r.lights_grid((7, 13), (1, 5))
+        r.light(13, 5)
+        r.light(7, 2)
 
 
 # ----------------------------------------------------------------------------
@@ -1517,13 +1549,9 @@ class Builder(Station):
             self.seal((x, UF + 1, -6), CHROME, {"axis": "x"})
         for z in (-8, -7):
             self.seal((-3, UF + 1, z), CHROME, {"axis": "z"})
-        # airlock doors with buttons on both sides
-        self.iron_door((-5, DECK + 1, -3), "west")
-        self.button((-4, DECK + 2, -2), "east")
-        self.button((-6, DECK + 2, -2), "west")
-        self.iron_door((-7, DECK + 1, -1), "south")
-        self.button((-8, DECK + 2, -2), "north")
-        self.button((-8, DECK + 2, 0), "south")
+        # airlock: outer and inner airlock doors (opened by hand)
+        self.airlock_door((-5, DECK + 1, -3), "west")
+        self.airlock_door((-7, DECK + 1, -1), "south")
 
     # ------------------------------------------------------------------ hub rooms
     def furnish_hub(self):
@@ -1537,15 +1565,15 @@ class Builder(Station):
         st.wall_sign((-6, DECK + 2, 0), "west", ["", "DOWN TO", "EVA PREP", ""], (-5, DECK + 2, 0))
         # --- EVA prep / suit-up room (u = 8 - z, v = -x) ---
         e = self.rooms["eva"]
-        for u in range(1, 7):                      # suit lockers along the partition wall
-            e.locker(u, 0, "back")
-        for v in range(1, 7):                      # oxygen bottle racks along the south wall
-            e.fput(0, v, 0, O2_RACK, "right")
+        for u in range(1, 8):                      # suit lockers: one per crew member (12 crew + commander)
+            e.locker(u, 0, "back", [(LOX, 2)])
+        for v in range(1, 7):
+            e.locker(0, v, "right", [(LOX, 2)])
         for u in range(2, 7):                      # bench facing the lockers
             e.seat(u, 2, SOFA, "front")
-        e.chest(7, 0, 0, "back", [(LOX, 8), (EMPTY_CAN, 4)])
-        for u in range(11, 16):                    # more bottle racks on the north part of the partition
+        for u in range(10, 16):                    # oxygen bottle racks on the north part of the partition
             e.fput(u, 0, 0, O2_RACK, "back")
+        e.poster(1, 8, 1, P_SUIT_CHECK, "back")    # at the foot of the airlock stairs
         # suit check desk on the west wall: pressure panel, lamp, stool
         e.desk(9, 8)
         e.wall(9, 8, 1, CONTROL_PANEL, "back")
@@ -1565,21 +1593,21 @@ class Builder(Station):
         fuel = [(FUEL, 16), (FUEL, 16), (FUEL, 16)]
         lox = [(LOX, 16), (LOX, 16), (LOX, 16)]
         runs = {5: fuel, 6: fuel, 7: [(EMPTY_CAN, 16), (FUEL, 8)], 9: [(EMPTY_CAN, 16), (LOX, 8)], 10: lox, 11: lox}
-        for u in range(1, 16):
+        for u in range(1, 16):                     # cargo crates, two high, along the walls
             items = runs.get(u, [("minecraft:bread", 16), ("minecraft:torch", 16)] if u % 2 else
                              [(rc("titanium_plate"), 8), ("minecraft:iron_ingot", 16)])
-            s.chest(u, 6, 0, "front", items)
-            s.barrel(u, 6, 1, "front")
+            s.crate(u, 6, 0, items)
+            s.crate(u, 6, 1, [(EMPTY_CAN, 8)])
         for v in range(0, 6):
-            s.chest(0, v, 0, "right", [(rc("aluminum_plate"), 16), (rc("vacuum_tube"), 8)])
-            s.barrel(0, v, 1, "right")
-            s.chest(16, v, 0, "left", [("minecraft:cooked_beef", 16), ("minecraft:apple", 16)])
-            s.barrel(16, v, 1, "left")
-        for u in range(4, 13):                     # island rack in the middle
+            s.crate(0, v, 0, [(rc("aluminum_plate"), 16), (rc("vacuum_tube"), 8)])
+            s.crate(0, v, 1, [("minecraft:paper", 8)])
+            s.crate(16, v, 0, [("minecraft:cooked_beef", 16), ("minecraft:apple", 16)])
+            s.crate(16, v, 1, [("minecraft:bread", 8)])
+        for u in range(4, 13):                     # island stack in the middle
             if u in (7, 8):
                 continue
-            s.chest(u, 3, 0, "front", [("minecraft:torch", 32), (rc("aluminum_ingot"), 16)])
-            s.barrel(u, 3, 1, "front")
+            s.crate(u, 3, 0, [("minecraft:torch", 32), (rc("aluminum_ingot"), 16)])
+            s.crate(u, 3, 1, [("minecraft:iron_ingot", 8)])
         st.wall_sign((8, UF + 3, -2), "west", ["RP-1", "ROCKET FUEL", "CANISTERS", ""])
         st.wall_sign((8, UF + 3, 2), "west", ["LOX", "LIQUID OXYGEN", "CANISTERS", ""])
         for u, v in ((4, 3), (12, 3)):
@@ -1594,7 +1622,9 @@ class Builder(Station):
         lb.desk(0, 3)
         lb.wall(0, 3, 1, CONTROL_PANEL, "left")
         lb.desk(0, 4, RADAR_SCOPE, facing="right")
-        lb.desk(0, 5, RADIO, facing="right")
+        lb.desk(0, 5, RADIO, facing="right", lit=False)
+        lb.poster(13, 16, 1, P_FREEDOM, "back")    # above the waiting lounges
+        lb.poster(13, 0, 1, P_VESPER, "front")
         lb.seat(1, 4, CAPTAIN_CHAIR, "left")
         st.wall_sign(lb.at(0, 4, 2), "east", ["DOCKING", "CONTROL", "", ""])
         # waiting lounges in the two eastern corners
@@ -1608,7 +1638,9 @@ class Builder(Station):
         lb.wall(16, 11, 2, SCONCE, "right")
         lb.wall(4, 0, 2, SCONCE, "front")
         lb.wall(12, 0, 2, SCONCE, "front")
-        lb.lights_grid((3, 8, 13), (3, 8, 13))
+        lb.lights_grid((4, 12), (4, 12))
+        lb.light(8, 13)
+        lb.light(8, 3)
         # signs above the four spoke doorways
         spoke_signs = {
             "north": ["SPOKE 1 - NORTH", "DECK A", "COMMAND", "BRIDGE - RADIO"],
@@ -1630,7 +1662,7 @@ class Builder(Station):
             def P(t, s, y):
                 return (t * dx - s * dz, y, t * dz + s * dx)
             # ceiling lights on the centre line every 4 blocks
-            for s in range(-24, 25, 4):
+            for s in range(-25, 26, 5):
                 self.put(P(25, s, F + 4), CEILING_LIGHT, {"lit": "true"})
             # spoke mouth: sign on the lintel, clocks either side
             self.wall_sign(P(CORR_IN, 0, F + 4), d, ["SPOKE " + str(HORIZ.index(d) + 1), "TO HUB", "DOCKING - EVA", ""])
@@ -1644,15 +1676,40 @@ class Builder(Station):
             for s in (-6, 6):
                 for t in (RING_IN_HULL, RING_IN_HULL + 1):
                     self.put(P(t, s, F + 2), PORTHOLE)
+            # posters on the inner wall between the portholes and alcoves
+            for k, s in enumerate((-21, -9, 9, 21)):
+                name = (P_LIFTOFF, P_HOMESTEAD, P_SPACE_POP, P_VESPER, P_FREEDOM)[(HORIZ.index(d) * 4 + k) % 5]
+                for y, half in ((F + 2, "lower"), (F + 3, "upper")):
+                    if self.get(P(CORR_IN - 1, s, y)) not in WALL_BLOCKS:
+                        self.error(f"corridor poster at {P(CORR_IN, s, y)} has no wall")
+                    self.put(P(CORR_IN, s, y), name, {"facing": d, "half": half})
             # deck name at both ends of the side
             for s in (-17, 17):
                 self.wall_sign(P(CORR_IN, s, F + 3), d, [deck[d][0], deck[d][1], "", ""])
             # spoke tube: lights and portholes
-            for t in (12, 16, 20):
+            for t in (13, 18):
                 self.put(P(t, 0, F + 4), CEILING_LIGHT, {"lit": "true"})
             for t in (14, 18):
                 for w in (-2, -3, 2, 3):
                     self.put(P(t, w, F + 2), PORTHOLE)
+        # posters on the door wall, on clear stretches between doorways (at least 2 blocks from any door/sign)
+        cycle = [P_HOMESTEAD, P_LIFTOFF, P_FREEDOM, P_SPACE_POP, P_VESPER]
+        k = 0
+        for d in HORIZ:
+            dx, dz = DIRS[d]
+
+            def P(t, s, y):
+                return (t * dx - s * dz, y, t * dz + s * dx)
+
+            last = -99
+            for s in range(-22, 23):
+                ok = all(self.get(P(CORR_OUT + 1, ss, y)) in WALL_BLOCKS for ss in range(s - 2, s + 3) for y in (F + 1, F + 2, F + 3)) \
+                    and all(self.get(P(CORR_OUT, ss, y)) == AIR for ss in range(s - 1, s + 2) for y in (F + 1, F + 2, F + 3))
+                if ok and s - last >= 9:
+                    for y, half in ((F + 2, "lower"), (F + 3, "upper")):
+                        self.put(P(CORR_OUT, s, y), cycle[k % len(cycle)], {"facing": OPPOSITE[d], "half": half})
+                    k += 1
+                    last = s
         # lanes: corridor and spoke cells at walking height must stay clear
         for c, key in self.region.items():
             reg = self.regions[key]
@@ -1827,7 +1884,20 @@ class Checker:
                     self.fail(f"{name} at {c} hangs on {st.get(back)}, not a wall")
             if name in CEILING_HUNG and st.get(above) not in WALL_BLOCKS:
                 self.fail(f"{name} at {c} has no ceiling above ({st.get(above)})")
-            if name in (IRON_DOOR, BIRCH_DOOR):
+            if name in TALL:
+                other = above if props["half"] == "lower" else below
+                want = "upper" if props["half"] == "lower" else "lower"
+                op = st.props(other)
+                if st.get(other) != name or op.get("half") != want or op.get("facing") != props["facing"] \
+                        or op.get("lit") != props.get("lit"):
+                    self.fail(f"two-tall {name} at {c} has no matching {want} half")
+                if props["half"] == "upper" and st.blocks[c][2] is not None:
+                    self.fail(f"upper half of {name} at {c} carries block entity data")
+                if name in STORAGE_BLOCKS and props["half"] == "lower" and st.blocks[c][2] is None:
+                    self.fail(f"{name} at {c} has no storage data")
+            if name in (SUPPLY_CABINET, CARGO_CRATE) and st.blocks[c][2] is None:
+                self.fail(f"{name} at {c} has no storage data")
+            if name in DOORS:
                 if props["half"] == "lower":
                     if st.get(below) not in FULL_CUBES:
                         self.fail(f"door at {c} stands on {st.get(below)}")
@@ -1866,8 +1936,8 @@ class Checker:
 
     def desks_and_seats(self):
         st = self.st
-        targets = {CONSOLE, TABLE, TV, RADIO, TELESCOPE, COMPUTER, BARREL, O2_RACK, CRAFTING, SMITHING, CARTOGRAPHY,
-                   STONECUTTER, BLAST_FURNACE, FURNACE, CAULDRON, VENDING} | DESK_BLOCKS | DESK_SLABS
+        targets = {CONSOLE, TABLE, TV, RADIO, TELESCOPE, COMPUTER, O2_RACK, SMITHING, CARTOGRAPHY, STONECUTTER,
+                   VENDING, WORKBENCH, STOVE, SINK, CREW_LOCKER, SUPPLY_CABINET, TAPE} | DESK_BLOCKS | DESK_SLABS
         for c, (name, props, _) in st.blocks.items():
             if name in ON_DESK:
                 b = st.below(c)
@@ -1883,13 +1953,14 @@ class Checker:
                     self.fail(f"computer bank at {c} does not stand against a wall ({st.get(back)})")
                 if st.get(front) != AIR and st.get(front) not in BEDS and not st.get(front).endswith("_carpet"):
                     self.fail(f"computer bank at {c} has no walkway in front ({st.get(front)})")
-            if name in (O2_RACK, VENDING, TV, CONSOLE, REFINERY, LIQUEFIER):
+            if name in (O2_RACK, VENDING, TV, CONSOLE, REFINERY, LIQUEFIER, STOVE, SINK, CREW_LOCKER, SUPPLY_CABINET,
+                        WORKBENCH, TAPE):
                 dx, dz = DIRS[props["facing"]]
                 back = (c[0] - dx, c[1], c[2] - dz)
                 if name != CONSOLE and st.get(back) not in WALL_BLOCKS:
                     self.fail(f"{name} at {c} does not stand with its back to a wall ({st.get(back)})")
                 front = (c[0] + dx, c[1], c[2] + dz)
-                if st.get(front) not in (AIR, CAPTAIN_CHAIR) and not st.get(front).endswith("_carpet"):
+                if name not in (TAPE,) and st.get(front) not in (AIR, CAPTAIN_CHAIR) and not st.get(front).endswith("_carpet"):
                     self.fail(f"{name} at {c} is blocked in front ({st.get(front)})")
             if name in SEATS_FACING:
                 dx, dz = DIRS[props["facing"]]
@@ -1988,7 +2059,7 @@ class Checker:
             n = st.get(c)
             if n is None or n == AIR:
                 return True
-            if n in (IRON_DOOR, BIRCH_DOOR):
+            if n in DOORS:
                 return False
             if n in FULL_CUBES:
                 return False
@@ -2027,10 +2098,10 @@ class Checker:
         feet, head = st.get(c), st.get(st.above(c))
         below = st.below(c)
         soft = lambda n: n == AIR or n in NO_COLLISION_DECOR or (n or "").endswith("_carpet") \
-            or n in (IRON_DOOR, BIRCH_DOOR)
+            or n in DOORS
         if not soft(feet) or not (soft(head) or st.above(c) not in st.inner and head == AIR):
             return False
-        if head not in (AIR,) and head not in NO_COLLISION_DECOR and head not in (IRON_DOOR, BIRCH_DOOR):
+        if head not in (AIR,) and head not in NO_COLLISION_DECOR and head not in DOORS:
             return False
         bn = st.get(below)
         return bn in FULL_CUBES or bn in (QUARTZ_STAIRS, SQUARTZ_STAIRS) or bn in DESK_SLABS
@@ -2066,9 +2137,9 @@ class Checker:
         for key in unreached_rooms:
             self.fail(f"{key} cannot be reached from the arrival spot")
         # every piece of furniture that is used must be next to a reachable standing spot
-        use = SEATS_FACING | CONTAINERS | {STOOL, CONSOLE, VENDING, JUKEBOX, SMOKER, FURNACE, BLAST_FURNACE, CAULDRON,
-                                           CRAFTING, SMITHING, STONECUTTER, REFINERY, LIQUEFIER, COMPOSTER, TELESCOPE,
-                                           COMPUTER, O2_RACK, TV, PLANTER} | BEDS
+        use = SEATS_FACING | CONTAINERS | {STOOL, CONSOLE, VENDING, JUKEBOX, STOVE, SINK, WORKBENCH, TAPE, SMITHING,
+                                           STONECUTTER, REFINERY, LIQUEFIER, COMPOSTER, TELESCOPE, COMPUTER, O2_RACK,
+                                           TV, PLANTER} | BEDS
         for c, (name, _, _) in st.blocks.items():
             if name not in use:
                 continue
@@ -2114,6 +2185,9 @@ class Checker:
             counts["carpet"] = sum(v for k, v in counts.items() if k.endswith("_carpet"))
             counts["seats"] = sum(counts.get(k, 0) for k in (SOFA, STOOL, EGG_CHAIR, CAPTAIN_CHAIR))
             counts["wall_clock_or_chart"] = counts.get(CLOCK, 0) + counts.get(STAR_CHART, 0)
+            counts["locker"] = counts.get(CREW_LOCKER, 0) // 2
+            counts["vending"] = counts.get(VENDING, 0) // 2
+            counts["poster"] = sum(v for k, v in counts.items() if k in POSTERS) // 2
             self.counts[key] = counts
             for item, need in REQUIRED.get(room.kind, {}).items():
                 if counts.get(item, 0) < need:
@@ -2121,7 +2195,7 @@ class Checker:
         # supply chests near the docking area
         fuel = lox = 0
         for c, (name, _, nbt) in st.blocks.items():
-            if name == CHEST and st.region.get(c) == "supply":
+            if name in STORAGE_BLOCKS and st.region.get(c) == "supply" and nbt is not None:
                 for it in nbt["Items"]:
                     if it["id"] == FUEL:
                         fuel += it["count"]
@@ -2224,11 +2298,36 @@ def anchors(st):
 def validate(st):
     states_dir = os.path.join(ROOT, "assets", "retrocosmos", "blockstates")
     problems = set()
+    pending = set()
     cache = {}
     forbidden = {mc("water"), mc("lava"), mc("sand"), mc("gravel"), mc("anvil"), mc("spawner"), mc("scaffolding")}
     for (name, props, _nbt) in st.blocks.values():
         if name in forbidden or name.endswith("concrete_powder"):
             problems.add(f"{name} is not allowed in the station")
+        if name in MOD_SCHEMAS:
+            schema = MOD_SCHEMAS[name]
+            if set(props) != set(schema) or any(v not in schema[k] for k, v in props.items()):
+                problems.add(f"{name}{props}: does not match the fixed schema {schema}")
+                continue
+            short = name.split(":", 1)[1]
+            path = os.path.join(states_dir, short + ".json")
+            if not os.path.exists(path):
+                pending.add(name)
+                continue
+            if short not in cache:
+                with open(path, encoding="utf-8") as f:
+                    cache[short] = json.load(f).get("variants")
+            variants = cache[short]
+            if variants is None:
+                continue
+            names = {kv.split("=")[0] for key in variants for kv in key.split(",") if kv}
+            if not names <= set(schema) or set(schema) - names - {"powered"}:
+                pending.add(name)       # blockstate file not updated to the new properties yet
+                continue
+            key = ",".join(f"{k}={v}" for k, v in sorted(props.items()) if k in names)
+            if key not in variants:
+                problems.add(f"{name}[{key}] has no blockstate variant")
+            continue
         if name.startswith("retrocosmos:"):
             if name == LAUNCH_PAD and not props:
                 continue            # stored plain; the game shapes the 3x3 after placement
@@ -2260,6 +2359,8 @@ def validate(st):
                     problems.add(f"{name}: {k}={v} invalid")
         else:
             problems.add(f"unknown block {name}")
+    if pending:
+        print("station.py: blockstates not drawn yet, checked against the fixed schemas: " + ", ".join(sorted(pending)))
     if problems:
         raise SystemExit("station.py: invalid block states:\n  " + "\n  ".join(sorted(problems)))
 

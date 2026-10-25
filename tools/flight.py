@@ -27,6 +27,12 @@ def orbit_dimension():
             "minecraft:gameplay/respawn_anchor_works": False,
             "minecraft:visual/fog_color": "#000000",
             "minecraft:visual/sky_color": "#000000",
+            # a starfield all around, a hard white sun and no sunrise glow
+            "minecraft:visual/star_brightness": 1.0,
+            "minecraft:visual/sun_angle": 40.0,
+            "minecraft:visual/moon_angle": 200.0,
+            "minecraft:visual/sunrise_sunset_color": "#00000000",
+            "minecraft:visual/sky_light_factor": 1.0,
         },
         "coordinate_scale": 1.0,
         "has_ceiling": False,
@@ -38,7 +44,7 @@ def orbit_dimension():
         "min_y": 0,
         "monster_spawn_block_light_limit": 0,
         "monster_spawn_light_level": 0,
-        "skybox": "end",
+        "skybox": "overworld",
     })
     write_json(os.path.join(DATA, "worldgen", "biome", "orbit.json"), {
         "attributes": {"minecraft:visual/sky_color": "#000000", "minecraft:visual/fog_color": "#000000"},
@@ -109,6 +115,7 @@ EN = {
     "gui.retrocosmos.map.status.locked": "LOCKED",
     "gui.retrocosmos.map.belt": "Scrapyard Belt",
     "command.retrocosmos.tp.station": "Teleported %s to Freedom Station",
+    "message.retrocosmos.station.protected": "Station property - hands off the hull!",
     "command.retrocosmos.tp.home": "Teleported %s home to Homestead",
     "command.retrocosmos.tp.no_station": "Freedom Station is unavailable",
     "command.retrocosmos.station.rebuilt": "Freedom Station rebuilt from the current design",
@@ -153,6 +160,7 @@ RU = {
     "gui.retrocosmos.map.status.locked": "ЗАКРЫТО",
     "gui.retrocosmos.map.belt": "Пояс «Свалка»",
     "command.retrocosmos.tp.station": "%s телепортирован на станцию «Свобода»",
+    "message.retrocosmos.station.protected": "Имущество станции — корпус не разбирать!",
     "command.retrocosmos.tp.home": "%s телепортирован домой на Хоумстед",
     "command.retrocosmos.tp.no_station": "Станция «Свобода» недоступна",
     "command.retrocosmos.station.rebuilt": "Станция «Свобода» перестроена по текущему проекту",

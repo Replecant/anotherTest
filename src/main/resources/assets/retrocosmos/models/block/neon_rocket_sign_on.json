@@ -7,7 +7,6 @@
     "particle": "retrocosmos:block/neon_back"
   },
   "render_type": "minecraft:cutout",
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [

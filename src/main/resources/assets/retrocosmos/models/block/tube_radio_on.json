@@ -8,7 +8,6 @@
     "chrome": "retrocosmos:block/furn_chrome",
     "particle": "retrocosmos:block/cream_bakelite"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [
@@ -75,6 +74,29 @@
             11
           ],
           "texture": "#cream"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4,
+        4.8
+      ],
+      "to": [
+        7,
+        7,
+        4.8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            9,
+            14,
+            12
+          ],
+          "texture": "#front_on"
         }
       },
       "shade": false

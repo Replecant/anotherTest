@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "TT",
+    "TG",
+    "TT"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "retrocosmos:airlock_door",
+    "count": 3
+  }
+}

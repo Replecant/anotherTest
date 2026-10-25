@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/tape_archive"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/tape_archive",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/tape_archive",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/tape_archive",
+      "y": 270
+    }
+  }
+}

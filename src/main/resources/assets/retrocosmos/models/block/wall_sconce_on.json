@@ -9,7 +9,6 @@
     "particle": "retrocosmos:block/stool_chrome"
   },
   "render_type": "minecraft:cutout",
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [
@@ -219,8 +218,7 @@
         ],
         "axis": "z",
         "angle": 45
-      },
-      "shade": false
+      }
     },
     {
       "from": [
@@ -261,8 +259,7 @@
         ],
         "axis": "z",
         "angle": -45
-      },
-      "shade": false
+      }
     }
   ]
 }

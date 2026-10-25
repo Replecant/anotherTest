@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AAA",
+    "C C",
+    "AAA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "C": "minecraft:cyan_dye"
+  },
+  "result": {
+    "id": "retrocosmos:supply_cabinet",
+    "count": 1
+  }
+}

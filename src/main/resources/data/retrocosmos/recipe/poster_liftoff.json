@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P",
+    "D",
+    "P"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "D": "minecraft:red_dye"
+  },
+  "result": {
+    "id": "retrocosmos:poster_liftoff",
+    "count": 1
+  }
+}

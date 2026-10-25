@@ -9,7 +9,6 @@
     "black": "retrocosmos:block/neon_back",
     "particle": "retrocosmos:block/walnut"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [
@@ -399,24 +398,6 @@
         3
       ],
       "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#screen_off"
-        },
-        "south": {
-          "uv": [
-            2,
-            3,
-            12,
-            12
-          ],
-          "texture": "#teal"
-        },
         "east": {
           "uv": [
             13,
@@ -452,6 +433,29 @@
             14
           ],
           "texture": "#teal"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4,
+        2
+      ],
+      "to": [
+        12,
+        13,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#screen_off"
         }
       }
     },

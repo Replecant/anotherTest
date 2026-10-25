@@ -131,7 +131,9 @@ public final class OxygenSystem {
             RetroCosmos.LOGGER.info("Retro Cosmos: {} is suffocating (suit {}, O2 {} ticks), damage applied={} health={}",
                     player.getName().getString(), suited ? "complete" : "incomplete", o2, applied, player.getHealth());
         }
-        level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_HURT_DROWN, SoundSource.PLAYERS, 1.0F, 0.8F);
+        // no water here: a racing heartbeat and the suit's alarm instead of drowning bubbles
+        level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 1.2F, 1.4F);
+        level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.PLAYERS, 0.8F, 0.5F);
         player.displayClientMessage(Component.translatable(suited ? "message.retrocosmos.oxygen.empty" : "message.retrocosmos.oxygen.no_suit")
                 .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
     }

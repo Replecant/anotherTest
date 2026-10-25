@@ -9,7 +9,6 @@
     "ctop": "retrocosmos:block/chrome_top",
     "particle": "retrocosmos:block/st_bakelite"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [
@@ -150,15 +149,6 @@
         4
       ],
       "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#screen"
-        },
         "east": {
           "uv": [
             12,
@@ -185,6 +175,29 @@
             4
           ],
           "texture": "#teal"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        2,
+        3
+      ],
+      "to": [
+        12,
+        10,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#screen"
         }
       }
     },

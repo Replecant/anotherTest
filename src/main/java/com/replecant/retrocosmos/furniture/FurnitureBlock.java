@@ -8,18 +8,24 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -36,6 +42,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class FurnitureBlock extends Block {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
     private static final ThreadLocal<FurnitureSpec> CONSTRUCTING = new ThreadLocal<>();
 
@@ -43,9 +50,14 @@ public class FurnitureBlock extends Block {
     private final Map<Direction, VoxelShape> shapes;
 
     public static FurnitureBlock create(BlockBehaviour.Properties properties, FurnitureSpec spec) {
+        return construct(() -> new FurnitureBlock(properties, spec), spec);
+    }
+
+    /** Runs a (sub)class constructor with the spec available to createBlockStateDefinition. */
+    protected static <B extends FurnitureBlock> B construct(java.util.function.Supplier<B> constructor, FurnitureSpec spec) {
         CONSTRUCTING.set(spec);
         try {
-            return new FurnitureBlock(properties, spec);
+            return constructor.get();
         } finally {
             CONSTRUCTING.remove();
         }
@@ -61,6 +73,9 @@ public class FurnitureBlock extends Block {
         }
         if (spec.toggleable()) {
             state = state.setValue(LIT, Boolean.FALSE);
+        }
+        if (spec.tall()) {
+            state = state.setValue(HALF, DoubleBlockHalf.LOWER);
         }
         registerDefaultState(state);
     }
@@ -84,6 +99,14 @@ public class FurnitureBlock extends Block {
         if (s.toggleable()) {
             builder.add(LIT);
         }
+        if (s.tall()) {
+            builder.add(HALF);
+        }
+    }
+
+    /** The lower half of a tall block (or the block itself). */
+    protected BlockPos basePos(BlockState state, BlockPos pos) {
+        return spec.tall() && state.getValue(HALF) == DoubleBlockHalf.UPPER ? pos.below() : pos;
     }
 
     /** Light level for a state; used by the block properties. */
@@ -96,6 +119,20 @@ public class FurnitureBlock extends Block {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockPos pos = context.getClickedPos();
+        if (spec.tall() && (pos.getY() >= context.getLevel().getMaxY() || !context.getLevel().getBlockState(pos.above()).canBeReplaced(context))) {
+            return null;
+        }
+        BlockState state = placementState(context);
+        if (state != null && spec.tall() && spec.wall()
+                && !canSurvive(state.setValue(HALF, DoubleBlockHalf.UPPER), context.getLevel(), pos.above())) {
+            return null;
+        }
+        return state;
+    }
+
+    @Nullable
+    private BlockState placementState(BlockPlaceContext context) {
         BlockState state = defaultBlockState();
         if (!spec.facing()) {
             return state;
@@ -117,6 +154,45 @@ public class FurnitureBlock extends Block {
             return null;
         }
         return state.setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        if (spec.tall()) {
+            level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), Block.UPDATE_ALL);
+        }
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
+                                     BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+        if (spec.tall()) {
+            DoubleBlockHalf half = state.getValue(HALF);
+            boolean towardPartner = half == DoubleBlockHalf.LOWER ? direction == Direction.UP : direction == Direction.DOWN;
+            if (towardPartner && !(neighborState.is(this) && neighborState.getValue(HALF) != half)) {
+                return Blocks.AIR.defaultBlockState();
+            }
+        }
+        if (spec.wall() && spec.facing() && direction == state.getValue(FACING).getOpposite() && !canSurvive(state, level, pos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, level, ticks, pos, direction, neighborPos, neighborState, random);
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        // like doors: breaking the upper half breaks the lower one, which carries the drop
+        if (!level.isClientSide() && spec.tall() && state.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            BlockPos below = pos.below();
+            BlockState lower = level.getBlockState(below);
+            if (lower.is(this) && lower.getValue(HALF) == DoubleBlockHalf.LOWER) {
+                if (!player.isCreative()) {
+                    Block.dropResources(lower, level, below, level.getBlockEntity(below), player, player.getMainHandItem());
+                }
+                level.setBlock(below, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
+            }
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -142,6 +218,13 @@ public class FurnitureBlock extends Block {
             if (!level.isClientSide()) {
                 boolean on = !state.getValue(LIT);
                 level.setBlock(pos, state.setValue(LIT, on), Block.UPDATE_ALL);
+                if (spec.tall()) {
+                    BlockPos other = state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below();
+                    BlockState otherState = level.getBlockState(other);
+                    if (otherState.is(this)) {
+                        level.setBlock(other, otherState.setValue(LIT, on), Block.UPDATE_ALL);
+                    }
+                }
                 if (spec.toggleSound() != null) {
                     level.playSound(null, pos, spec.toggleSound(), SoundSource.BLOCKS, 0.6F, on ? 1.2F : 0.8F);
                 } else {

@@ -7,7 +7,6 @@
     "ctop": "retrocosmos:block/chrome_top",
     "particle": "retrocosmos:block/st_cream"
   },
-  "ambientocclusion": false,
   "elements": [
     {
       "from": [

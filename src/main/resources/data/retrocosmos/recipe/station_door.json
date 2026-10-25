@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AA",
+    "AG",
+    "AA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "retrocosmos:station_door",
+    "count": 3
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "retrocosmos:block/poster_liftoff_lower"
+    },
+    "facing=north,half=upper": {
+      "model": "retrocosmos:block/poster_liftoff_upper"
+    },
+    "facing=east,half=lower": {
+      "model": "retrocosmos:block/poster_liftoff_lower",
+      "y": 90
+    },
+    "facing=east,half=upper": {
+      "model": "retrocosmos:block/poster_liftoff_upper",
+      "y": 90
+    },
+    "facing=south,half=lower": {
+      "model": "retrocosmos:block/poster_liftoff_lower",
+      "y": 180
+    },
+    "facing=south,half=upper": {
+      "model": "retrocosmos:block/poster_liftoff_upper",
+      "y": 180
+    },
+    "facing=west,half=lower": {
+      "model": "retrocosmos:block/poster_liftoff_lower",
+      "y": 270
+    },
+    "facing=west,half=upper": {
+      "model": "retrocosmos:block/poster_liftoff_upper",
+      "y": 270
+    }
+  }
+}

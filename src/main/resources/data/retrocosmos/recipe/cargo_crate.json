@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "ARA",
+    "A A",
+    "AAA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "R": "minecraft:red_dye"
+  },
+  "result": {
+    "id": "retrocosmos:cargo_crate",
+    "count": 1
+  }
+}

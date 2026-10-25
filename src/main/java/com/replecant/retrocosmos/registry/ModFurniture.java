@@ -2,6 +2,10 @@ package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.furniture.FurnitureBlock;
 import com.replecant.retrocosmos.furniture.FurnitureSpec;
+import com.replecant.retrocosmos.furniture.GalleyStoveBlock;
+import com.replecant.retrocosmos.furniture.LabSinkBlock;
+import com.replecant.retrocosmos.furniture.StorageFurnitureBlock;
+import com.replecant.retrocosmos.furniture.WorkbenchBlock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,11 +19,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -97,7 +104,7 @@ public final class ModFurniture {
     public static final DeferredBlock<FurnitureBlock> OXYGEN_TANK_RACK = furniture("oxygen_tank_rack",
             spec(Block.box(1, 0, 4, 15, 16, 12), true, false, false, 0, -1, null), metal(MapColor.METAL));
     public static final DeferredBlock<FurnitureBlock> VENDING_MACHINE = furniture("vending_machine",
-            spec(Block.box(1, 0, 2, 15, 16, 15), true, false, true, 8, -1, SoundEvents.BARREL_OPEN), metal(MapColor.COLOR_RED));
+            spec(Block.box(1, 0, 2, 15, 16, 15), true, false, true, 8, -1, SoundEvents.BARREL_OPEN).asTall(), metal(MapColor.COLOR_RED));
     public static final DeferredBlock<FurnitureBlock> STAR_CHART = furniture("star_chart",
             spec(Block.box(1, 1, 15, 15, 15, 16), true, true, true, 4, -1, null), metal(MapColor.COLOR_BLUE).noCollision());
     public static final DeferredBlock<FurnitureBlock> CEILING_LIGHT = furniture("ceiling_light",
@@ -124,6 +131,40 @@ public final class ModFurniture {
                     .isValidSpawn((s, l, pos, t) -> false).isRedstoneConductor((s, l, pos) -> false)
                     .isSuffocating((s, l, pos) -> false).isViewBlocking((s, l, pos) -> false));
 
+    // ================= Station storage, work stations, posters, doors =================
+    public static final DeferredBlock<StorageFurnitureBlock> CREW_LOCKER = furniture("crew_locker",
+            spec(Block.box(1, 0, 2, 15, 16, 16), true, false, false, 0, -1, null).asTall(), metal(MapColor.COLOR_LIGHT_GRAY),
+            StorageFurnitureBlock::create);
+    public static final DeferredBlock<StorageFurnitureBlock> CARGO_CRATE = furniture("cargo_crate",
+            spec(Block.box(0, 0, 0, 16, 16, 16), false, false, false, 0, -1, null), metal(MapColor.SNOW), StorageFurnitureBlock::create);
+    public static final DeferredBlock<StorageFurnitureBlock> SUPPLY_CABINET = furniture("supply_cabinet",
+            spec(Block.box(0, 0, 1, 16, 16, 16), true, false, false, 0, -1, null), metal(MapColor.COLOR_CYAN), StorageFurnitureBlock::create);
+    public static final DeferredBlock<WorkbenchBlock> RETRO_WORKBENCH = furniture("retro_workbench",
+            spec(Block.box(0, 0, 0, 16, 16, 16), true, false, false, 0, -1, null), metal(MapColor.SAND), WorkbenchBlock::create);
+    public static final DeferredBlock<GalleyStoveBlock> GALLEY_STOVE = furniture("galley_stove",
+            spec(Block.box(0, 0, 1, 16, 16, 16), true, false, true, 10, -1, null), metal(MapColor.METAL), GalleyStoveBlock::create);
+    public static final DeferredBlock<LabSinkBlock> LAB_SINK = furniture("lab_sink",
+            spec(Block.box(0, 0, 1, 16, 16, 16), true, false, false, 0, -1, null), metal(MapColor.METAL), LabSinkBlock::create);
+    public static final DeferredBlock<FurnitureBlock> TAPE_ARCHIVE = furniture("tape_archive",
+            spec(Block.box(0, 0, 0, 16, 16, 16), true, false, false, 0, -1, null), metal(MapColor.COLOR_CYAN));
+
+    public static final DeferredBlock<FurnitureBlock> POSTER_LIFTOFF = poster("poster_liftoff");
+    public static final DeferredBlock<FurnitureBlock> POSTER_VESPER = poster("poster_vesper");
+    public static final DeferredBlock<FurnitureBlock> POSTER_SPACE_POP = poster("poster_space_pop");
+    public static final DeferredBlock<FurnitureBlock> POSTER_SUIT_CHECK = poster("poster_suit_check");
+    public static final DeferredBlock<FurnitureBlock> POSTER_HOMESTEAD = poster("poster_homestead");
+    public static final DeferredBlock<FurnitureBlock> POSTER_FREEDOM = poster("poster_freedom");
+
+    public static final DeferredBlock<DoorBlock> STATION_DOOR = block("station_door", p -> new DoorBlock(BlockSetType.COPPER, p),
+            p -> p.mapColor(MapColor.SNOW).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<DoorBlock> AIRLOCK_DOOR = block("airlock_door", p -> new DoorBlock(BlockSetType.COPPER, p),
+            p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 12.0F).sound(SoundType.METAL).noOcclusion().pushReaction(PushReaction.DESTROY));
+
+    private static DeferredBlock<FurnitureBlock> poster(String name) {
+        return furniture(name, spec(Block.box(1, 0, 15, 15, 16, 16), true, true, false, 0, -1, null).asTall(),
+                BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F).sound(SoundType.WOOL).noOcclusion().noCollision());
+    }
+
     private static FurnitureSpec spec(VoxelShape shape, boolean facing, boolean wall, boolean toggle, int light, float seat,
                                       @Nullable SoundEvent sound) {
         return new FurnitureSpec(shape, facing, wall, toggle, light, seat, sound);
@@ -142,8 +183,13 @@ public final class ModFurniture {
     }
 
     private static DeferredBlock<FurnitureBlock> furniture(String name, FurnitureSpec spec, BlockBehaviour.Properties base) {
+        return furniture(name, spec, base, FurnitureBlock::create);
+    }
+
+    private static <B extends FurnitureBlock> DeferredBlock<B> furniture(String name, FurnitureSpec spec, BlockBehaviour.Properties base,
+                                                                        java.util.function.BiFunction<BlockBehaviour.Properties, FurnitureSpec, B> factory) {
         int light = spec.lightOn();
-        return block(name, p -> FurnitureBlock.create(p, spec),
+        return block(name, p -> factory.apply(p, spec),
                 p -> light > 0 ? p.lightLevel(state -> FurnitureBlock.lightLevel(state, light)) : p, base);
     }
 

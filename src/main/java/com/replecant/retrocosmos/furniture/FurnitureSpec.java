@@ -14,9 +14,19 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * @param lightOn     light level emitted while lit
  * @param seatHeight  seat surface height in pixels, or a negative value when it isn't a seat
  * @param toggleSound sound played when switched, may be null
+ * @param tall        two blocks tall (lower/upper halves, like a door)
  */
 public record FurnitureSpec(VoxelShape shape, boolean facing, boolean wall, boolean toggleable, int lightOn,
-                            float seatHeight, @Nullable SoundEvent toggleSound) {
+                            float seatHeight, @Nullable SoundEvent toggleSound, boolean tall) {
+
+    public FurnitureSpec(VoxelShape shape, boolean facing, boolean wall, boolean toggleable, int lightOn,
+                         float seatHeight, @Nullable SoundEvent toggleSound) {
+        this(shape, facing, wall, toggleable, lightOn, seatHeight, toggleSound, false);
+    }
+
+    public FurnitureSpec asTall() {
+        return new FurnitureSpec(shape, facing, wall, toggleable, lightOn, seatHeight, toggleSound, true);
+    }
 
     public boolean isSeat() {
         return seatHeight >= 0;

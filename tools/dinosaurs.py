@@ -13,7 +13,7 @@ import os
 
 from PIL import Image
 
-from gen_resources import ASSETS, DATA, MOD, generated_item, loot_self, save, shaped, write_json
+from gen_resources import ASSETS, DATA, MOD, generated_item, loot_self, save, shaped, shapeless, write_json
 from furniture import add_to_tag
 
 JAVA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "java",
@@ -1343,8 +1343,231 @@ EXTRA_PAINTERS.update({"flipper": p_flipper, "dbody": p_dbody, "deye": p_deye, "
                        "club": p_club, "scutes": p_scutes, "croceye": p_croceye})
 
 
+# ---- Dr. Oinstein's atomic robots ---------------------------------------------------------------------------------
+
+ROBOT_PAL = {"chrome": (196, 206, 214), "chrome_dark": (110, 122, 134), "chrome_light": (244, 248, 252),
+             "steel": (128, 136, 140), "steel_dark": (78, 84, 90), "rivet": (60, 64, 70), "rivet_light": (210, 214, 218),
+             "gun": (58, 62, 70), "gun_light": (96, 102, 112), "hazard_y": (236, 186, 40), "hazard_k": (34, 32, 30),
+             "glass": (190, 236, 240), "core": (120, 255, 190), "core_hot": (230, 255, 240), "lens": (255, 40, 30),
+             "lens_hot": (255, 200, 170), "orbit": (90, 220, 255), "electron": (220, 250, 255), "beacon": (255, 70, 50),
+             "visor": (255, 90, 40), "noise": 3}
+
+
+def sentry_spec():
+    """Atomic Sentry: a chrome flying saucer on watch - one red eye, a blaster below, a glass reactor dome on top and
+    two glowing atom orbits spinning round it."""
+    parts = [
+        P("body", None, (0, 15, 0), (0, 0, 0), [
+            B(-7, -1.5, -7, 14, 3, 14, "band"),
+            B(-5, -4.5, -5, 10, 3, 10, "chrome", rivets=True),
+            B(-5, 1.5, -5, 10, 2, 10, "chrome"),
+            B(-3, -6.5, -3, 6, 2, 6, "glass"),
+            B(-2, 3.5, -2, 4, 1, 4, "steel"),
+        ]),
+        P("core", "body", (0, -5.5, 0), (0, 0, 0), [
+            B(-1.5, -1.5, -1.5, 3, 3, 3, "core"),
+        ]),
+        P("eye", "body", (0, -2.5, -5), (0, 0, 0), [
+            B(-2, -1.5, -1.5, 4, 3, 2, "lens"),
+        ]),
+        P("eye_flare", "eye", (0, 0, 0), (0, 0, 0), [
+            B(-3, -2.5, -2.5, 6, 5, 1, "flare"),
+        ]),
+        P("barrel", "body", (0, 3, -2), (0.3, 0, 0), [
+            B(-1, -1, -6, 2, 2, 6, "gun"),
+            B(-1.5, -1.5, -7, 3, 3, 1, "muzzle"),
+        ]),
+        P("antenna", "body", (3, -4.5, 3), (0, 0, 0.3), [
+            B(-0.5, -5, -0.5, 1, 5, 1, "steel"),
+            B(-1, -6, -1, 2, 1, 2, "beacon"),
+        ]),
+        P("orbit_a", None, (0, 15, 0), (0.5, 0, 0.3), []),
+        P("ring_a", "orbit_a", (0, 0, 0), (0, 0, 0), [
+            B(-9, -0.5, -9, 18, 1, 1, "orbit"), B(-9, -0.5, 8, 18, 1, 1, "orbit"),
+            B(-9, -0.5, -8, 1, 1, 16, "orbit"), B(8, -0.5, -8, 1, 1, 16, "orbit"),
+            B(-10, -1, -1, 2, 2, 2, "electron"),
+        ]),
+        P("orbit_b", None, (0, 15, 0), (-0.5, 0, -0.3), []),
+        P("ring_b", "orbit_b", (0, 0, 0), (0, 0.78, 0), [
+            B(-9, -0.5, -9, 18, 1, 1, "orbit"), B(-9, -0.5, 8, 18, 1, 1, "orbit"),
+            B(-9, -0.5, -8, 1, 1, 16, "orbit"), B(8, -0.5, -8, 1, 1, 16, "orbit"),
+            B(8, -1, -1, 2, 2, 2, "electron"),
+        ]),
+    ]
+    return {"name": "atomic_sentry", "tex_w": 128, "parts": parts, "glow": True, "palette": dict(ROBOT_PAL)}
+
+
+def automaton_spec():
+    """Atomic Automaton: a 1950s picture-show robot - barrel chest with an atom-core window, bucket head, visor slit."""
+    parts = [
+        P("body", None, (0, 10, 0), (0, 0, 0), [
+            B(-7, -14, -4.5, 14, 13, 9, "steel", rivets=True, core_window=True),
+            B(-5, -1, -3.5, 10, 3, 7, "hazard"),
+        ]),
+        P("head", "body", (0, -14, 0), (0, 0, 0), [
+            B(-4.5, -8, -4.5, 9, 8, 9, "chrome", visor=True, rivets=True),
+            B(-3.5, -9, -3.5, 7, 1, 7, "chrome"),
+            B(-5.5, -6, -1, 1, 3, 2, "gun"), B(4.5, -6, -1, 1, 3, 2, "gun"),
+        ]),
+        P("antenna", "head", (0, -9, 0), (0, 0, 0), [
+            B(-0.5, -3, -0.5, 1, 3, 1, "steel"),
+            B(-1, -4, -1, 2, 1, 2, "beacon"),
+        ]),
+    ]
+    parts += legs("", [
+        P("arm_l", "body", (7, -12, 0), (0, 0, -0.08), [
+            B(0, -2, -2.5, 3, 4, 5, "chrome"),
+            B(0.5, 2, -1.5, 2, 6, 3, "accordion"),
+        ]),
+        P("forearm_l", "arm_l", (1.5, 8, 0), (-0.15, 0, 0), [
+            B(-1.5, 0, -2, 3, 6, 4, "steel", rivets=True),
+        ]),
+        P("claw_l", "forearm_l", (0, 6, 0), (0, 0, 0), [
+            B(-1.5, 0, -2.5, 3, 3, 1, "rclaw"), B(-1.5, 0, 1.5, 3, 3, 1, "rclaw"),
+        ]),
+        P("leg_l", None, (3.5, 12, 0), (0, 0, 0), [
+            B(-2.5, 0, -2.5, 5, 6, 5, "gun"),
+        ]),
+        P("shin_l", "leg_l", (0, 6, 0), (0, 0, 0), [
+            B(-2, 0, -2, 4, 5, 4, "chrome", rivets=True),
+            B(-3, 5, -4, 6, 1, 7, "gun"),
+        ]),
+    ])
+    return {"name": "atomic_automaton", "tex_w": 128, "parts": parts, "glow": True, "palette": dict(ROBOT_PAL)}
+
+
+def _rivet(t):
+    """Rivet heads along the edges of a face, every 3 texels."""
+    cols = t.w if t.face in ("north", "south", "top", "bottom") else t.d
+    rows = t.h if t.face not in ("top", "bottom") else t.d
+    on_edge = t.i in (0, cols - 1) or t.j in (0, rows - 1)
+    return on_edge and (t.i + t.j) % 3 == 0 and cols > 3 and rows > 3
+
+
+def p_metal(spec, t, noise):
+    pal = spec["palette"]
+    mat = t.mat
+    rows = t.h if t.face not in ("top", "bottom") else t.d
+    cols = t.w if t.face in ("north", "south", "top", "bottom") else t.d
+    fy = t.j / max(1, rows - 1)
+    if mat == "chrome":
+        c = lerp(pal["chrome_light"], pal["chrome_dark"], fy * 0.9)
+        if abs(t.i - cols * 0.3) < 1.0 and t.face not in ("top", "bottom"):
+            c = pal["chrome_light"]  # the specular streak
+        if t.face == "top":
+            c = pal["chrome_light"]
+    elif mat == "steel":
+        c = lerp(pal["steel"], pal["steel_dark"], fy * 0.5)
+        if t.j % 5 == 4 and t.face not in ("top", "bottom"):
+            c = pal["steel_dark"]  # plate seams
+    elif mat == "gun":
+        c = pal["gun_light"] if hash3(t.box_id, t.i, t.j, 4) > 0.85 else pal["gun"]
+        if t.j == 0:
+            c = pal["gun_light"]
+    elif mat == "accordion":
+        c = pal["gun"] if t.j % 2 == 0 else pal["chrome_dark"]
+    elif mat == "rclaw":
+        c = pal["chrome_dark"] if t.j < rows - 1 else pal["gun"]
+    elif mat in ("band", "hazard"):
+        c = pal["hazard_y"] if int(math.floor((t.i + t.j) / 2)) % 2 == 0 else pal["hazard_k"]
+        if t.face in ("top", "bottom"):
+            c = pal["steel_dark"]
+        if mat == "band" and t.j in (0, rows - 1):
+            c = pal["chrome_dark"]
+    else:
+        c = pal["steel"]
+    if t.feat.get("rivets") and _rivet(t):
+        c = pal["rivet"] if (t.i + t.j) % 2 else pal["rivet_light"]
+    if t.feat.get("core_window") and t.face == "north":
+        r = math.hypot(t.i + 0.5 - cols / 2, t.j + 0.5 - rows * 0.42)
+        if r < 3.6:
+            c = _core_glow(pal, t, cols, rows) if r < 2.8 else pal["chrome_light"]
+    if t.feat.get("visor") and t.face in ("north", "east", "west") and t.j in (3, 4):
+        if t.face == "north" and 0 < t.i < cols - 1 or t.face != "north" and t.i < 3:
+            c = pal["visor"] if t.j == 3 else mul(pal["visor"], 0.7)
+    return tuple(v + noise for v in c), 255
+
+
+def _core_glow(pal, t, cols, rows):
+    """Atom emblem in the chest window: a bright nucleus with an orbit ring."""
+    dx = t.i + 0.5 - cols / 2
+    dy = t.j + 0.5 - rows * 0.42
+    r = math.hypot(dx, dy)
+    if r < 1.0:
+        return pal["core_hot"]
+    if abs(r - 2.1) < 0.6 or abs(dx) < 0.6 or abs(dy) < 0.6:
+        return pal["core"]
+    return mul(pal["core"], 0.45)
+
+
+def p_glow_parts(spec, t, noise):
+    """Self-lit bits (also drawn in the base texture, so they read even without the glow layer)."""
+    pal = spec["palette"]
+    m = t.mat
+    if m == "core":
+        return (pal["core_hot"] if t.j == 1 and t.i == 1 else pal["core"]), 255
+    if m == "lens":
+        if t.face == "north":
+            r = math.hypot(t.i - 1.5, t.j - 1.5)
+            return (pal["lens_hot"] if r < 0.8 else pal["lens"] if r < 1.8 else (120, 10, 10)), 255
+        return pal["gun"], 255
+    if m == "flare":
+        return None, 0  # only in the glow layer, and only while alarmed
+    if m == "orbit":
+        return pal["orbit"], 255
+    if m == "electron":
+        return pal["electron"], 255
+    if m == "beacon":
+        return pal["beacon"], 255
+    if m == "muzzle":
+        return ((255, 120, 60) if t.face == "north" and t.i == 1 and t.j == 1 else pal["gun"]), 255
+    if m == "glass":
+        cols = t.w if t.face in ("north", "south", "top", "bottom") else t.d
+        rows = t.h if t.face not in ("top", "bottom") else t.d
+        edge = t.i in (0, cols - 1) or t.j in (0, rows - 1)
+        if edge:
+            return pal["chrome_dark"], 255
+        if t.i == t.j:
+            return pal["glass"], 255  # glint
+        return None, 0  # clear: the glowing core shows through
+    raise ValueError(m)
+
+
+def robot_glow(spec, t):
+    pal = spec["palette"]
+    if t.mat in ("core", "orbit", "electron", "beacon"):
+        c, _ = p_glow_parts(spec, t, 0)
+        return c + (255,)
+    if t.mat == "lens" and t.face == "north":
+        c, _ = p_glow_parts(spec, t, 0)
+        return c + (255,)
+    if t.mat == "flare" and t.face in ("north", "south"):
+        r = math.hypot(t.i - 2.5, t.j - 2.5)
+        if r < 3.2:
+            return (255, 80, 60, 255) if r > 1.5 else (255, 230, 210, 255)
+    if t.mat == "muzzle" and t.face == "north" and t.i == 1 and t.j == 1:
+        return (255, 140, 70, 255)
+    if t.feat.get("core_window") and t.face == "north":
+        r = math.hypot(t.i + 0.5 - t.w / 2, t.j + 0.5 - t.h * 0.42)
+        if r < 2.8:
+            return _core_glow(pal, t, t.w, t.h) + (255,)
+    if t.feat.get("visor") and t.face in ("north", "east", "west") and t.j == 3:
+        cols = t.w if t.face == "north" else t.d
+        if t.face == "north" and 0 < t.i < cols - 1 or t.face != "north" and t.i < 3:
+            return pal["visor"] + (255,)
+    return None
+
+
+EXTRA_PAINTERS.update({m: p_metal for m in ("chrome", "steel", "gun", "accordion", "rclaw", "band", "hazard")})
+EXTRA_PAINTERS.update({m: p_glow_parts for m in ("core", "lens", "flare", "orbit", "electron", "beacon", "muzzle", "glass")})
+
+SPECS += [sentry_spec(), automaton_spec()]
+
+
 def glow_texel(spec, t):
-    """Emissive overlay (drawn full-bright in game): the creeper's spore bulb and its eyes."""
+    """Emissive overlay (drawn full-bright in game): spore bulbs, eyes, wing spots, robot cores and lenses."""
+    if spec["name"] in ("atomic_sentry", "atomic_automaton"):
+        return robot_glow(spec, t)
     if t.mat == "bulb":
         c, _ = p_bulb(spec, t, 0)
         return c + (255,)
@@ -1381,7 +1604,7 @@ def build_texture(spec, glow=False):
                         if glow:
                             px = glow_texel(spec, t)
                             if px:
-                                img.putpixel((u0 + i, v0 + j), px)
+                                img.putpixel((u0 + i, v0 + j), tuple(max(0, min(255, int(round(v)))) for v in px))
                         else:
                             img.putpixel((u0 + i, v0 + j), paint(spec, t))
     return img
@@ -1524,6 +1747,8 @@ EGGS = {
     "spore_moth": ((196, 180, 214), (120, 255, 220)),
     "ankylosaurus": ((96, 92, 86), (192, 142, 62)),
     "deinosuchus": ((70, 86, 50), (176, 170, 120)),
+    "atomic_sentry": ((196, 206, 214), (230, 40, 30)),
+    "atomic_automaton": ((110, 118, 124), (236, 186, 40)),
 }
 
 EGG_SPOTS = [(5, 3), (9, 4), (4, 7), (8, 8), (11, 7), (6, 11), (10, 11), (7, 5), (12, 10), (4, 10)]
@@ -1728,6 +1953,54 @@ def plate_icon():
     return img
 
 
+def bolt_texture():
+    """The blaster bolt glow: a white-hot centre fading through orange to red at the rim (drawn additive)."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for x in range(16):
+        for y in range(16):
+            r = math.hypot(x - 7.5, y - 7.5) / 7.5
+            if r < 1.0:
+                c = lerp((255, 250, 230), (255, 110, 40), r * 1.6) if r < 0.6 else lerp((255, 110, 40), (200, 20, 10), (r - 0.6) / 0.4)
+                img.putpixel((x, y), tuple(int(v) for v in c) + (int(255 * (1 - r ** 3)),))
+    return img
+
+
+def scrap_icon():
+    """A twisted bit of riveted chrome plating with a stripped wire."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    plate = [(x, y) for y in range(4, 13) for x in range(2, 14) if abs((x - 8) * 0.6 + (y - 8)) < 4.2 and (x + y) % 11 != 0]
+    for (x, y) in plate:
+        c = lerp((236, 240, 246), (96, 106, 118), (y - 4) / 9)
+        edge = any((x + a, y + b) not in plate for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        img.putpixel((x, y), tuple(int(v * (0.6 if edge else 1.0)) for v in c) + (255,))
+    for (x, y) in ((5, 7), (9, 6), (7, 10)):
+        img.putpixel((x, y), (50, 54, 60, 255))
+    for k, (x, y) in enumerate(((11, 3), (12, 2), (13, 2), (14, 1))):
+        img.putpixel((x, y), (214, 120, 60, 255) if k % 2 == 0 else (240, 170, 90, 255))
+    return img
+
+
+def core_icon():
+    """An atomic core: a glass bulb with a glowing green nucleus and an orbit ring, on a brass cap."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for x in range(16):
+        for y in range(16):
+            r = math.hypot(x - 7.5, y - 7.0)
+            if r < 5.6:
+                c = (150, 220, 210) if r > 4.6 else lerp((230, 255, 240), (60, 200, 140), r / 4.6)
+                img.putpixel((x, y), tuple(int(v) for v in c) + (255,))
+    for k in range(40):
+        a = k / 40 * math.pi * 2
+        x, y = 7.5 + math.cos(a) * 6.8, 7.0 + math.sin(a) * 2.6
+        if 0 <= int(x) < 16 and 0 <= int(y) < 16:
+            img.putpixel((int(x), int(y)), (120, 230, 255, 255))
+    for x in range(5, 11):
+        for y in (13, 14):
+            img.putpixel((x, y), (214, 170, 70, 255) if y == 13 else (150, 110, 40, 255))
+    img.putpixel((6, 4), (255, 255, 255, 255))
+    return img
+
+
 def dagger_icon():
     """The fang lashed to a leather-wrapped grip with a brass pommel, held like a vanilla sword (tip top-right)."""
     img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
@@ -1824,6 +2097,13 @@ EN = {
     "item.retrocosmos.plesiosaur_tooth": "Plesiosaur Tooth",
     "item.retrocosmos.deinosuchus_tooth": "Deinosuchus Tooth",
     "item.retrocosmos.ankylosaurus_plate": "Ankylosaurus Plate",
+    "entity.retrocosmos.atomic_sentry": "Atomic Sentry",
+    "entity.retrocosmos.atomic_automaton": "Atomic Automaton",
+    "entity.retrocosmos.sentry_bolt": "Blaster Bolt",
+    "item.retrocosmos.atomic_sentry_spawn_egg": "Atomic Sentry Spawn Egg",
+    "item.retrocosmos.atomic_automaton_spawn_egg": "Atomic Automaton Spawn Egg",
+    "item.retrocosmos.atomic_scrap": "Atomic Scrap",
+    "item.retrocosmos.atomic_core": "Atomic Core",
 }
 
 RU = {
@@ -1857,6 +2137,13 @@ RU = {
     "item.retrocosmos.plesiosaur_tooth": "Зуб плезиозавра",
     "item.retrocosmos.deinosuchus_tooth": "Зуб дейнозуха",
     "item.retrocosmos.ankylosaurus_plate": "Пластина анкилозавра",
+    "entity.retrocosmos.atomic_sentry": "Атомный часовой",
+    "entity.retrocosmos.atomic_automaton": "Атомный автоматон",
+    "entity.retrocosmos.sentry_bolt": "Бластерный заряд",
+    "item.retrocosmos.atomic_sentry_spawn_egg": "Яйцо призыва атомного часового",
+    "item.retrocosmos.atomic_automaton_spawn_egg": "Яйцо призыва атомного автоматона",
+    "item.retrocosmos.atomic_scrap": "Атомный лом",
+    "item.retrocosmos.atomic_core": "Атомное ядро",
 }
 
 
@@ -1877,6 +2164,14 @@ def generate():
     generated_item("deinosuchus_tooth")
     save(plate_icon(), "item", "ankylosaurus_plate")
     generated_item("ankylosaurus_plate")
+    # Dr. Oinstein's robots
+    save(bolt_texture(), "entity", "dinosaur", "sentry_bolt")
+    save(scrap_icon(), "item", "atomic_scrap")
+    generated_item("atomic_scrap")
+    save(core_icon(), "item", "atomic_core")
+    generated_item("atomic_core")
+    shapeless("iron_ingot_from_atomic_scrap", ["atomic_scrap"] * 4, "minecraft:iron_ingot")
+    add_to_tag("entity_type/oinstein_forces", [f"{MOD}:atomic_sentry", f"{MOD}:atomic_automaton"], namespace=MOD)
     shaped("fang_dagger", ["F", "L", "S"], {"F": "tyrannosaurus_fang", "L": "minecraft:leather", "S": "minecraft:stick"},
            "fang_dagger", category="equipment")
 
@@ -1907,6 +2202,10 @@ def generate():
                           rare(f"{MOD}:ankylosaurus_plate", 0.15)])
     loot("deinosuchus", [drop("minecraft:leather", 1, 3), drop("minecraft:bone", 0, 2),
                          rare(f"{MOD}:deinosuchus_tooth", 0.12)])
+    loot("atomic_sentry", [drop(f"{MOD}:atomic_scrap", 1, 2), drop("minecraft:copper_ingot", 0, 1),
+                           drop("minecraft:redstone", 0, 2), rare(f"{MOD}:atomic_core", 0.06)])
+    loot("atomic_automaton", [drop(f"{MOD}:atomic_scrap", 2, 4), drop("minecraft:copper_ingot", 0, 2),
+                              drop("minecraft:redstone", 1, 3), rare(f"{MOD}:atomic_core", 0.12)])
 
 
 if __name__ == "__main__":

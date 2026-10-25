@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:atomic_scrap",
+    "retrocosmos:atomic_scrap",
+    "retrocosmos:atomic_scrap",
+    "retrocosmos:atomic_scrap"
+  ],
+  "result": {
+    "id": "minecraft:iron_ingot",
+    "count": 1
+  }
+}

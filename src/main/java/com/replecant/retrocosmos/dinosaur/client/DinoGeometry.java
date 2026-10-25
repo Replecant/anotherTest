@@ -563,6 +563,112 @@ public final class DinoGeometry {
         return LayerDefinition.create(mesh, 128, 128);
     }
 
+    /** atomic_sentry: 10 parts, texture 128x64. */
+    public static LayerDefinition atomic_sentry() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-7.0F, -1.5F, -7.0F, 14.0F, 3.0F, 14.0F)
+                .texOffs(68, 17).addBox(-5.0F, -4.5F, -5.0F, 10.0F, 3.0F, 10.0F)
+                .texOffs(0, 34).addBox(-5.0F, 1.5F, -5.0F, 10.0F, 2.0F, 10.0F)
+                .texOffs(40, 34).addBox(-3.0F, -6.5F, -3.0F, 6.0F, 2.0F, 6.0F)
+                .texOffs(110, 34).addBox(-2.0F, 3.5F, -2.0F, 4.0F, 1.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, 15.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition core = body.addOrReplaceChild("core", CubeListBuilder.create()
+                .texOffs(94, 34).addBox(-1.5F, -1.5F, -1.5F, 3.0F, 3.0F, 3.0F),
+                PartPose.offsetAndRotation(0.0F, -5.5F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition eye = body.addOrReplaceChild("eye", CubeListBuilder.create()
+                .texOffs(0, 46).addBox(-2.0F, -1.5F, -1.5F, 4.0F, 3.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, -2.5F, -5.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition eye_flare = eye.addOrReplaceChild("eye_flare", CubeListBuilder.create()
+                .texOffs(80, 34).addBox(-3.0F, -2.5F, -2.5F, 6.0F, 5.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition barrel = body.addOrReplaceChild("barrel", CubeListBuilder.create()
+                .texOffs(64, 34).addBox(-1.0F, -1.0F, -6.0F, 2.0F, 2.0F, 6.0F)
+                .texOffs(12, 46).addBox(-1.5F, -1.5F, -7.0F, 3.0F, 3.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 3.0F, -2.0F, 0.3F, 0.0F, 0.0F));
+        PartDefinition antenna = body.addOrReplaceChild("antenna", CubeListBuilder.create()
+                .texOffs(106, 34).addBox(-0.5F, -5.0F, -0.5F, 1.0F, 5.0F, 1.0F)
+                .texOffs(36, 46).addBox(-1.0F, -6.0F, -1.0F, 2.0F, 1.0F, 2.0F),
+                PartPose.offsetAndRotation(3.0F, -4.5F, 3.0F, 0.0F, 0.0F, 0.3F));
+        PartDefinition orbit_a = root.addOrReplaceChild("orbit_a", CubeListBuilder.create(),
+                PartPose.offsetAndRotation(0.0F, 15.0F, 0.0F, 0.5F, 0.0F, 0.3F));
+        PartDefinition ring_a = orbit_a.addOrReplaceChild("ring_a", CubeListBuilder.create()
+                .texOffs(44, 46).addBox(-9.0F, -0.5F, -9.0F, 18.0F, 1.0F, 1.0F)
+                .texOffs(82, 46).addBox(-9.0F, -0.5F, 8.0F, 18.0F, 1.0F, 1.0F)
+                .texOffs(56, 0).addBox(-9.0F, -0.5F, -8.0F, 1.0F, 1.0F, 16.0F)
+                .texOffs(90, 0).addBox(8.0F, -0.5F, -8.0F, 1.0F, 1.0F, 16.0F)
+                .texOffs(20, 46).addBox(-10.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition orbit_b = root.addOrReplaceChild("orbit_b", CubeListBuilder.create(),
+                PartPose.offsetAndRotation(0.0F, 15.0F, 0.0F, -0.5F, 0.0F, -0.3F));
+        PartDefinition ring_b = orbit_b.addOrReplaceChild("ring_b", CubeListBuilder.create()
+                .texOffs(0, 51).addBox(-9.0F, -0.5F, -9.0F, 18.0F, 1.0F, 1.0F)
+                .texOffs(38, 51).addBox(-9.0F, -0.5F, 8.0F, 18.0F, 1.0F, 1.0F)
+                .texOffs(0, 17).addBox(-9.0F, -0.5F, -8.0F, 1.0F, 1.0F, 16.0F)
+                .texOffs(34, 17).addBox(8.0F, -0.5F, -8.0F, 1.0F, 1.0F, 16.0F)
+                .texOffs(28, 46).addBox(8.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.78F, 0.0F));
+        return LayerDefinition.create(mesh, 128, 64);
+    }
+
+    /** atomic_automaton: 13 parts, texture 128x64. */
+    public static LayerDefinition atomic_automaton() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-7.0F, -14.0F, -4.5F, 14.0F, 13.0F, 9.0F)
+                .texOffs(0, 22).addBox(-5.0F, -1.0F, -3.5F, 10.0F, 3.0F, 7.0F),
+                PartPose.offsetAndRotation(0.0F, 10.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create()
+                .texOffs(46, 0).addBox(-4.5F, -8.0F, -4.5F, 9.0F, 8.0F, 9.0F)
+                .texOffs(20, 32).addBox(-3.5F, -9.0F, -3.5F, 7.0F, 1.0F, 7.0F)
+                .texOffs(100, 32).addBox(-5.5F, -6.0F, -1.0F, 1.0F, 3.0F, 2.0F)
+                .texOffs(106, 32).addBox(4.5F, -6.0F, -1.0F, 1.0F, 3.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, -14.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition antenna = head.addOrReplaceChild("antenna", CubeListBuilder.create()
+                .texOffs(16, 41).addBox(-0.5F, -3.0F, -0.5F, 1.0F, 3.0F, 1.0F)
+                .texOffs(20, 41).addBox(-1.0F, -4.0F, -1.0F, 2.0F, 1.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, -9.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition arm_l = body.addOrReplaceChild("arm_l", CubeListBuilder.create()
+                .texOffs(62, 22).addBox(0.0F, -2.0F, -2.5F, 3.0F, 4.0F, 5.0F)
+                .texOffs(0, 32).addBox(0.5F, 2.0F, -1.5F, 2.0F, 6.0F, 3.0F),
+                PartPose.offsetAndRotation(7.0F, -12.0F, 0.0F, 0.0F, 0.0F, -0.08F));
+        PartDefinition forearm_l = arm_l.addOrReplaceChild("forearm_l", CubeListBuilder.create()
+                .texOffs(34, 22).addBox(-1.5F, 0.0F, -2.0F, 3.0F, 6.0F, 4.0F),
+                PartPose.offsetAndRotation(1.5F, 8.0F, 0.0F, -0.15F, 0.0F, 0.0F));
+        PartDefinition claw_l = forearm_l.addOrReplaceChild("claw_l", CubeListBuilder.create()
+                .texOffs(112, 32).addBox(-1.5F, 0.0F, -2.5F, 3.0F, 3.0F, 1.0F)
+                .texOffs(120, 32).addBox(-1.5F, 0.0F, 1.5F, 3.0F, 3.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition leg_l = root.addOrReplaceChild("leg_l", CubeListBuilder.create()
+                .texOffs(82, 0).addBox(-2.5F, 0.0F, -2.5F, 5.0F, 6.0F, 5.0F),
+                PartPose.offsetAndRotation(3.5F, 12.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition shin_l = leg_l.addOrReplaceChild("shin_l", CubeListBuilder.create()
+                .texOffs(78, 22).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 5.0F, 4.0F)
+                .texOffs(48, 32).addBox(-3.0F, 5.0F, -4.0F, 6.0F, 1.0F, 7.0F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition arm_r = body.addOrReplaceChild("arm_r", CubeListBuilder.create()
+                .texOffs(94, 22).addBox(-3.0F, -2.0F, -2.5F, 3.0F, 4.0F, 5.0F)
+                .texOffs(10, 32).addBox(-2.5F, 2.0F, -1.5F, 2.0F, 6.0F, 3.0F),
+                PartPose.offsetAndRotation(-7.0F, -12.0F, 0.0F, 0.0F, 0.0F, 0.08F));
+        PartDefinition forearm_r = arm_r.addOrReplaceChild("forearm_r", CubeListBuilder.create()
+                .texOffs(48, 22).addBox(-1.5F, 0.0F, -2.0F, 3.0F, 6.0F, 4.0F),
+                PartPose.offsetAndRotation(-1.5F, 8.0F, 0.0F, -0.15F, 0.0F, 0.0F));
+        PartDefinition claw_r = forearm_r.addOrReplaceChild("claw_r", CubeListBuilder.create()
+                .texOffs(0, 41).addBox(-1.5F, 0.0F, -2.5F, 3.0F, 3.0F, 1.0F)
+                .texOffs(8, 41).addBox(-1.5F, 0.0F, 1.5F, 3.0F, 3.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition leg_r = root.addOrReplaceChild("leg_r", CubeListBuilder.create()
+                .texOffs(102, 0).addBox(-2.5F, 0.0F, -2.5F, 5.0F, 6.0F, 5.0F),
+                PartPose.offsetAndRotation(-3.5F, 12.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition shin_r = leg_r.addOrReplaceChild("shin_r", CubeListBuilder.create()
+                .texOffs(110, 22).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 5.0F, 4.0F)
+                .texOffs(74, 32).addBox(-3.0F, 5.0F, -4.0F, 6.0F, 1.0F, 7.0F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        return LayerDefinition.create(mesh, 128, 64);
+    }
+
     // ---- key poses, as rotation offsets added on top of the rest pose ----
 
     public static final Map<String, float[]> RAPTOR_LEAP = Map.ofEntries(

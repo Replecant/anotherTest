@@ -55,14 +55,15 @@ public final class DinosaurClient {
         modEventBus.addListener(DinosaurClient::registerLayers);
         modEventBus.addListener(DinosaurClient::registerRenderers);
         NeoForge.EVENT_BUS.addListener(DinosaurClient::shakeCamera);
+        com.replecant.retrocosmos.dinosaur.robot.client.RobotClient.init(modEventBus);
     }
 
-    private static RenderType glow(String name) {
+    public static RenderType glow(String name) {
         return RenderTypes.eyes(Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "textures/entity/dinosaur/" + name + "_glow.png"));
     }
 
     /** Adds a full-bright overlay (eyes, spore bulb, wing spots) that glows in the dark. */
-    private static <T extends net.minecraft.world.entity.Mob & DinosaurAnimated> DinosaurRenderer<T> glowing(DinosaurRenderer<T> renderer,
+    public static <T extends net.minecraft.world.entity.Mob & DinosaurAnimated> DinosaurRenderer<T> glowing(DinosaurRenderer<T> renderer,
                                                                                                             RenderType glow) {
         renderer.addLayer(new EyesLayer<DinosaurRenderState, EntityModel<DinosaurRenderState>>(renderer) {
             @Override

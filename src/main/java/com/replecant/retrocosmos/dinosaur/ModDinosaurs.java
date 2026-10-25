@@ -1,5 +1,6 @@
 package com.replecant.retrocosmos.dinosaur;
 
+import com.replecant.retrocosmos.dinosaur.robot.ModRobots;
 import com.replecant.retrocosmos.registry.ModBlocks;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModItems;
@@ -181,11 +182,14 @@ public final class ModDinosaurs {
         modEventBus.addListener(ModDinosaurs::createAttributes);
         modEventBus.addListener(ModDinosaurs::registerSpawnPlacements);
         modEventBus.addListener(ModDinosaurs::addToVanillaTabs);
+        ModRobots.init(modEventBus);
     }
 
-    /** Spawn eggs etc. for the Venus creative tab, in order. */
+    /** Spawn eggs etc. for the Venus creative tab, in order (Dr. Oinstein's robots last). */
     public static List<DeferredItem<? extends Item>> items() {
-        return Collections.unmodifiableList(ITEMS);
+        List<DeferredItem<? extends Item>> all = new ArrayList<>(ITEMS);
+        all.addAll(ModRobots.items());
+        return Collections.unmodifiableList(all);
     }
 
     private static DeferredItem<SpawnEggItem> egg(String name, DeferredHolder<EntityType<?>, ? extends EntityType<? extends Mob>> type) {

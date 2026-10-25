@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "retrocosmos:atomic_sentry",
+    "retrocosmos:atomic_automaton"
+  ]
+}

@@ -25,7 +25,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
  */
 public final class CooperTrades {
     /** Saved with every Cooper; a Cooper whose ledger is older gets fresh offers. */
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
 
     private CooperTrades() {}
 
@@ -79,7 +79,10 @@ public final class CooperTrades {
             buys("retrocosmos:tyrannosaurus_fang", 1, 24, 4),
             buys("retrocosmos:plesiosaur_tooth", 1, 6, 6),
             buys("retrocosmos:deinosuchus_tooth", 1, 6, 6),
-            buys("retrocosmos:ankylosaurus_plate", 1, 5, 6));
+            buys("retrocosmos:ankylosaurus_plate", 1, 5, 6),
+            buys("retrocosmos:control_collar", 1, 8, 4),
+            buys("retrocosmos:brain_flask", 1, 14, 3),
+            buys("retrocosmos:atomic_core", 1, 10, 4));
 
     /** Expedition supplies for sale. */
     public static final List<Deal> SUPPLIES = List.of(
@@ -97,7 +100,8 @@ public final class CooperTrades {
     /** Relics whose first delivery gets its own excited line (chat.retrocosmos.npc.cooper.first.<path>). */
     public static final Set<String> EXCITING = Set.of("venusian_idol", "glyph_tablet", "sun_disk_fragment", "ancient_amulet",
             "tribal_mask", "bone_spear", "raptor_tooth", "dino_hide", "venus_amber", "shaman_charm", "tyrannosaurus_fang",
-            "plesiosaur_tooth", "deinosuchus_tooth", "ankylosaurus_plate");
+            "plesiosaur_tooth", "deinosuchus_tooth", "ankylosaurus_plate",
+            "control_collar", "brain_flask");
 
     private static Optional<Item> item(String id) {
         Identifier key = Identifier.parse(id);

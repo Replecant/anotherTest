@@ -21,8 +21,8 @@ public final class OinsteinForces {
         return entity != null && entity.getType().is(TAG);
     }
 
-    /** Players and the tribesmen of Venus - never his own creatures. */
+    /** Players and free tribesmen of Venus - never his own creatures, nor the captives in his cages. */
     public static boolean isQuarry(LivingEntity entity) {
-        return !isMember(entity) && (entity instanceof Player || entity instanceof Tribesman);
+        return !isMember(entity) && (entity instanceof Player || entity instanceof Tribesman tribesman && !tribesman.isCaptive());
     }
 }

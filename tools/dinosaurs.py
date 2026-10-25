@@ -198,43 +198,43 @@ def trike_spec():
 
 
 def creeper_spec():
-    """Venus Creeper: a walking seed-pod on four root-stalks, a creeper face, a sepal collar and a spore bulb."""
+    """Venus Creeper: exactly the vanilla creeper's boxes (head 8x8x8, body 8x12x4, legs 4x6x4 at the vanilla
+    pivots), dressed as Venus flora: leafy teal-olive skin with ochre veins, root toes, a fringe of leaf frills at
+    the neck (2 px) and a little glowing spore bulb sprouting from the crown."""
     parts = [
-        P("body", None, (0, 8, 0), (0, 0, 0), [
-            B(-3, 0, -2, 6, 10, 4, "stalk"),
+        P("head", None, (0, 6, 0), (0, 0, 0), [
+            B(-4, -8, -4, 8, 8, 8, "cskin", face=True),
         ]),
-        P("head", None, (0, 8, 0), (0, 0, 0), [
-            B(-4, -8, -4, 8, 8, 8, "pod", face=True),
+        P("body", None, (0, 6, 0), (0, 0, 0), [
+            B(-4, 0, -2, 8, 12, 4, "cskin"),
         ]),
-        P("bulb", "head", (0, -8, 0.5), (0.1, 0, 0), [
-            B(-0.5, -2, -0.5, 1, 2, 1, "bulbstem"),
-            B(-2, -6, -2, 4, 4, 4, "bulb"),
+        P("bulb", "head", (1.5, -8, 1.5), (0.15, 0, 0.1), [
+            B(-0.5, -1, -0.5, 1, 1, 1, "bulbstem"),
+            B(-1.5, -3.5, -1.5, 3, 3, 3, "bulb"),
         ]),
-        P("leaf_front", "head", (0, -0.5, -4), (0.55, 0, 0), [
-            B(-4, 0, -6, 8, 1, 6, "leaf", axis="-z"),
+        P("leaf_front", "head", (0, 0, -4), (0.7, 0, 0), [
+            B(-4, 0, -2, 8, 1, 2, "fringe", axis="-z"),
         ]),
-        P("leaf_back", "head", (0, -0.5, 4), (-0.55, 0, 0), [
-            B(-4, 0, 0, 8, 1, 6, "leaf", axis="+z"),
+        P("leaf_back", "head", (0, 0, 4), (-0.7, 0, 0), [
+            B(-4, 0, 0, 8, 1, 2, "fringe", axis="+z"),
         ]),
     ]
     parts += legs("", [
-        P("leaf_l", "head", (4, -0.5, 0), (0, 0, 0.55), [
-            B(0, 0, -4, 6, 1, 8, "leaf", axis="+x"),
+        P("leaf_l", "head", (4, 0, 0), (0, 0, 0.7), [
+            B(0, 0, -4, 2, 1, 8, "fringe", axis="+x"),
         ]),
-        P("leg_front_l", None, (2, 17.6, -2), (0.22, 0, -0.18), [
-            B(-1, 0, -1, 2, 5, 2, "stalk"),
-            B(-1.5, 5, -1.5, 3, 1, 3, "root"),
+        P("leg_front_l", None, (2, 18, -4), (0, 0, 0), [
+            B(-2, 0, -2, 4, 6, 4, "cskin", toes=True),
         ]),
-        P("leg_back_l", None, (2, 17.6, 2), (-0.22, 0, -0.18), [
-            B(-1, 0, -1, 2, 5, 2, "stalk"),
-            B(-1.5, 5, -1.5, 3, 1, 3, "root"),
+        P("leg_back_l", None, (2, 18, 4), (0, 0, 0), [
+            B(-2, 0, -2, 4, 6, 4, "cskin", toes=True),
         ]),
     ])
     return {"name": "venus_creeper", "tex_w": 64, "parts": parts, "glow": True,
-            "palette": {"dorsal": (70, 132, 52), "base": (96, 168, 64), "belly": (150, 196, 92), "noise": 7,
-                        "pod": (132, 196, 84), "pod_dark": (78, 136, 50), "face": (20, 36, 18),
-                        "stalk": (74, 128, 50), "vein": (52, 96, 40), "root": (98, 80, 52),
-                        "leaf": (58, 150, 70), "leaf_dark": (34, 100, 50), "leaf_edge": (214, 196, 60),
+            "palette": {"noise": 6, "skin": (92, 132, 96), "skin_light": (124, 160, 108), "skin_dark": (58, 92, 70),
+                        "vein": (204, 152, 62), "face": (18, 30, 20), "root": (104, 78, 50), "root_dark": (62, 44, 30),
+                        "stalk": (74, 128, 50), "vein_dark": (52, 96, 40),
+                        "leaf": (70, 140, 80), "leaf_dark": (40, 96, 58), "leaf_edge": (214, 170, 60),
                         "bulb": (226, 250, 120), "bulb_core": (255, 255, 210), "bulb_dark": (150, 200, 60)}}
 
 
@@ -903,7 +903,46 @@ def p_pfoot(spec, t, noise):
     return tuple(v + noise for v in c), 255
 
 
-EXTRA_PAINTERS = {"pod": p_pod, "stalk": p_stalk, "bulbstem": p_stalk, "root": p_root, "leaf": p_leaf,
+def p_cskin(spec, t, noise):
+    """Creeper hide as Venus flora: vanilla-style green mottling in teal-olive, branching ochre veins."""
+    pal = spec["palette"]
+    m = hash3(t.box_id, t.i, t.j, sum(map(ord, t.face)))
+    c = pal["skin_light"] if m > 0.78 else pal["skin_dark"] if m < 0.22 else pal["skin"]
+    if pal.get("veins", True):
+        ridge = abs(value_noise(t.mx, t.my, t.mz, 3.2, 41) - 0.5)
+        if ridge < 0.022:
+            c = pal["vein"]
+    if t.face == "bottom":
+        c = mul(c, 0.8)
+    if t.feat.get("toes") and t.face in ("north", "south", "east", "west"):
+        if t.ly > t.y1 - 2:  # root toes at the bottom of each leg
+            c = pal["root"] if t.i % 2 == 0 else pal["root_dark"]
+            if t.ly < t.y1 - 1 and t.i % 2 == 1:
+                c = mul(pal["skin_dark"], 0.9)
+    if t.feat.get("toes") and t.face == "bottom":
+        c = pal["root_dark"]
+    if t.feat.get("face") and _creeper_face(t):
+        c = pal["face"]
+    return tuple(v + noise * 0.5 for v in c), 255
+
+
+def p_fringe(spec, t, noise):
+    """A 2 px leaf fringe: flat faces only, the outer row cut into points."""
+    pal = spec["palette"]
+    if t.face not in ("top", "bottom"):
+        return None, 0
+    axis = t.feat["axis"]
+    out = abs(t.lz) if axis.endswith("z") else abs(t.lx)
+    along = t.i if axis.endswith("z") else t.j
+    if out > 1.0 and along % 2 == 1:
+        return None, 0
+    c = pal["leaf"] if out <= 1.0 else pal["leaf_edge"]
+    if t.face == "bottom":
+        c = mul(c, 0.8)
+    return tuple(v + noise for v in c), 255
+
+
+EXTRA_PAINTERS = {"cskin": p_cskin, "fringe": p_fringe, "pod": p_pod, "stalk": p_stalk, "bulbstem": p_stalk, "root": p_root, "leaf": p_leaf,
                   "bulb": p_bulb, "membrane": p_membrane, "bone": p_bone, "pcrest": p_pcrest, "pfoot": p_pfoot}
 
 
@@ -912,7 +951,7 @@ def glow_texel(spec, t):
     if t.mat == "bulb":
         c, _ = p_bulb(spec, t, 0)
         return c + (255,)
-    if t.mat == "pod" and t.feat.get("face") and _creeper_face(t) and t.j in (2, 3):
+    if t.mat in ("pod", "cskin") and t.feat.get("face") and _creeper_face(t) and t.j in (2, 3):
         return (150, 255, 110, 255)
     return None
 

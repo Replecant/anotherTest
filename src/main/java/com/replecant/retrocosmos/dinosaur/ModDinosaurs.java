@@ -73,8 +73,7 @@ public final class ModDinosaurs {
     /** Venus Creeper: a walking seed-pod that bursts into a cloud of poison spores. */
     public static final DeferredHolder<EntityType<?>, EntityType<VenusCreeper>> VENUS_CREEPER = ModEntities.ENTITIES.register("venus_creeper",
             id -> EntityType.Builder.of(VenusCreeper::new, MobCategory.MONSTER)
-                    .sized(0.7F, 1.8F)
-                    .eyeHeight(1.45F)
+                    .sized(0.6F, 1.7F)
                     .clientTrackingRange(8)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 

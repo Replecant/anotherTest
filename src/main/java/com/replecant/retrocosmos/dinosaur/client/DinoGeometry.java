@@ -178,44 +178,40 @@ public final class DinoGeometry {
     public static LayerDefinition venus_creeper() {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
-        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
-                .texOffs(32, 0).addBox(-3.0F, 0.0F, -2.0F, 6.0F, 10.0F, 4.0F),
-                PartPose.offsetAndRotation(0.0F, 8.0F, 0.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition head = root.addOrReplaceChild("head", CubeListBuilder.create()
                 .texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F),
-                PartPose.offsetAndRotation(0.0F, 8.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(32, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 0.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition bulb = head.addOrReplaceChild("bulb", CubeListBuilder.create()
-                .texOffs(48, 40).addBox(-0.5F, -2.0F, -0.5F, 1.0F, 2.0F, 1.0F)
-                .texOffs(0, 25).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 4.0F, 4.0F),
-                PartPose.offsetAndRotation(0.0F, -8.0F, 0.5F, 0.1F, 0.0F, 0.0F));
+                .texOffs(40, 35).addBox(-0.5F, -1.0F, -0.5F, 1.0F, 1.0F, 1.0F)
+                .texOffs(40, 26).addBox(-1.5F, -3.5F, -1.5F, 3.0F, 3.0F, 3.0F),
+                PartPose.offsetAndRotation(1.5F, -8.0F, 1.5F, 0.15F, 0.0F, 0.1F));
         PartDefinition leaf_front = head.addOrReplaceChild("leaf_front", CubeListBuilder.create()
-                .texOffs(16, 25).addBox(-4.0F, 0.0F, -6.0F, 8.0F, 1.0F, 6.0F),
-                PartPose.offsetAndRotation(0.0F, -0.5F, -4.0F, 0.55F, 0.0F, 0.0F));
+                .texOffs(0, 35).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 1.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, -4.0F, 0.7F, 0.0F, 0.0F));
         PartDefinition leaf_back = head.addOrReplaceChild("leaf_back", CubeListBuilder.create()
-                .texOffs(0, 33).addBox(-4.0F, 0.0F, 0.0F, 8.0F, 1.0F, 6.0F),
-                PartPose.offsetAndRotation(0.0F, -0.5F, 4.0F, -0.55F, 0.0F, 0.0F));
+                .texOffs(20, 35).addBox(-4.0F, 0.0F, 0.0F, 8.0F, 1.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 4.0F, -0.7F, 0.0F, 0.0F));
         PartDefinition leaf_l = head.addOrReplaceChild("leaf_l", CubeListBuilder.create()
-                .texOffs(0, 16).addBox(0.0F, 0.0F, -4.0F, 6.0F, 1.0F, 8.0F),
-                PartPose.offsetAndRotation(4.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.55F));
+                .texOffs(0, 26).addBox(0.0F, 0.0F, -4.0F, 2.0F, 1.0F, 8.0F),
+                PartPose.offsetAndRotation(4.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.7F));
         PartDefinition leg_front_l = root.addOrReplaceChild("leg_front_l", CubeListBuilder.create()
-                .texOffs(28, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
-                .texOffs(0, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
-                PartPose.offsetAndRotation(2.0F, 17.6F, -2.0F, 0.22F, 0.0F, -0.18F));
+                .texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F),
+                PartPose.offsetAndRotation(2.0F, 18.0F, -4.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leg_back_l = root.addOrReplaceChild("leg_back_l", CubeListBuilder.create()
-                .texOffs(36, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
-                .texOffs(12, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
-                PartPose.offsetAndRotation(2.0F, 17.6F, 2.0F, -0.22F, 0.0F, -0.18F));
+                .texOffs(16, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F),
+                PartPose.offsetAndRotation(2.0F, 18.0F, 4.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leaf_r = head.addOrReplaceChild("leaf_r", CubeListBuilder.create()
-                .texOffs(28, 16).addBox(-6.0F, 0.0F, -4.0F, 6.0F, 1.0F, 8.0F),
-                PartPose.offsetAndRotation(-4.0F, -0.5F, 0.0F, 0.0F, 0.0F, -0.55F));
+                .texOffs(20, 26).addBox(-2.0F, 0.0F, -4.0F, 2.0F, 1.0F, 8.0F),
+                PartPose.offsetAndRotation(-4.0F, 0.0F, 0.0F, 0.0F, 0.0F, -0.7F));
         PartDefinition leg_front_r = root.addOrReplaceChild("leg_front_r", CubeListBuilder.create()
-                .texOffs(44, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
-                .texOffs(24, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
-                PartPose.offsetAndRotation(-2.0F, 17.6F, -2.0F, 0.22F, 0.0F, 0.18F));
+                .texOffs(32, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F),
+                PartPose.offsetAndRotation(-2.0F, 18.0F, -4.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leg_back_r = root.addOrReplaceChild("leg_back_r", CubeListBuilder.create()
-                .texOffs(52, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
-                .texOffs(36, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
-                PartPose.offsetAndRotation(-2.0F, 17.6F, 2.0F, -0.22F, 0.0F, 0.18F));
+                .texOffs(48, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F),
+                PartPose.offsetAndRotation(-2.0F, 18.0F, 4.0F, 0.0F, 0.0F, 0.0F));
         return LayerDefinition.create(mesh, 64, 64);
     }
 

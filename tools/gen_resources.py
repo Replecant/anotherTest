@@ -2218,7 +2218,7 @@ def main():
     flight.generate()
     import station_furniture
     station_furniture.generate()
-    for optional in ("venus", "dinosaurs", "ruins", "tribes"):
+    for optional in ("venus", "dinosaurs", "ruins", "tribes", "npcs", "venus_camp"):
         try:
             module = __import__(optional)
         except ImportError:
@@ -2375,7 +2375,7 @@ def write_lang():
     import station_furniture
     EN.update(station_furniture.EN)
     RU.update(station_furniture.RU)
-    for optional in ("venus", "dinosaurs", "ruins", "tribes"):
+    for optional in ("venus", "dinosaurs", "ruins", "tribes", "npcs", "venus_camp"):
         try:
             module = __import__(optional)
         except ImportError:

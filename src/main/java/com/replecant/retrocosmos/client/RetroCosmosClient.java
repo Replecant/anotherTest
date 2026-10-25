@@ -3,6 +3,7 @@ package com.replecant.retrocosmos.client;
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.dinosaur.DinosaurClient;
 import com.replecant.retrocosmos.flight.RocketEntity;
+import com.replecant.retrocosmos.npc.NpcClient;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModMenus;
 import com.replecant.retrocosmos.tribe.TribeClient;
@@ -27,6 +28,7 @@ public class RetroCosmosClient {
         modEventBus.addListener(RetroCosmosClient::registerScreens);
         DinosaurClient.init(modEventBus);
         TribeClient.init(modEventBus);
+        NpcClient.init(modEventBus);
         modEventBus.addListener(RetroCosmosClient::registerGuiLayers);
         modEventBus.addListener(RetroCosmosClient::registerRenderers);
         NeoForge.EVENT_BUS.addListener(RetroCosmosClient::onClientTick);

@@ -1,0 +1,131 @@
+{
+  "period_ticks": 24000,
+  "tracks": {
+    "minecraft:gameplay/sky_light_level": {
+      "keyframes": [
+        {
+          "ticks": 133,
+          "value": 1.0
+        },
+        {
+          "ticks": 11867,
+          "value": 1.0
+        },
+        {
+          "ticks": 13670,
+          "value": 0.4
+        },
+        {
+          "ticks": 22330,
+          "value": 0.4
+        }
+      ],
+      "modifier": "multiply"
+    },
+    "minecraft:visual/sky_light_factor": {
+      "keyframes": [
+        {
+          "ticks": 133,
+          "value": 1.0
+        },
+        {
+          "ticks": 11867,
+          "value": 1.0
+        },
+        {
+          "ticks": 13670,
+          "value": 0.45
+        },
+        {
+          "ticks": 22330,
+          "value": 0.45
+        }
+      ],
+      "modifier": "multiply"
+    },
+    "minecraft:visual/sky_light_color": {
+      "keyframes": [
+        {
+          "ticks": 133,
+          "value": "#ffffff"
+        },
+        {
+          "ticks": 11867,
+          "value": "#ffffff"
+        },
+        {
+          "ticks": 13670,
+          "value": "#b49cff"
+        },
+        {
+          "ticks": 22330,
+          "value": "#b49cff"
+        }
+      ],
+      "modifier": "multiply"
+    },
+    "minecraft:visual/fog_color": {
+      "keyframes": [
+        {
+          "ticks": 133,
+          "value": "#ffffff"
+        },
+        {
+          "ticks": 11867,
+          "value": "#ffffff"
+        },
+        {
+          "ticks": 13670,
+          "value": "#4a3a5e"
+        },
+        {
+          "ticks": 22330,
+          "value": "#4a3a5e"
+        }
+      ],
+      "modifier": "multiply"
+    },
+    "minecraft:visual/sky_color": {
+      "keyframes": [
+        {
+          "ticks": 133,
+          "value": "#ffffff"
+        },
+        {
+          "ticks": 11867,
+          "value": "#ffffff"
+        },
+        {
+          "ticks": 13670,
+          "value": "#4a3a5e"
+        },
+        {
+          "ticks": 22330,
+          "value": "#4a3a5e"
+        }
+      ],
+      "modifier": "multiply"
+    },
+    "minecraft:visual/cloud_color": {
+      "keyframes": [
+        {
+          "ticks": 133,
+          "value": -1
+        },
+        {
+          "ticks": 11867,
+          "value": -1
+        },
+        {
+          "ticks": 13670,
+          "value": -11849150
+        },
+        {
+          "ticks": 22330,
+          "value": -11849150
+        }
+      ],
+      "modifier": "multiply"
+    }
+  }
+}

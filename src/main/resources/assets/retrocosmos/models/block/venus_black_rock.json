@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "retrocosmos:block/venus_black_rock_top",
+    "side": "retrocosmos:block/venus_black_rock"
+  }
+}

@@ -23,22 +23,26 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 public final class StationSmokeTest {
     private StationSmokeTest() {}
 
-    /** Returns null when data/retrocosmos/dimension/freedom_station.json decodes as a LevelStem, else the error. */
+    /** Decodes every data/retrocosmos/dimension/*.json as a LevelStem; returns null when all are fine, else the error. */
     private static String validateDimension(MinecraftServer server) {
-        Identifier file = Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "dimension/freedom_station.json");
-        try {
-            var resource = server.getResourceManager().getResource(file);
-            if (resource.isEmpty()) {
-                return "missing " + file;
-            }
-            try (Reader reader = resource.get().openAsReader()) {
+        var files = server.getResourceManager().listResources("dimension",
+                id -> id.getNamespace().equals(RetroCosmos.MODID) && id.getPath().endsWith(".json"));
+        if (files.isEmpty()) {
+            return "no dimension definitions found";
+        }
+        for (var entry : files.entrySet()) {
+            try (Reader reader = entry.getValue().openAsReader()) {
                 JsonElement json = JsonParser.parseReader(reader);
                 var result = LevelStem.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, server.registryAccess()), json);
-                return result.error().map(e -> e.message()).orElse(null);
+                if (result.error().isPresent()) {
+                    return entry.getKey() + ": " + result.error().get().message();
+                }
+                RetroCosmos.LOGGER.info("Retro Cosmos smoke: dimension {} decodes fine", entry.getKey());
+            } catch (Exception e) {
+                return entry.getKey() + ": " + e;
             }
-        } catch (Exception e) {
-            return e.toString();
         }
+        return null;
     }
 
     public static void onServerStarted(ServerStartedEvent event) {
@@ -91,6 +95,14 @@ public final class StationSmokeTest {
             problems.add("not enough propellant stored: RP-1 " + fuel + ", LOX " + lox);
         }
         problems.stream().limit(200).forEach(problem -> RetroCosmos.LOGGER.warn("STATION AUDIT {}", problem));
+        // the Venus expedition camp builder, exercised in the test world far from the station
+        BlockPos camp = com.replecant.retrocosmos.venus.VenusLanding.buildAt(event.getServer().overworld(), 400, 400);
+        int campPad = LaunchPadBlock.countPad(event.getServer().overworld(), camp.below());
+        int campTower = LaunchSite.towerHeight(event.getServer().overworld(), camp.below());
+        RetroCosmos.LOGGER.info("Retro Cosmos smoke: Venus camp pad={}/9 tower={}", campPad, campTower);
+        if (campPad < LaunchSite.PAD_SIZE || campTower < 6) {
+            problems.add("Venus camp incomplete: pad " + campPad + ", tower " + campTower);
+        }
         boolean ok = pad >= LaunchSite.PAD_SIZE && tower >= 6 && blocked == 0 && arrivalOk && problems.isEmpty();
         RetroCosmos.LOGGER.info("STATION SMOKE {}: origin={} pad={}/9 tower={} blockedAbovePad={} arrivalPressurized={} compartments={} auditProblems={}",
                 ok ? "OK" : "FAIL", layout.origin(), pad, tower, blocked, arrivalOk, layout.pressurized().size(), problems.size());

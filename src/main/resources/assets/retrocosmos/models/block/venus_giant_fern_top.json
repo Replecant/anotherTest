@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "retrocosmos:block/venus_giant_fern_top"
+  },
+  "render_type": "minecraft:cutout"
+}

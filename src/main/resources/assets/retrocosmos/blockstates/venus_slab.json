@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "retrocosmos:block/venus_slab"
+    },
+    "type=double": {
+      "model": "retrocosmos:block/venus_planks"
+    },
+    "type=top": {
+      "model": "retrocosmos:block/venus_slab_top"
+    }
+  }
+}

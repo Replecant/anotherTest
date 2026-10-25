@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * The orbital chart the crew sees once the Liberty I reaches orbit: a tilted Googie orrery of the Solar
- * System. Earth and Freedom Station (in orbit around it) are open; the other worlds are locked for now.
+ * System. Earth, Freedom Station (in orbit around it) and the jungles of Venus are open; the rest is locked for now.
  */
 public class SystemMapScreen extends Screen {
     private static final String DIR = "textures/gui/system_map/";
@@ -51,11 +51,12 @@ public class SystemMapScreen extends Screen {
     }
 
     private static final Body EARTH = new Body("earth", 40, 2400, 4.0F, 14, 14, true, false);
+    private static final Body VENUS = new Body("venus", 28, 1600, 2.1F, 12, 12, false, false);
     /** Freedom Station circles Earth (radius relative to the planet). */
     private static final Body STATION = new Body("freedom_station", 17, 700, 3.75F, 11, 11, false, true);
     private static final List<Body> BODIES = List.of(
             new Body("mercury", 18, 900, 0.3F, 10, 10, false, false),
-            new Body("venus", 28, 1600, 2.1F, 12, 12, false, false),
+            VENUS,
             EARTH,
             new Body("mars", 52, 3600, 5.2F, 12, 12, false, false),
             new Body("jupiter", 72, 6000, 1.0F, 24, 24, false, false),
@@ -109,7 +110,7 @@ public class SystemMapScreen extends Screen {
     }
 
     private static boolean open(Body body) {
-        return body.home() || body.station();
+        return body.home() || body.station() || body == VENUS;
     }
 
     private int[] position(Body body, float partialTick) {
@@ -222,6 +223,7 @@ public class SystemMapScreen extends Screen {
         y += 11;
         boolean home = open(selected);
         String status = TextFit.str(selected.station() ? "gui.retrocosmos.map.status.station"
+                : selected == VENUS ? "gui.retrocosmos.map.status.venus"
                 : home ? "gui.retrocosmos.map.status.home" : "gui.retrocosmos.map.status.locked");
         g.drawString(font, TextFit.fit(font, status, w), x, y, home ? AMBER : RED, false);
         y += 14;
@@ -237,7 +239,8 @@ public class SystemMapScreen extends Screen {
                 y += 10;
             }
         } else {
-            String hint = selected.station() ? "gui.retrocosmos.map.station_hint" : "gui.retrocosmos.map.home_hint";
+            String hint = selected.station() ? "gui.retrocosmos.map.station_hint"
+                    : selected == VENUS ? "gui.retrocosmos.map.venus_hint" : "gui.retrocosmos.map.home_hint";
             for (net.minecraft.util.FormattedCharSequence seq : font.split(Component.translatable(hint), w)) {
                 g.drawString(font, seq, x, y, PHOSPHOR, false);
                 y += 10;
@@ -253,7 +256,8 @@ public class SystemMapScreen extends Screen {
         boolean enabled = open(selected);
         int v = !enabled ? 32 : overButton(mouseX, mouseY) ? 16 : 0;
         g.blit(RenderPipelines.GUI_TEXTURED, BUTTON, left + BTN_X, top + BTN_Y, 0, v, BTN_W, BTN_H, BTN_W, 48);
-        String label = TextFit.fit(font, TextFit.str(selected.station() ? "gui.retrocosmos.map.dock" : "gui.retrocosmos.map.return"), BTN_W - 8);
+        String label = TextFit.fit(font, TextFit.str(selected.station() ? "gui.retrocosmos.map.dock"
+                : selected == VENUS ? "gui.retrocosmos.map.land" : "gui.retrocosmos.map.return"), BTN_W - 8);
         g.drawString(font, label, left + BTN_X + (BTN_W - font.width(label)) / 2, top + BTN_Y + 4,
                 enabled ? BTN_TEXT : BTN_TEXT_OFF, false);
     }

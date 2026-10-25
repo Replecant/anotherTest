@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "retrocosmos:block/venus_planks",
+    "side": "retrocosmos:block/venus_planks",
+    "top": "retrocosmos:block/venus_planks"
+  }
+}

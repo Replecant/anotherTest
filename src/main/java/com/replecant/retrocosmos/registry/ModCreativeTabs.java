@@ -53,7 +53,7 @@ public final class ModCreativeTabs {
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> VENUS = TABS.register("venus", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.retrocosmos.venus"))
-            .icon(() -> new ItemStack(ModItems.ROCKET.get()))
+            .icon(() -> new ItemStack(ModVenus.VENUS_TREE_FERN.get()))
             .withTabsBefore(STATION.getKey())
             .displayItems((params, output) -> {
                 ModVenus.items().forEach(item -> output.accept(item.get()));

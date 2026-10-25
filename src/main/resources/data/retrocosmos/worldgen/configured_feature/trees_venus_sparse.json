@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "default": "retrocosmos:venus_jungle_bush_checked",
+    "features": [
+      {
+        "chance": 0.2,
+        "feature": "retrocosmos:venus_canopy_tree_checked"
+      },
+      {
+        "chance": 0.12,
+        "feature": "retrocosmos:venus_amber_tree_checked"
+      }
+    ]
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "attributes": {
+    "minecraft:audio/background_music": {
+      "default": {
+        "max_delay": 24000,
+        "min_delay": 12000,
+        "sound": "minecraft:music.overworld.swamp"
+      }
+    },
+    "minecraft:visual/fog_color": "#c9a456",
+    "minecraft:visual/sky_color": "#c9a456",
+    "minecraft:visual/water_fog_color": "#26402c",
+    "minecraft:gameplay/increased_fire_burnout": true,
+    "minecraft:gameplay/snow_golem_melts": true,
+    "minecraft:visual/ambient_particles": [
+      {
+        "particle": {
+          "type": "minecraft:white_ash"
+        },
+        "probability": 0.01
+      }
+    ],
+    "minecraft:visual/water_fog_end_distance": {
+      "argument": 0.85,
+      "modifier": "multiply"
+    }
+  },
+  "carvers": [
+    "retrocosmos:venus_cave",
+    "retrocosmos:venus_cave_extra",
+    "retrocosmos:venus_canyon"
+  ],
+  "downfall": 0.9,
+  "effects": {
+    "water_color": "#4e8c64",
+    "grass_color": "#6a9244",
+    "foliage_color": "#52864a",
+    "dry_foliage_color": "#8a6a3c"
+  },
+  "features": [
+    [],
+    [
+      "retrocosmos:venus_tar_pit",
+      "retrocosmos:venus_hot_spring_rare",
+      "retrocosmos:venus_lava_lake_underground"
+    ],
+    [
+      "retrocosmos:venus_spring_vents"
+    ],
+    [],
+    [],
+    [],
+    [
+      "retrocosmos:ore_venus_soil",
+      "retrocosmos:ore_venus_black_rock",
+      "retrocosmos:ore_venus_tar",
+      "retrocosmos:ore_venus_mud",
+      "retrocosmos:disk_venus_mud"
+    ],
+    [],
+    [
+      "retrocosmos:venus_spring_water",
+      "retrocosmos:venus_spring_lava"
+    ],
+    [
+      "retrocosmos:trees_venus_swamp",
+      "retrocosmos:venus_lianas",
+      "retrocosmos:patch_venus_giant_fern",
+      "retrocosmos:patch_venus_tree_fern_swamp",
+      "retrocosmos:patch_venus_sedge_dense",
+      "retrocosmos:patch_venus_horsetail_swamp",
+      "retrocosmos:patch_venus_glowcap_sparse",
+      "minecraft:seagrass_swamp",
+      "minecraft:patch_waterlily",
+      "retrocosmos:venus_cave_glowcaps",
+      "retrocosmos:venus_cave_glowstalks"
+    ],
+    []
+  ],
+  "has_precipitation": true,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [
+      {
+        "type": "minecraft:bat",
+        "maxCount": 8,
+        "minCount": 8,
+        "weight": 10
+      }
+    ],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "retrocosmos:brontosaurus",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 8
+      },
+      {
+        "type": "minecraft:frog",
+        "maxCount": 5,
+        "minCount": 2,
+        "weight": 10
+      }
+    ],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [
+      {
+        "type": "minecraft:glow_squid",
+        "maxCount": 6,
+        "minCount": 4,
+        "weight": 10
+      }
+    ],
+    "water_ambient": [
+      {
+        "type": "minecraft:tropical_fish",
+        "maxCount": 8,
+        "minCount": 8,
+        "weight": 25
+      }
+    ],
+    "water_creature": []
+  },
+  "temperature": 0.95
+}

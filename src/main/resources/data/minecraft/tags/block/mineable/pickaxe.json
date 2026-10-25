@@ -51,6 +51,11 @@
     "retrocosmos:lab_sink",
     "retrocosmos:tape_archive",
     "retrocosmos:station_door",
-    "retrocosmos:airlock_door"
+    "retrocosmos:airlock_door",
+    "retrocosmos:venus_stone",
+    "retrocosmos:venus_cobblestone",
+    "retrocosmos:venus_stone_bricks",
+    "retrocosmos:venus_black_rock",
+    "retrocosmos:venus_fumarole"
   ]
 }

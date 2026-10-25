@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": "retrocosmos:venus_stone"
+  },
+  "result": {
+    "id": "retrocosmos:venus_stone_bricks",
+    "count": 4
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:rocket"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.venus.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.venus.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "landed": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "retrocosmos:stage2/orbit"
+}

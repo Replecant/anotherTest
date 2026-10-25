@@ -72,11 +72,12 @@ def generate():
     advancement("orbit", "guidance_computer", "root", "orbit", frame="goal")
     advancement("splashdown", "heat_shield", "orbit", "landed", frame="challenge")
     advancement("freedom_station", "mission_control_console", "orbit", "docked", frame="goal")
+    advancement("venus", "rocket", "orbit", "landed", frame="goal")
 
 
 BODY_EN = {
     "mercury": ("Mercury", ["0.39 AU", "0.38 g", "Day 176 d", "-180..430 C"]),
-    "venus": ("Venus", ["0.72 AU", "0.90 g", "Acid clouds", "+460 C"]),
+    "venus": ("Venus", ["0.72 AU", "0.90 g", "Steam jungles", "Dinosaurs!"]),
     "earth": ("Earth", ["1.00 AU", "1.00 g", "Air 21% O2", "Pad LC-1"]),
     "mars": ("Mars", ["1.52 AU", "0.38 g", "Thin CO2", "-60 C"]),
     "jupiter": ("Jupiter", ["5.20 AU", "2.53 g", "Gas giant", "Great Red Spot"]),
@@ -85,7 +86,7 @@ BODY_EN = {
 }
 BODY_RU = {
     "mercury": ("Меркурий", ["0,39 а.е.", "0,38 g", "Сутки 176 д", "-180..430 C"]),
-    "venus": ("Венера", ["0,72 а.е.", "0,90 g", "Кислот. тучи", "+460 C"]),
+    "venus": ("Венера", ["0,72 а.е.", "0,90 g", "Джунгли, пар", "Динозавры!"]),
     "earth": ("Земля", ["1,00 а.е.", "1,00 g", "Воздух 21% O2", "Комплекс №1"]),
     "mars": ("Марс", ["1,52 а.е.", "0,38 g", "Слабый CO2", "-60 C"]),
     "jupiter": ("Юпитер", ["5,20 а.е.", "2,53 g", "Газ. гигант", "Большое пятно"]),
@@ -114,6 +115,15 @@ EN = {
     "gui.retrocosmos.map.status.home": "HOME - GO",
     "gui.retrocosmos.map.status.locked": "LOCKED",
     "gui.retrocosmos.map.belt": "Asteroid Belt",
+    "gui.retrocosmos.map.status.venus": "LANDING - GO",
+    "gui.retrocosmos.map.venus_hint": "Breathable air under the clouds. Beware of dinosaurs!",
+    "gui.retrocosmos.map.land": "LAND",
+    "message.retrocosmos.flight.approach_venus": "Entering the clouds of Venus... hold on, it's going to be bumpy.",
+    "message.retrocosmos.flight.landed_venus": "Touchdown on Venus! The expedition camp is yours - fuel in the supply cabinet. Mind the dinosaurs.",
+    "command.retrocosmos.tp.venus": "Teleported %s to the Venus expedition camp",
+    "command.retrocosmos.tp.no_venus": "Venus is unavailable",
+    "advancements.retrocosmos.stage2.venus.title": "The Lost World",
+    "advancements.retrocosmos.stage2.venus.description": "Land in the steaming jungles of Venus",
     "itemGroup.retrocosmos.venus": "Retro Cosmos: Venus",
     "command.retrocosmos.tp.station": "Teleported %s to Freedom Station",
     "message.retrocosmos.station.protected": "Station property - hands off the hull!",
@@ -160,6 +170,15 @@ RU = {
     "gui.retrocosmos.map.status.home": "ДОМ - GO",
     "gui.retrocosmos.map.status.locked": "ЗАКРЫТО",
     "gui.retrocosmos.map.belt": "Пояс астероидов",
+    "gui.retrocosmos.map.status.venus": "ПОСАДКА - GO",
+    "gui.retrocosmos.map.venus_hint": "Под облаками можно дышать. Осторожно, динозавры!",
+    "gui.retrocosmos.map.land": "ПОСАДКА",
+    "message.retrocosmos.flight.approach_venus": "Входим в облака Венеры... держитесь, будет трясти.",
+    "message.retrocosmos.flight.landed_venus": "Посадка на Венере! Лагерь экспедиции ваш — топливо в шкафу снабжения. Берегитесь динозавров.",
+    "command.retrocosmos.tp.venus": "%s телепортирован в лагерь экспедиции на Венере",
+    "command.retrocosmos.tp.no_venus": "Венера недоступна",
+    "advancements.retrocosmos.stage2.venus.title": "Затерянный мир",
+    "advancements.retrocosmos.stage2.venus.description": "Совершите посадку в душных джунглях Венеры",
     "itemGroup.retrocosmos.venus": "Ретрокосмос: Венера",
     "command.retrocosmos.tp.station": "%s телепортирован на станцию «Свобода»",
     "message.retrocosmos.station.protected": "Имущество станции — корпус не разбирать!",

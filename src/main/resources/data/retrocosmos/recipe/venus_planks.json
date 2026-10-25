@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "#retrocosmos:venus_logs"
+  ],
+  "result": {
+    "id": "retrocosmos:venus_planks",
+    "count": 4
+  }
+}

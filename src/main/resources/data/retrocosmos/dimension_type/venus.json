@@ -1,0 +1,58 @@
+{
+  "ambient_light": 0.0,
+  "attributes": {
+    "minecraft:audio/ambient_sounds": {
+      "mood": {
+        "block_search_extent": 8,
+        "offset": 2.0,
+        "sound": "minecraft:ambient.cave",
+        "tick_delay": 6000
+      }
+    },
+    "minecraft:audio/background_music": {
+      "default": {
+        "max_delay": 24000,
+        "min_delay": 12000,
+        "sound": "minecraft:music.overworld.jungle"
+      }
+    },
+    "minecraft:gameplay/bed_rule": {
+      "can_set_spawn": "always",
+      "can_sleep": "when_dark",
+      "error_message": {
+        "translate": "block.minecraft.bed.no_sleep"
+      }
+    },
+    "minecraft:gameplay/respawn_anchor_works": false,
+    "minecraft:gameplay/snow_golem_melts": true,
+    "minecraft:visual/cloud_color": "#ccf0c080",
+    "minecraft:visual/cloud_height": 170.0,
+    "minecraft:visual/fog_color": "#d9a64e",
+    "minecraft:visual/sky_color": "#d9a64e",
+    "minecraft:visual/fog_start_distance": 12.0,
+    "minecraft:visual/fog_end_distance": 168.0,
+    "minecraft:visual/water_fog_color": "#1e4a3c",
+    "minecraft:visual/sky_light_color": "#ffd8a0",
+    "minecraft:visual/sky_light_factor": 1.0,
+    "minecraft:visual/star_brightness": 0.0,
+    "minecraft:visual/sunrise_sunset_color": "#00000000"
+  },
+  "coordinate_scale": 1.0,
+  "has_ceiling": false,
+  "has_fixed_time": false,
+  "has_skylight": true,
+  "height": 384,
+  "infiniburn": "#minecraft:infiniburn_overworld",
+  "logical_height": 384,
+  "min_y": -64,
+  "monster_spawn_block_light_limit": 0,
+  "monster_spawn_light_level": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 7,
+    "min_inclusive": 0
+  },
+  "skybox": "none",
+  "timelines": [
+    "retrocosmos:venus_day"
+  ]
+}

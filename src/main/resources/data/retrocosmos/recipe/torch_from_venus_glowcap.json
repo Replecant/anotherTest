@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:venus_glowcap",
+    "minecraft:stick"
+  ],
+  "result": {
+    "id": "minecraft:torch",
+    "count": 2
+  }
+}

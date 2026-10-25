@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "retrocosmos:block/venus_stone"
+      },
+      {
+        "model": "retrocosmos:block/venus_stone",
+        "y": 90
+      },
+      {
+        "model": "retrocosmos:block/venus_stone",
+        "y": 180
+      },
+      {
+        "model": "retrocosmos:block/venus_stone",
+        "y": 270
+      }
+    ]
+  }
+}

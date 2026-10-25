@@ -1,0 +1,106 @@
+{
+  "attributes": {
+    "minecraft:audio/background_music": {
+      "default": {
+        "max_delay": 24000,
+        "min_delay": 12000,
+        "sound": "minecraft:music.nether.basalt_deltas"
+      }
+    },
+    "minecraft:visual/fog_color": "#b98a5a",
+    "minecraft:visual/sky_color": "#b98a5a",
+    "minecraft:visual/water_fog_color": "#20403c",
+    "minecraft:gameplay/increased_fire_burnout": true,
+    "minecraft:gameplay/snow_golem_melts": true,
+    "minecraft:visual/ambient_particles": [
+      {
+        "particle": {
+          "type": "minecraft:white_ash"
+        },
+        "probability": 0.05
+      }
+    ]
+  },
+  "carvers": [
+    "retrocosmos:venus_cave",
+    "retrocosmos:venus_cave_extra",
+    "retrocosmos:venus_canyon"
+  ],
+  "downfall": 0.3,
+  "effects": {
+    "water_color": "#3a8a80",
+    "grass_color": "#7a8a4a",
+    "foliage_color": "#5a7a4a",
+    "dry_foliage_color": "#8a6a3c"
+  },
+  "features": [
+    [],
+    [
+      "retrocosmos:venus_hot_spring",
+      "retrocosmos:venus_lava_lake_underground"
+    ],
+    [
+      "retrocosmos:venus_cinder_cone",
+      "retrocosmos:venus_spring_vents"
+    ],
+    [],
+    [],
+    [],
+    [
+      "retrocosmos:ore_venus_soil",
+      "retrocosmos:ore_venus_black_rock",
+      "retrocosmos:ore_venus_tar",
+      "retrocosmos:ore_venus_mud",
+      "retrocosmos:disk_venus_mud"
+    ],
+    [],
+    [
+      "retrocosmos:venus_spring_water",
+      "retrocosmos:venus_spring_lava"
+    ],
+    [
+      "retrocosmos:venus_fumarole_field",
+      "retrocosmos:trees_venus_highlands",
+      "retrocosmos:patch_venus_sedge",
+      "retrocosmos:patch_venus_fire_lily",
+      "retrocosmos:patch_venus_cycad_sparse",
+      "retrocosmos:venus_cave_glowcaps",
+      "retrocosmos:venus_cave_glowstalks"
+    ],
+    []
+  ],
+  "has_precipitation": true,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [
+      {
+        "type": "minecraft:bat",
+        "maxCount": 8,
+        "minCount": 8,
+        "weight": 10
+      }
+    ],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "retrocosmos:triceratops",
+        "maxCount": 5,
+        "minCount": 2,
+        "weight": 10
+      }
+    ],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [
+      {
+        "type": "minecraft:glow_squid",
+        "maxCount": 6,
+        "minCount": 4,
+        "weight": 10
+      }
+    ],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 1.2
+}

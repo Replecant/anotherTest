@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "retrocosmos:block/venus_tree_fern_bottom"
+    },
+    "half=upper": {
+      "model": "retrocosmos:block/venus_tree_fern_top"
+    }
+  }
+}

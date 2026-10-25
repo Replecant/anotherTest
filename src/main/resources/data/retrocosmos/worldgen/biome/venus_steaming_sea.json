@@ -1,0 +1,104 @@
+{
+  "attributes": {
+    "minecraft:audio/background_music": {
+      "default": {
+        "max_delay": 24000,
+        "min_delay": 12000,
+        "sound": "minecraft:music.overworld.jungle"
+      }
+    },
+    "minecraft:visual/fog_color": "#d2a85e",
+    "minecraft:visual/sky_color": "#d2a85e",
+    "minecraft:visual/water_fog_color": "#1a4a44",
+    "minecraft:gameplay/increased_fire_burnout": true,
+    "minecraft:gameplay/snow_golem_melts": true
+  },
+  "carvers": [
+    "retrocosmos:venus_cave",
+    "retrocosmos:venus_cave_extra",
+    "retrocosmos:venus_canyon"
+  ],
+  "downfall": 0.9,
+  "effects": {
+    "water_color": "#3a9c8c",
+    "grass_color": "#5f9a4a",
+    "foliage_color": "#3f8a5c",
+    "dry_foliage_color": "#8a6a3c"
+  },
+  "features": [
+    [],
+    [
+      "retrocosmos:venus_lava_lake_underground"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [
+      "retrocosmos:ore_venus_soil",
+      "retrocosmos:ore_venus_black_rock",
+      "retrocosmos:ore_venus_tar",
+      "retrocosmos:ore_venus_mud",
+      "retrocosmos:disk_venus_mud"
+    ],
+    [],
+    [
+      "retrocosmos:venus_spring_water",
+      "retrocosmos:venus_spring_lava"
+    ],
+    [
+      "minecraft:seagrass_warm",
+      "minecraft:kelp_warm",
+      "retrocosmos:venus_cave_glowcaps",
+      "retrocosmos:venus_cave_glowstalks"
+    ],
+    []
+  ],
+  "has_precipitation": true,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [
+      {
+        "type": "minecraft:bat",
+        "maxCount": 8,
+        "minCount": 8,
+        "weight": 10
+      }
+    ],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [
+      {
+        "type": "minecraft:glow_squid",
+        "maxCount": 6,
+        "minCount": 4,
+        "weight": 10
+      }
+    ],
+    "water_ambient": [
+      {
+        "type": "minecraft:tropical_fish",
+        "maxCount": 8,
+        "minCount": 8,
+        "weight": 25
+      },
+      {
+        "type": "minecraft:pufferfish",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 15
+      }
+    ],
+    "water_creature": [
+      {
+        "type": "minecraft:dolphin",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 2
+      }
+    ]
+  },
+  "temperature": 0.95
+}

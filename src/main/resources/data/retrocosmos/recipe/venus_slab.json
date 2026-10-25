@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP"
+  ],
+  "key": {
+    "P": "retrocosmos:venus_planks"
+  },
+  "result": {
+    "id": "retrocosmos:venus_slab",
+    "count": 6
+  }
+}

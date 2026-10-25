@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "retrocosmos:block/venus_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "retrocosmos:block/venus_wood"
+    },
+    "axis=z": {
+      "model": "retrocosmos:block/venus_wood",
+      "x": 90
+    }
+  }
+}

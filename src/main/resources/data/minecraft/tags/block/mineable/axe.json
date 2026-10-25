@@ -2,6 +2,14 @@
   "replace": false,
   "values": [
     "retrocosmos:atomic_tv",
-    "retrocosmos:tube_radio"
+    "retrocosmos:tube_radio",
+    "retrocosmos:venus_log",
+    "retrocosmos:venus_wood",
+    "retrocosmos:venus_planks",
+    "retrocosmos:venus_stairs",
+    "retrocosmos:venus_slab",
+    "retrocosmos:venus_glowcap_block",
+    "retrocosmos:venus_glowcap_stem",
+    "retrocosmos:venus_hanging_vines"
   ]
 }

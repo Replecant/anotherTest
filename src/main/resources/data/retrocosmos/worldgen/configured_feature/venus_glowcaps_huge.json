@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "default": "retrocosmos:huge_venus_glowcap_flat_checked",
+    "features": [
+      {
+        "chance": 0.5,
+        "feature": "retrocosmos:huge_venus_glowcap_checked"
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "retrocosmos:block/venus_mud"
+      },
+      {
+        "model": "retrocosmos:block/venus_mud",
+        "y": 90
+      },
+      {
+        "model": "retrocosmos:block/venus_mud",
+        "y": 180
+      },
+      {
+        "model": "retrocosmos:block/venus_mud",
+        "y": 270
+      }
+    ]
+  }
+}

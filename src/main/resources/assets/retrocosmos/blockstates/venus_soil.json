@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "retrocosmos:block/venus_soil"
+      },
+      {
+        "model": "retrocosmos:block/venus_soil",
+        "y": 90
+      },
+      {
+        "model": "retrocosmos:block/venus_soil",
+        "y": 180
+      },
+      {
+        "model": "retrocosmos:block/venus_soil",
+        "y": 270
+      }
+    ]
+  }
+}

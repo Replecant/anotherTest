@@ -9,6 +9,8 @@ import com.replecant.retrocosmos.registry.ModBlocks;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.station.FreedomStation;
+import com.replecant.retrocosmos.venus.Venus;
+import com.replecant.retrocosmos.venus.VenusLanding;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -58,6 +60,7 @@ public class RocketEntity extends Entity {
 
     public static final String EARTH = "earth";
     public static final String FREEDOM_STATION = "freedom_station";
+    public static final String VENUS = "venus";
 
     public static final int PAD_COUNTDOWN = 10 * 20;
     /** Height above the world's build limit at which the rocket is considered to be in orbit. */
@@ -307,12 +310,15 @@ public class RocketEntity extends Entity {
         if (FreedomStation.isStation(level())) {
             return FREEDOM_STATION;
         }
+        if (Venus.isVenus(level())) {
+            return VENUS;
+        }
         return level().dimension() == Level.OVERWORLD ? EARTH : "";
     }
 
     /** Called when the crew picks a destination on the system map. */
     public void travelTo(String target) {
-        if (phase() != PHASE_ORBIT || !(target.equals(EARTH) || target.equals(FREEDOM_STATION))) {
+        if (phase() != PHASE_ORBIT || !(target.equals(EARTH) || target.equals(FREEDOM_STATION) || target.equals(VENUS))) {
             return;
         }
         if (target.equals(currentBody())) {
@@ -335,6 +341,9 @@ public class RocketEntity extends Entity {
             target = FreedomStation.level(server);
             FreedomStation.Layout layout = target == null ? null : FreedomStation.ensureBuilt(target);
             pad = layout == null ? null : layout.padBase();
+        } else if (destination.equals(VENUS)) {
+            target = server.getLevel(Venus.DIMENSION);
+            pad = target == null ? null : VenusLanding.ensureCamp(target);
         } else {
             target = server.overworld();
             HomePad home = crew.isEmpty() ? HomePad.UNKNOWN : crew.get(0).getData(ModAttachments.HOME_PAD);
@@ -360,8 +369,12 @@ public class RocketEntity extends Entity {
         target.addFreshEntity(rocket);
         for (ServerPlayer player : crew) {
             player.startRiding(rocket, true, true);
-            player.displayClientMessage(Component.translatable(destination.equals(FREEDOM_STATION)
-                    ? "message.retrocosmos.flight.approach_station" : "message.retrocosmos.flight.deorbit").withStyle(ChatFormatting.GOLD), false);
+            String message = switch (destination) {
+                case FREEDOM_STATION -> "message.retrocosmos.flight.approach_station";
+                case VENUS -> "message.retrocosmos.flight.approach_venus";
+                default -> "message.retrocosmos.flight.deorbit";
+            };
+            player.displayClientMessage(Component.translatable(message).withStyle(ChatFormatting.GOLD), false);
         }
         discard();
     }
@@ -412,11 +425,15 @@ public class RocketEntity extends Entity {
         List<Entity> crew = List.copyOf(getPassengers());
         for (Entity passenger : crew) {
             if (passenger instanceof ServerPlayer player) {
-                player.displayClientMessage(Component.translatable("message.retrocosmos.flight.landed").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD), false);
-                LaunchSite.award(player, "stage2/splashdown", "landed");
-                if (FreedomStation.isStation(level)) {
+                if (Venus.isVenus(level)) {
+                    player.displayClientMessage(Component.translatable("message.retrocosmos.flight.landed_venus").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD), false);
+                    LaunchSite.award(player, "stage2/venus", "landed");
+                } else if (FreedomStation.isStation(level)) {
                     player.displayClientMessage(Component.translatable("message.retrocosmos.flight.docked").withStyle(ChatFormatting.AQUA), false);
                     LaunchSite.award(player, "stage2/freedom_station", "docked");
+                } else {
+                    player.displayClientMessage(Component.translatable("message.retrocosmos.flight.landed").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD), false);
+                    LaunchSite.award(player, "stage2/splashdown", "landed");
                 }
             }
         }

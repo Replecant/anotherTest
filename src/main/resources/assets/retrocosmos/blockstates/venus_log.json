@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "retrocosmos:block/venus_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "retrocosmos:block/venus_log"
+    },
+    "axis=z": {
+      "model": "retrocosmos:block/venus_log_horizontal",
+      "x": 90
+    }
+  }
+}

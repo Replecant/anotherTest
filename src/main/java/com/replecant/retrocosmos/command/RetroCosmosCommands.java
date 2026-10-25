@@ -10,6 +10,8 @@ import com.replecant.retrocosmos.oxygen.OxygenSystem;
 import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.station.FreedomStation;
+import com.replecant.retrocosmos.venus.Venus;
+import com.replecant.retrocosmos.venus.VenusLanding;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -31,7 +33,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * /retrocosmos oxygen on|off [player]      - airless-environment simulation (test toggle, permission level 2)
  * /retrocosmos oxygen set &lt;seconds&gt; [player] - set the worn suit's oxygen
  * /retrocosmos hud on|off                  - suit telemetry HUD
- * /retrocosmos tp station|earth [player] - teleport to Freedom Station / to the player's home pad (level 2)
+ * /retrocosmos tp station|earth|venus [player] - teleport to Freedom Station / to the player's home pad (level 2)
  * /retrocosmos station rebuild             - wipe and rebuild Freedom Station from the current design (level 2)
  * </pre>
  */
@@ -61,7 +63,7 @@ public final class RetroCosmosCommands {
 
         LiteralArgumentBuilder<CommandSourceStack> tp = Commands.literal("tp")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
-        for (String target : new String[] {RocketEntity.FREEDOM_STATION, "station", RocketEntity.EARTH, "home"}) {
+        for (String target : new String[] {RocketEntity.FREEDOM_STATION, "station", RocketEntity.EARTH, "home", RocketEntity.VENUS}) {
             tp.then(Commands.literal(target)
                     .executes(ctx -> teleport(ctx, ctx.getSource().getPlayerOrException(), target))
                     .then(Commands.argument("player", EntityArgument.player())
@@ -90,6 +92,21 @@ public final class RetroCosmosCommands {
     private static int teleport(CommandContext<CommandSourceStack> ctx, ServerPlayer player, String target) {
         MinecraftServer server = ctx.getSource().getServer();
         boolean toStation = target.equals(RocketEntity.FREEDOM_STATION) || target.equals("station");
+        if (target.equals(RocketEntity.VENUS)) {
+            ServerLevel venus = server.getLevel(Venus.DIMENSION);
+            if (venus == null) {
+                ctx.getSource().sendFailure(Component.translatable("command.retrocosmos.tp.no_venus"));
+                return 0;
+            }
+            if (player.isPassenger()) {
+                player.stopRiding();
+            }
+            BlockPos camp = VenusLanding.ensureCamp(venus);
+            player.teleport(new TeleportTransition(venus, Vec3.atBottomCenterOf(camp.offset(0, 0, 2)), Vec3.ZERO,
+                    player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
+            ctx.getSource().sendSuccess(() -> Component.translatable("command.retrocosmos.tp.venus", player.getName()), true);
+            return 1;
+        }
         if (player.isPassenger()) {
             player.stopRiding();
         }

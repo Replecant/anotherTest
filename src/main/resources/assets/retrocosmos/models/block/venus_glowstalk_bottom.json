@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "retrocosmos:block/venus_glowstalk_bottom"
+  },
+  "render_type": "minecraft:cutout"
+}

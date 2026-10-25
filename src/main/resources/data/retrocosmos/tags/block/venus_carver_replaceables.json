@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "retrocosmos:venus_stone",
+    "retrocosmos:venus_black_rock",
+    "retrocosmos:venus_soil",
+    "retrocosmos:venus_moss",
+    "retrocosmos:venus_mud",
+    "retrocosmos:venus_tar",
+    "minecraft:water"
+  ]
+}

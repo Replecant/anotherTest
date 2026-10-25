@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "tip=false": {
+      "model": "retrocosmos:block/venus_hanging_vines"
+    },
+    "tip=true": {
+      "model": "retrocosmos:block/venus_hanging_vines_tip"
+    }
+  }
+}

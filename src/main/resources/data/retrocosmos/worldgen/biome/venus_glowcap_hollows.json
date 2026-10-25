@@ -89,6 +89,12 @@
         "maxCount": 4,
         "minCount": 2,
         "weight": 60
+      },
+      {
+        "type": "retrocosmos:venus_creeper",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 25
       }
     ],
     "underground_water_creature": [

@@ -101,10 +101,23 @@
         "maxCount": 5,
         "minCount": 2,
         "weight": 10
+      },
+      {
+        "type": "retrocosmos:pteranodon",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 4
       }
     ],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "retrocosmos:venus_creeper",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 10
+      }
+    ],
     "underground_water_creature": [
       {
         "type": "minecraft:glow_squid",

@@ -6,8 +6,8 @@ noise settings with surface rules, biomes, configured/placed features, carvers).
 
 Called from gen_resources.main(); EN / RU are merged into the lang files.
 
-Dinosaur spawns (retrocosmos:raptor / brontosaurus / triceratops) are written into the biomes only once
-dinosaur/ModDinosaurs.java registers those entity ids (an unknown entity id would break biome loading). Force them
+Dinosaur spawns (retrocosmos:raptor / brontosaurus / triceratops / venus_creeper / pteranodon / tyrannosaurus) are
+written into the biomes only once dinosaur/ModDinosaurs.java registers those entity ids (an unknown entity id would break biome loading). Force them
 on or off with the environment variable VENUS_DINO_SPAWNS=1 / 0.
 """
 import json
@@ -23,7 +23,7 @@ from furniture import add_to_tag
 HERE = os.path.dirname(os.path.abspath(__file__))
 JAVA_DINOS = os.path.join(HERE, "..", "src", "main", "java", "com", "replecant", "retrocosmos", "dinosaur",
                           "ModDinosaurs.java")
-DINOS = ("raptor", "brontosaurus", "triceratops")
+DINOS = ("raptor", "brontosaurus", "triceratops", "venus_creeper", "pteranodon", "tyrannosaurus")
 
 
 def P(name):
@@ -1532,6 +1532,11 @@ def biomes():
     raptor = [spawner(P("raptor"), 60, 2, 4)] if dinos else []
     bronto = lambda w: [spawner(P("brontosaurus"), w, 2, 4)] if dinos else []
     trike = lambda w: [spawner(P("triceratops"), w, 2, 5)] if dinos else []
+    # second wave: spore-creepers in the dark jungle, pteranodons roosting on the canopy and - very rarely,
+    # further throttled in ModDinosaurs - the tyrannosaurus
+    creeper = lambda w: [spawner(P("venus_creeper"), w, 1, 1)] if dinos else []
+    ptero = lambda w: [spawner(P("pteranodon"), w, 1, 3)] if dinos else []
+    rex = lambda w: [spawner(P("tyrannosaurus"), w, 1, 1)] if dinos else []
     ambient = [spawner("minecraft:bat", 10, 8, 8)]
     caves_water = [spawner("minecraft:glow_squid", 10, 4, 6)]
     common_ores = ["ore_venus_soil", "ore_venus_black_rock", "ore_venus_tar", "ore_venus_mud", "disk_venus_mud"]
@@ -1546,8 +1551,9 @@ def biomes():
                  VEGETAL: ["trees_venus_jungle", "venus_lianas", "patch_venus_giant_fern", "patch_venus_tree_fern",
                            "patch_venus_sedge_dense", "patch_venus_horsetail", "patch_venus_fire_lily",
                            "patch_venus_cycad_sparse", "patch_venus_glowcap_sparse"] + cave_life},
-          spawners={"monster": raptor, "ambient": ambient, "underground_water_creature": caves_water,
-                    "creature": [spawner("minecraft:parrot", 30, 1, 2)]})
+          spawners={"monster": raptor + creeper(15) + rex(2), "ambient": ambient,
+                    "underground_water_creature": caves_water,
+                    "creature": [spawner("minecraft:parrot", 30, 1, 2)] + ptero(12)})
     biome("venus_fern_swamp", fog="#c9a456", water="#4e8c64", water_fog="#26402c", grass="#6a9244", foliage="#52864a",
           extra_attrs={"minecraft:visual/water_fog_end_distance": {"argument": 0.85, "modifier": "multiply"}},
           particles=[{"particle": {"type": "minecraft:white_ash"}, "probability": 0.01}],
@@ -1557,7 +1563,8 @@ def biomes():
                  VEGETAL: ["trees_venus_swamp", "venus_lianas", "patch_venus_tree_fern_swamp", "patch_venus_giant_fern",
                            "patch_venus_horsetail_swamp", "patch_venus_sedge_dense", "patch_venus_glowcap_sparse",
                            "minecraft:seagrass_swamp", "minecraft:patch_waterlily"] + cave_life},
-          spawners={"creature": bronto(8) + [spawner("minecraft:frog", 10, 2, 5)], "ambient": ambient,
+          spawners={"creature": bronto(8) + [spawner("minecraft:frog", 10, 2, 5)] + ptero(4),
+                    "monster": creeper(10), "ambient": ambient,
                     "underground_water_creature": caves_water,
                     "water_ambient": [spawner("minecraft:tropical_fish", 25, 8, 8)]})
     biome("venus_cycad_plains", fog="#e0ae58", water="#3f9a7c", water_fog="#1e4a3c", grass="#7d9a48", foliage="#5c8a4a",
@@ -1566,7 +1573,7 @@ def biomes():
                  VEGETAL: ["trees_venus_plains", "patch_venus_cycad", "patch_venus_sedge_dense",
                            "patch_venus_fire_lily_plains", "patch_venus_horsetail", "patch_venus_giant_fern_sparse"]
                  + cave_life},
-          spawners={"creature": bronto(10) + trike(14), "ambient": ambient,
+          spawners={"creature": bronto(10) + trike(14), "monster": rex(3), "ambient": ambient,
                     "underground_water_creature": caves_water})
     biome("venus_volcanic_highlands", fog="#b98a5a", water="#3a8a80", water_fog="#20403c", grass="#7a8a4a",
           foliage="#5a7a4a", temperature=1.2, downfall=0.3, sound="minecraft:music.nether.basalt_deltas",
@@ -1575,7 +1582,8 @@ def biomes():
                  ORES: common_ores, SPRINGS: springs,
                  VEGETAL: ["venus_fumarole_field", "trees_venus_highlands", "patch_venus_sedge",
                            "patch_venus_cycad_sparse", "patch_venus_fire_lily"] + cave_life},
-          spawners={"creature": trike(10), "ambient": ambient, "underground_water_creature": caves_water})
+          spawners={"creature": trike(10), "monster": rex(3), "ambient": ambient,
+                    "underground_water_creature": caves_water})
     biome("venus_glowcap_hollows", fog="#a78a7a", water="#3a8a8a", water_fog="#1c3a44", grass="#4a8a6a",
           foliage="#3a7a6a", temperature=0.8,
           particles=[{"particle": {"type": "minecraft:spore_blossom_air"}, "probability": 0.02}],
@@ -1584,7 +1592,7 @@ def biomes():
           steps={LAKES: ["venus_tar_pit_rare", "venus_lava_lake_underground"], ORES: common_ores, SPRINGS: springs,
                  VEGETAL: ["venus_glowcaps_huge", "trees_venus_plains", "venus_lianas", "patch_venus_glowstalk",
                            "patch_venus_glowcap", "patch_venus_sedge", "patch_venus_giant_fern_sparse"] + cave_life},
-          spawners={"monster": raptor, "ambient": ambient, "underground_water_creature": caves_water})
+          spawners={"monster": raptor + creeper(25), "ambient": ambient, "underground_water_creature": caves_water})
     biome("venus_steaming_sea", fog="#d2a85e", water="#3a9c8c", water_fog="#1a4a44", grass="#5f9a4a",
           foliage="#3f8a5c", sound="minecraft:music.overworld.jungle",
           steps={LAKES: ["venus_lava_lake_underground"], ORES: common_ores, SPRINGS: springs,

@@ -26,7 +26,7 @@ public class TribeFireGoal extends Goal {
     }
 
     private boolean ready() {
-        return mob.campFire() != null && mob.getTarget() == null && !mob.isTrading() && !mob.isPassenger() && mob.isAlive();
+        return mob.campFire() != null && !mob.isCaptive() && mob.getTarget() == null && !mob.isTrading() && !mob.isPassenger() && mob.isAlive();
     }
 
     @Override

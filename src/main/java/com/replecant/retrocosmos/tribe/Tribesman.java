@@ -43,6 +43,7 @@ import net.minecraft.world.entity.ai.goal.TradeWithPlayerGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import com.replecant.retrocosmos.tribe.mutant.OinsteinForces;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -68,6 +69,10 @@ public class Tribesman extends AbstractVillager {
     private static final EntityDataAccessor<Byte> DATA_ACTION = SynchedEntityData.defineId(Tribesman.class, EntityDataSerializers.BYTE);
     public static final int SIT = 1;
     public static final int DANCE = 2;
+    /** Bit 4: locked in one of Dr. Oinstein's cages, hugging its knees. */
+    public static final int CAPTIVE = 4;
+    /** Player persistent-data key: how many captive tribesfolk this player has freed (tribe reputation). */
+    public static final String FRIEND_KEY = "retrocosmos.tribe_friend";
 
     public static final int VARIANTS = 3;
     public static final int NAMES = 16;
@@ -90,15 +95,24 @@ public class Tribesman extends AbstractVillager {
     private int danceTicks;
     private int fireAction;
     private long lastGreet;
+    private boolean captive;
+    private int freedTicks;
+    private int pleaCooldown = 100;
+    @Nullable
+    private net.minecraft.world.phys.Vec3 freedFrom;
 
     // client-side smoothed pose amounts
-    private float sit, sitO, dance, danceO;
+    private float sit, sitO, dance, danceO, caged, cagedO;
 
     public Tribesman(EntityType<? extends Tribesman> type, Level level) {
         super(type, level);
         // they know better than to walk through the camp fire
         setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
         setPathfindingMalus(PathType.DANGER_FIRE, 16.0F);
+        // tribesfolk do not work door handles - so a captive is only free once its cage is really open
+        if (getNavigation() instanceof net.minecraft.world.entity.ai.navigation.GroundPathNavigation nav) {
+            nav.setCanOpenDoors(false);
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -121,7 +135,15 @@ public class Tribesman extends AbstractVillager {
         goalSelector.addGoal(1, new AvoidEntityGoal<>(this, VenusRaptor.class, 12.0F, 0.9, 1.25) {
             @Override
             public boolean canUse() {
-                return (isBaby() || (!role().isWarrior() && getTarget() == null)) && super.canUse();
+                return !captive && (isBaby() || (!role().isWarrior() && getTarget() == null)) && super.canUse();
+            }
+        });
+        // and everyone runs from Dr. Oinstein's mutants and robots
+        goalSelector.addGoal(1, new AvoidEntityGoal<>(this, LivingEntity.class, OinsteinForces::isForce, 14.0F, 1.0, 1.35,
+                e -> true) {
+            @Override
+            public boolean canUse() {
+                return !captive && super.canUse();
             }
         });
         goalSelector.addGoal(1, new PanicGoal(this, 1.3) {
@@ -134,12 +156,22 @@ public class Tribesman extends AbstractVillager {
         goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.2, true) {
             @Override
             public boolean canUse() {
-                return !isBaby() && super.canUse();
+                return !isBaby() && !captive && super.canUse();
             }
         });
         goalSelector.addGoal(4, new TribeFireGoal(this));
-        goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 0.8));
-        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.6));
+        goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 0.8) {
+            @Override
+            public boolean canUse() {
+                return !captive && freedTicks <= 0 && super.canUse();
+            }
+        });
+        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.6) {
+            @Override
+            public boolean canUse() {
+                return !captive && freedTicks <= 0 && super.canUse();
+            }
+        });
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, Tribesman.class, 6.0F));
         goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -253,6 +285,7 @@ public class Tribesman extends AbstractVillager {
         output.putInt("TribeName", nameIndex);
         output.putBoolean("Assigned", assigned);
         output.putLong("LastRestock", lastRestock);
+        output.putBoolean("Captive", captive);
         if (fire != null) {
             output.putIntArray("CampFire", new int[]{fire.getX(), fire.getY(), fire.getZ()});
         }
@@ -269,6 +302,7 @@ public class Tribesman extends AbstractVillager {
         nameIndex = Mth.clamp(input.getInt("TribeName").orElseGet(() -> random.nextInt(NAMES)), 0, NAMES - 1);
         assigned = assigned || input.getBooleanOr("Assigned", false);
         lastRestock = input.getLongOr("LastRestock", 0L);
+        captive = input.getBooleanOr("Captive", false);
         input.getIntArray("CampFire").filter(a -> a.length == 3).ifPresent(a -> fire = new BlockPos(a[0], a[1], a[2]));
         applyRoleStats();
     }
@@ -276,6 +310,66 @@ public class Tribesman extends AbstractVillager {
     // ------------------------------------------------------------------
     // Camp life
     // ------------------------------------------------------------------
+
+    /** Locked in one of Dr. Oinstein's cages (NBT {@code Captive:1b}). */
+    public boolean isCaptive() {
+        return captive;
+    }
+
+    public void setCaptive(boolean captive) {
+        this.captive = captive;
+    }
+
+    /** Can this captive walk to the player - i.e. is its cage open? */
+    private boolean canReach(Player player) {
+        net.minecraft.world.level.pathfinder.Path path = getNavigation().createPath(player, 1);
+        return path != null && path.canReach();
+    }
+
+    /** Out of the cage: thanks, a gift, a friend for life - then off home through the jungle. */
+    private void free(ServerLevel level, Player player) {
+        captive = false;
+        freedTicks = 240;
+        freedFrom = position();
+        clearHome();
+        fire = null;
+        fireSearchCooldown = 260;
+        say(player, "chat.retrocosmos.tribe.freed." + random.nextInt(2));
+        playSound(SoundEvents.VILLAGER_CELEBRATE, 1.0F, getVoicePitch());
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, getX(), getY() + 1.4, getZ(), 8, 0.4, 0.4, 0.4, 0.0);
+        spawnAtLocation(level, new ItemStack(ModTribes.VENUS_AMBER.get(), 2 + random.nextInt(3)));
+        ItemStack[] gifts = {new ItemStack(ModTribes.RAPTOR_TOOTH.get(), 2), new ItemStack(ModTribes.GLOWCAP_TEA.get()),
+                new ItemStack(ModTribes.SHAMAN_CHARM.get()), new ItemStack(ModTribes.DINO_HIDE.get())};
+        spawnAtLocation(level, gifts[random.nextInt(gifts.length)]);
+        var data = player.getPersistentData();
+        data.putInt(FRIEND_KEY, data.getIntOr(FRIEND_KEY, 0) + 1);
+    }
+
+    public static boolean isTribeFriend(Player player) {
+        return player.getPersistentData().getIntOr(FRIEND_KEY, 0) > 0;
+    }
+
+    private void captiveStep(ServerLevel level) {
+        setTarget(null);
+        fireAction = 0;
+        danceTicks = 0;
+        getNavigation().stop();
+        if (!hasHome()) {
+            setHomeTo(blockPosition(), 2);
+        }
+        Player near = level.getNearestPlayer(this, 8.0);
+        if (near != null && !near.isSpectator()) {
+            if (tickCount % 20 == 0 && distanceToSqr(near) < 7.0 * 7.0 && canReach(near)) {
+                free(level, near);
+                return;
+            }
+            if (--pleaCooldown <= 0) {
+                pleaCooldown = 300 + random.nextInt(400);
+                say(near, "chat.retrocosmos.tribe.captive." + random.nextInt(3));
+                playSound(SoundEvents.VILLAGER_NO, 0.8F, getVoicePitch() * 0.9F);
+            }
+        }
+    }
 
     @Nullable
     public BlockPos campFire() {
@@ -332,6 +426,22 @@ public class Tribesman extends AbstractVillager {
             assigned = true;
             setPersistenceRequired();
         }
+        if (captive) {
+            captiveStep(level);
+            entityData.set(DATA_ACTION, (byte) (isTrading() ? 0 : CAPTIVE));
+            return;
+        }
+        if (freedTicks > 0) {
+            // heading away from the lab before settling down
+            if (--freedTicks <= 0) {
+                setHomeTo(blockPosition(), HOME_RADIUS);
+            } else if (getNavigation().isDone() && freedFrom != null && getTarget() == null) {
+                net.minecraft.world.phys.Vec3 away = net.minecraft.world.entity.ai.util.DefaultRandomPos.getPosAway(this, 20, 7, freedFrom);
+                if (away != null) {
+                    getNavigation().moveTo(away.x, away.y, away.z, 0.9);
+                }
+            }
+        }
         if (fireSearchCooldown-- <= 0) {
             fireSearchCooldown = fire == null ? 400 : 1200;
             if (fire == null || !level.getBlockState(fire).is(BlockTags.CAMPFIRES)) {
@@ -378,6 +488,8 @@ public class Tribesman extends AbstractVillager {
             danceO = dance;
             sit = Mth.approach(sit, (action & SIT) != 0 ? 1.0F : 0.0F, 0.12F);
             dance = Mth.approach(dance, (action & DANCE) != 0 ? 1.0F : 0.0F, 0.15F);
+            cagedO = caged;
+            caged = Mth.approach(caged, (action & CAPTIVE) != 0 ? 1.0F : 0.0F, 0.1F);
         }
     }
 
@@ -388,6 +500,10 @@ public class Tribesman extends AbstractVillager {
 
     public float sitAmount(float partialTick) {
         return Mth.lerp(partialTick, sitO, sit);
+    }
+
+    public float captiveAmount(float partialTick) {
+        return Mth.lerp(partialTick, cagedO, caged);
     }
 
     public float danceAmount(float partialTick) {
@@ -491,6 +607,17 @@ public class Tribesman extends AbstractVillager {
         if (stack.is(ModTribes.TRIBESMAN_SPAWN_EGG.get()) || !isAlive() || isTrading()) {
             return super.mobInteract(player, hand);
         }
+        if (captive) {
+            if (level() instanceof ServerLevel server) {
+                if (canReach(player)) {
+                    free(server, player);
+                } else {
+                    setUnhappyCounter(40);
+                    say(player, "chat.retrocosmos.tribe.captive.locked");
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (isBaby()) {
             if (!level().isClientSide()) {
                 setUnhappyCounter(30);
@@ -515,11 +642,18 @@ public class Tribesman extends AbstractVillager {
                 return InteractionResult.CONSUME;
             }
             boolean masked = player.getItemBySlot(EquipmentSlot.HEAD).is(ModTribes.TRIBAL_MASK.get());
+            boolean friend = isTribeFriend(player);
             for (MerchantOffer offer : offers) {
                 int cost = offer.getBaseCostA().getCount();
-                offer.setSpecialPriceDiff(masked && cost > 1 ? -Math.max(1, cost / 3) : 0);
+                int off = (masked ? cost / 3 : 0) + (friend ? cost / 4 : 0);
+                if ((masked || friend) && cost > 1) {
+                    off = Math.min(cost - 1, Math.max(1, off));
+                } else {
+                    off = 0;
+                }
+                offer.setSpecialPriceDiff(-off);
             }
-            greet(player, masked);
+            greet(player, masked, friend);
             fireAction = 0;
             setTradingPlayer(player);
             openTradingScreen(player, tradeTitle(), 1);
@@ -527,7 +661,7 @@ public class Tribesman extends AbstractVillager {
         return InteractionResult.SUCCESS;
     }
 
-    private void greet(Player player, boolean masked) {
+    private void greet(Player player, boolean masked, boolean friend) {
         long now = level().getGameTime();
         if (now - lastGreet < GREET_COOLDOWN) {
             return;
@@ -535,6 +669,8 @@ public class Tribesman extends AbstractVillager {
         lastGreet = now;
         if (masked) {
             say(player, "chat.retrocosmos.tribe.mask");
+        } else if (friend && random.nextInt(3) == 0) {
+            say(player, "chat.retrocosmos.tribe.friend");
         } else if (random.nextBoolean()) {
             say(player, "chat.retrocosmos.tribe." + role().key + "." + random.nextInt(2));
         } else {

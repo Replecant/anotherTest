@@ -13,6 +13,8 @@ public class TribesmanRenderState extends LivingEntityRenderState {
     public float dance;
     /** Shaking the head "no" (refusing a trade, a child being shy). */
     public boolean unhappy;
+    /** Caged by Dr. Oinstein 0..1: hunched, knees hugged, rocking. */
+    public float captive;
     public boolean aggressive;
     /** Melee swing progress 0..1. */
     public float attackAnim;

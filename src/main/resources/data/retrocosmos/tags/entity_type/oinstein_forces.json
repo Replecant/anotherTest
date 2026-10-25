@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "retrocosmos:atomic_sentry",
-    "retrocosmos:atomic_automaton"
+    "retrocosmos:atomic_automaton",
+    "retrocosmos:hominid_novus",
+    "retrocosmos:hominus_sapiens"
   ]
 }

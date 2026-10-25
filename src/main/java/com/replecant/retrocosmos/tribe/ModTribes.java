@@ -32,7 +32,15 @@ import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
+import com.replecant.retrocosmos.tribe.mutant.BlasterBolt;
+import com.replecant.retrocosmos.tribe.mutant.HominidNovus;
+import com.replecant.retrocosmos.tribe.mutant.HominusSapiens;
+import com.replecant.retrocosmos.tribe.mutant.RayBlasterItem;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -57,6 +65,30 @@ public final class ModTribes {
                     .noSummon()
                     .clientTrackingRange(6)
                     .updateInterval(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    // ---- Dr. Oinstein's mutant hominids (faction tag: OinsteinForces.TAG = #retrocosmos:oinstein_forces) ----
+    /** Hominid Novus: the 2.6-block brute in the control collar. */
+    public static final DeferredHolder<EntityType<?>, EntityType<HominidNovus>> HOMINID_NOVUS = ModEntities.ENTITIES.register("hominid_novus",
+            id -> EntityType.Builder.of(HominidNovus::new, MobCategory.MONSTER)
+                    .sized(1.4F, 2.6F)
+                    .eyeHeight(2.0F)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+    /** Hominus Sapiens: the brain under glass with the ray pistol. */
+    public static final DeferredHolder<EntityType<?>, EntityType<HominusSapiens>> HOMINUS_SAPIENS = ModEntities.ENTITIES.register("hominus_sapiens",
+            id -> EntityType.Builder.of(HominusSapiens::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.95F)
+                    .eyeHeight(1.55F)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+    /** The glowing ray-gun bolt (fired by the Sapiens and by the player's ray blaster). */
+    public static final DeferredHolder<EntityType<?>, EntityType<BlasterBolt>> BLASTER_BOLT = ModEntities.ENTITIES.register("blaster_bolt",
+            id -> EntityType.Builder.<BlasterBolt>of(BlasterBolt::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     public static final TagKey<Item> REPAIRS_BONE_SPEAR = TagKey.create(Registries.ITEM,
@@ -92,12 +124,26 @@ public final class ModTribes {
     public static final DeferredItem<SpawnEggItem> TRIBESMAN_SPAWN_EGG = item("tribesman_spawn_egg", SpawnEggItem::new,
             p -> p.spawnEgg(TRIBESMAN.get()));
 
+    // ---- Oinstein loot ----
+    /** The steel collar off a Hominid Novus - a curio for Dr. Cooper. */
+    public static final DeferredItem<Item> CONTROL_COLLAR = item("control_collar", Item::new, p -> p.stacksTo(16).rarity(Rarity.UNCOMMON));
+    /** A Hominus Sapiens' brain dome, brain and all - a curio for Dr. Cooper. */
+    public static final DeferredItem<Item> BRAIN_FLASK = item("brain_flask", Item::new, p -> p.stacksTo(16).rarity(Rarity.RARE));
+    /** The Sapiens' ray pistol: fires blaster bolts, 120 shots, repaired with redstone. */
+    public static final DeferredItem<RayBlasterItem> RAY_BLASTER = item("ray_blaster", RayBlasterItem::new,
+            p -> p.durability(120).repairable(Items.REDSTONE).rarity(Rarity.RARE));
+    public static final DeferredItem<SpawnEggItem> HOMINID_NOVUS_SPAWN_EGG = item("hominid_novus_spawn_egg", SpawnEggItem::new,
+            p -> p.spawnEgg(HOMINID_NOVUS.get()));
+    public static final DeferredItem<SpawnEggItem> HOMINUS_SAPIENS_SPAWN_EGG = item("hominus_sapiens_spawn_egg", SpawnEggItem::new,
+            p -> p.spawnEgg(HOMINUS_SAPIENS.get()));
+
     private ModTribes() {}
 
     /** Called from the mod constructor before the deferred registers are attached. */
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(ModTribes::createAttributes);
         modEventBus.addListener(ModTribes::addToVanillaTabs);
+        modEventBus.addListener(ModTribes::registerSpawnPlacements);
     }
 
     /** Items for the Venus creative tab, in order. */
@@ -116,12 +162,25 @@ public final class ModTribes {
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(TRIBESMAN_SPAWN_EGG.get());
+            event.accept(HOMINID_NOVUS_SPAWN_EGG.get());
+            event.accept(HOMINUS_SAPIENS_SPAWN_EGG.get());
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(BONE_SPEAR.get());
+            event.accept(RAY_BLASTER.get());
         }
     }
 
     private static void createAttributes(EntityAttributeCreationEvent event) {
         event.put(TRIBESMAN.get(), Tribesman.createAttributes().build());
+        event.put(HOMINID_NOVUS.get(), HominidNovus.createAttributes().build());
+        event.put(HOMINUS_SAPIENS.get(), HominusSapiens.createAttributes().build());
+    }
+
+    /** No natural biome spawns; these rules apply to the outposts' structure spawn overrides. Labs are lit, so any light. */
+    private static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(HOMINID_NOVUS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkAnyLightMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(HOMINUS_SAPIENS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkAnyLightMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }

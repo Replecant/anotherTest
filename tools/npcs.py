@@ -1309,6 +1309,12 @@ LINES = {
     "cooper.first.ankylosaurus_plate": (
         "Armour plate from a living tank! Our engineers would give their slide rules for an alloy this tough.",
         "Броневая пластина живого танка! Наши инженеры отдали бы свои логарифмические линейки за такой сплав."),
+    "cooper.first.control_collar": (
+        "A control collar - riveted steel, a radio valve and a kill switch. Whoever built this wanted an army, not a pet. Oinstein...",
+        "Ошейник управления - клёпаная сталь, радиолампа и выключатель. Кто бы это ни собрал, ему нужна армия, а не питомец. Ойнштайн..."),
+    "cooper.first.brain_flask": (
+        "Good Lord, it's still warm. A brain - an ape's brain, three times too big. I'll need a stiff drink and a bigger jar.",
+        "Господи, он ещё тёплый. Мозг - обезьяний мозг, втрое больше положенного. Мне нужно выпить и банку побольше."),
     "cooper.first.generic": ("Now THAT is something I've never seen before. Into the collection!",
                              "Вот ЭТОГО я ещё никогда не видел. В коллекцию!"),
     # ---- guards ----

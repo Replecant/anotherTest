@@ -38,6 +38,7 @@ public class TribesmanRenderer extends MobRenderer<Tribesman, TribesmanRenderSta
         state.variant = entity.variant();
         state.sit = entity.sitAmount(partialTick);
         state.dance = entity.danceAmount(partialTick);
+        state.captive = entity.captiveAmount(partialTick);
         state.unhappy = entity.getUnhappyCounter() > 0;
         state.aggressive = entity.isAggressive();
         state.attackAnim = entity.getAttackAnim(partialTick);

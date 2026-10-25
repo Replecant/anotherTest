@@ -107,7 +107,7 @@ public final class LaunchSite {
     }
 
     /** Tallest column of service tower blocks standing in the ring right outside the 3x3 pad. */
-    private static int towerHeight(Level level, BlockPos padCenter) {
+    public static int towerHeight(Level level, BlockPos padCenter) {
         int best = 0;
         for (int dx = -2; dx <= 2; dx++) {
             for (int dz = -2; dz <= 2; dz++) {

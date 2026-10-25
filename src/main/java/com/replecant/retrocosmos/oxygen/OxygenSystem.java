@@ -2,6 +2,7 @@ package com.replecant.retrocosmos.oxygen;
 
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.flight.RocketEntity;
+import com.replecant.retrocosmos.station.FreedomStation;
 import com.replecant.retrocosmos.launch.LaunchSite;
 import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModBlocks;
@@ -63,6 +64,11 @@ public final class OxygenSystem {
         chest.set(ModDataComponents.OXYGEN.get(), Math.max(0, Math.min(MAX_OXYGEN, ticks)));
     }
 
+    /** Whether the player must breathe from the suit: real vacuum (outside Freedom Station's compartments) or the test toggle. */
+    public static boolean isAirless(Player player) {
+        return settings(player).airless() || player.getData(ModAttachments.IN_VACUUM);
+    }
+
     public static boolean wearingSuit(Player player) {
         return LaunchSite.suitBits(player) == LaunchSite.SUIT_FULL;
     }
@@ -71,7 +77,14 @@ public final class OxygenSystem {
         if (!(event.getEntity() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level)) {
             return;
         }
-        if (player.isSpectator() || player.isDeadOrDying() || !settings(player).airless()) {
+        if (player.tickCount % 10 == 0) {
+            boolean vacuum = !(player.getVehicle() instanceof RocketEntity)
+                    && FreedomStation.isVacuum(level, player.getX(), player.getEyeY(), player.getZ());
+            if (vacuum != player.getData(ModAttachments.IN_VACUUM)) {
+                player.setData(ModAttachments.IN_VACUUM, vacuum);
+            }
+        }
+        if (player.isSpectator() || player.isDeadOrDying() || !isAirless(player)) {
             return;
         }
         if (player.getVehicle() instanceof RocketEntity) {

@@ -17,10 +17,55 @@ def advancement(name, icon, parent, criterion, frame="task", background=None):
     write_json(os.path.join(DATA, "advancement", "stage2", name + ".json"), adv)
 
 
+def orbit_dimension():
+    """The "orbit" dimension where Freedom Station hangs: a void with a black sky, no weather, no mobs."""
+    write_json(os.path.join(DATA, "dimension_type", "orbit.json"), {
+        "ambient_light": 0.1,
+        "attributes": {
+            "minecraft:gameplay/bed_rule": {"can_set_spawn": "never", "can_sleep": "never", "explodes": False,
+                                            "error_message": {"translate": "message.retrocosmos.station.no_sleep"}},
+            "minecraft:gameplay/respawn_anchor_works": False,
+            "minecraft:visual/fog_color": "#000000",
+            "minecraft:visual/sky_color": "#000000",
+        },
+        "coordinate_scale": 1.0,
+        "has_ceiling": False,
+        "has_fixed_time": True,
+        "has_skylight": True,
+        "height": 256,
+        "infiniburn": "#minecraft:infiniburn_end",
+        "logical_height": 256,
+        "min_y": 0,
+        "monster_spawn_block_light_limit": 0,
+        "monster_spawn_light_level": 0,
+        "skybox": "end",
+    })
+    write_json(os.path.join(DATA, "worldgen", "biome", "orbit.json"), {
+        "attributes": {"minecraft:visual/sky_color": "#000000", "minecraft:visual/fog_color": "#000000"},
+        "carvers": [],
+        "downfall": 0.0,
+        "effects": {"water_color": "#3f76e4"},
+        "features": [],
+        "has_precipitation": False,
+        "spawn_costs": {},
+        "spawners": {k: [] for k in ("ambient", "axolotls", "creature", "misc", "monster", "underground_water_creature",
+                                     "water_ambient", "water_creature")},
+        "temperature": 0.5,
+    })
+    write_json(os.path.join(DATA, "dimension", "freedom_station.json"), {
+        "type": f"{MOD}:orbit",
+        "generator": {"type": "minecraft:flat", "settings": {
+            "biome": f"{MOD}:orbit", "features": False, "lakes": False,
+            "layers": [{"block": "minecraft:air", "height": 1}], "structure_overrides": []}},
+    })
+
+
 def generate():
+    orbit_dimension()
     advancement("root", "rocket", None, "liftoff", background="minecraft:gui/advancements/backgrounds/end")
     advancement("orbit", "guidance_computer", "root", "orbit", frame="goal")
     advancement("splashdown", "heat_shield", "orbit", "landed", frame="challenge")
+    advancement("freedom_station", "mission_control_console", "orbit", "docked", frame="goal")
 
 
 BODY_EN = {
@@ -30,6 +75,7 @@ BODY_EN = {
     "verdigris": ("Verdigris", ["1.46 AU", "0.82 g", "Copper jungle", "Humid, toxic"]),
     "goliath": ("Goliath", ["4.90 AU", "2.31 g", "Gas giant", "Storm Eye"]),
     "halo": ("Halo", ["8.70 AU", "1.12 g", "Ice giant", "Bright ring"]),
+    "freedom_station": ("Stn. Freedom", ["Orbit: Home", "Crew: none", "Docking: open", "Supplies: yes"]),
 }
 BODY_RU = {
     "cinder": ("Синдер", ["0,31 а.е.", "0,44 g", "Лавовые моря", "+520 C"]),
@@ -38,6 +84,7 @@ BODY_RU = {
     "verdigris": ("Вердигрис", ["1,46 а.е.", "0,82 g", "Медн. джунгли", "Яд. атмосфера"]),
     "goliath": ("Голиаф", ["4,90 а.е.", "2,31 g", "Газ. гигант", "Око бури"]),
     "halo": ("Гало", ["8,70 а.е.", "1,12 g", "Лед. гигант", "Яркое кольцо"]),
+    "freedom_station": ("Ст. «Свобода»", ["У Хоумстеда", "Экипаж: нет", "Стыковка: да", "Есть припасы"]),
 }
 
 EN = {
@@ -61,6 +108,15 @@ EN = {
     "gui.retrocosmos.map.status.home": "HOME - GO",
     "gui.retrocosmos.map.status.locked": "LOCKED",
     "gui.retrocosmos.map.belt": "Scrapyard Belt",
+    "gui.retrocosmos.map.status.station": "DOCKING - GO",
+    "gui.retrocosmos.map.station_hint": "Uncrewed station. Fuel and oxygen in the supply room.",
+    "gui.retrocosmos.map.dock": "DOCK",
+    "message.retrocosmos.flight.approach_station": "Transfer burn complete. Approaching Freedom Station...",
+    "message.retrocosmos.flight.docked": "Docked at Freedom Station. Nobody home - the supply room is next to the bay.",
+    "message.retrocosmos.flight.no_trajectory": "Mission Control: no trajectory to that destination.",
+    "message.retrocosmos.station.no_sleep": "Station bunks aren't rated for sleep in zero-g yet",
+    "advancements.retrocosmos.stage2.freedom_station.title": "Freedom Station",
+    "advancements.retrocosmos.stage2.freedom_station.description": "Dock at the uncrewed orbital station «Freedom»",
     "gui.retrocosmos.map.locked_hint": "Trajectory not computed yet. Coming in the next stages.",
     "gui.retrocosmos.map.home_hint": "Ready for the deorbit burn.",
     "gui.retrocosmos.map.return": "RETURN HOME",
@@ -92,6 +148,15 @@ RU = {
     "gui.retrocosmos.map.status.home": "ДОМ - GO",
     "gui.retrocosmos.map.status.locked": "ЗАКРЫТО",
     "gui.retrocosmos.map.belt": "Пояс «Свалка»",
+    "gui.retrocosmos.map.status.station": "СТЫКОВКА - GO",
+    "gui.retrocosmos.map.station_hint": "Станция без экипажа. Топливо и кислород в кладовой.",
+    "gui.retrocosmos.map.dock": "СТЫКОВКА",
+    "message.retrocosmos.flight.approach_station": "Импульс перехода выполнен. Подходим к станции «Свобода»...",
+    "message.retrocosmos.flight.docked": "Стыковка со станцией «Свобода». На борту никого — кладовая рядом с отсеком.",
+    "message.retrocosmos.flight.no_trajectory": "ЦУП: траектории к этой цели нет.",
+    "message.retrocosmos.station.no_sleep": "Койки станции пока не рассчитаны на сон в невесомости",
+    "advancements.retrocosmos.stage2.freedom_station.title": "Станция «Свобода»",
+    "advancements.retrocosmos.stage2.freedom_station.description": "Состыкуйтесь с безлюдной орбитальной станцией «Свобода»",
     "gui.retrocosmos.map.locked_hint": "Траектория ещё не рассчитана. Будет в следующих этапах.",
     "gui.retrocosmos.map.home_hint": "Готовы к тормозному импульсу.",
     "gui.retrocosmos.map.return": "ДОМОЙ",

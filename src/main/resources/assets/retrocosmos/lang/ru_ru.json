@@ -186,6 +186,15 @@
   "gui.retrocosmos.map.status.home": "ДОМ - GO",
   "gui.retrocosmos.map.status.locked": "ЗАКРЫТО",
   "gui.retrocosmos.map.belt": "Пояс «Свалка»",
+  "gui.retrocosmos.map.status.station": "СТЫКОВКА - GO",
+  "gui.retrocosmos.map.station_hint": "Станция без экипажа. Топливо и кислород в кладовой.",
+  "gui.retrocosmos.map.dock": "СТЫКОВКА",
+  "message.retrocosmos.flight.approach_station": "Импульс перехода выполнен. Подходим к станции «Свобода»...",
+  "message.retrocosmos.flight.docked": "Стыковка со станцией «Свобода». На борту никого — кладовая рядом с отсеком.",
+  "message.retrocosmos.flight.no_trajectory": "ЦУП: траектории к этой цели нет.",
+  "message.retrocosmos.station.no_sleep": "Койки станции пока не рассчитаны на сон в невесомости",
+  "advancements.retrocosmos.stage2.freedom_station.title": "Станция «Свобода»",
+  "advancements.retrocosmos.stage2.freedom_station.description": "Состыкуйтесь с безлюдной орбитальной станцией «Свобода»",
   "gui.retrocosmos.map.locked_hint": "Траектория ещё не рассчитана. Будет в следующих этапах.",
   "gui.retrocosmos.map.home_hint": "Готовы к тормозному импульсу.",
   "gui.retrocosmos.map.return": "ДОМОЙ",
@@ -224,5 +233,10 @@
   "gui.retrocosmos.map.body.halo.line0": "8,70 а.е.",
   "gui.retrocosmos.map.body.halo.line1": "1,12 g",
   "gui.retrocosmos.map.body.halo.line2": "Лед. гигант",
-  "gui.retrocosmos.map.body.halo.line3": "Яркое кольцо"
+  "gui.retrocosmos.map.body.halo.line3": "Яркое кольцо",
+  "gui.retrocosmos.map.body.freedom_station": "Ст. «Свобода»",
+  "gui.retrocosmos.map.body.freedom_station.line0": "У Хоумстеда",
+  "gui.retrocosmos.map.body.freedom_station.line1": "Экипаж: нет",
+  "gui.retrocosmos.map.body.freedom_station.line2": "Стыковка: да",
+  "gui.retrocosmos.map.body.freedom_station.line3": "Есть припасы"
 }

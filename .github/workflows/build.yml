@@ -2,7 +2,7 @@ name: Build mod
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, probe ]
   workflow_dispatch:
 
 permissions:
@@ -49,6 +49,8 @@ jobs:
             exit 1
           fi
           grep -q "Retro Cosmos: countdown initiated" server.log || { echo "::error::Mod did not load"; exit 1; }
+          grep "STATION SMOKE" server.log || true
+          grep -q "STATION SMOKE OK" server.log || { echo "::error::Freedom Station smoke test failed"; exit 1; }
 
       - name: Publish build log (for debugging)
         if: always()
@@ -70,7 +72,7 @@ jobs:
           path: build/libs/*.jar
 
       - name: Publish GitHub release
-        if: steps.smoke.outcome == 'success'
+        if: steps.smoke.outcome == 'success' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

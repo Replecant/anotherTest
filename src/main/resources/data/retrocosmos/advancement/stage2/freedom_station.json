@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:mission_control_console"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.freedom_station.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.freedom_station.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "docked": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "retrocosmos:stage2/orbit"
+}

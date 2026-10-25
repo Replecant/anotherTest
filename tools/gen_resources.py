@@ -2225,6 +2225,8 @@ def main():
         furniture_art.generate()
     import space_art
     space_art.generate()
+    import station
+    station.generate()
     write_lang()
 
 

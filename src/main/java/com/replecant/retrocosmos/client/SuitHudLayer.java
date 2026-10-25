@@ -45,9 +45,10 @@ public class SuitHudLayer implements GuiLayer {
             return;
         }
         SuitSettings settings = OxygenSystem.settings(player);
+        boolean airless = OxygenSystem.isAirless(player);
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
         boolean hasChest = chest.is(ModItems.SPACE_SUIT.get());
-        if (settings.hudHidden() || (!settings.airless() && !hasChest)) {
+        if (settings.hudHidden() || (!airless && !hasChest)) {
             return;
         }
         Font font = mc.font;
@@ -59,16 +60,16 @@ public class SuitHudLayer implements GuiLayer {
         int seconds = o2 / 20;
         int color = frac > 0.2F ? GREEN : frac > 0.1F ? AMBER : RED;
         boolean creative = player.isCreative();
-        boolean warning = settings.airless() && !creative && (frac <= 0.2F || suit != LaunchSite.SUIT_FULL);
+        boolean warning = airless && !creative && (frac <= 0.2F || suit != LaunchSite.SUIT_FULL);
 
         int x = 6;
         int y = 6;
         g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, PANEL_W, PANEL_H, TEX_W, TEX_H);
 
         // label strip: title left, environment tag right-aligned, title truncated to the space left
-        String env = TextFit.str(settings.airless() ? "gui.retrocosmos.hud.vacuum" : "gui.retrocosmos.hud.atmosphere");
+        String env = TextFit.str(airless ? "gui.retrocosmos.hud.vacuum" : "gui.retrocosmos.hud.atmosphere");
         int envX = TextFit.rightX(font, env, x + PANEL_W - 11);
-        g.drawString(font, env, envX, y + 3, settings.airless() ? 0xFFC82828 : 0xFF287870, false);
+        g.drawString(font, env, envX, y + 3, airless ? 0xFFC82828 : 0xFF287870, false);
         g.drawString(font, TextFit.fit(font, TextFit.str("gui.retrocosmos.hud.title"), envX - 4 - (x + 11)), x + 11, y + 3, INK, false);
 
         // oxygen gauge
@@ -104,13 +105,13 @@ public class SuitHudLayer implements GuiLayer {
         int lampX = x + INNER_RIGHT - 8;
         g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, lampX, y + 36, 104 + lamp * 8, 48, 8, 8, TEX_W, TEX_H);
         double wobble = Math.sin(ticks / 25.0);
-        String flavour = settings.airless()
+        String flavour = airless
                 ? String.format("P %.1f psi  T %+d°C", suit == LaunchSite.SUIT_FULL ? 3.5 + wobble * 0.1 : 0.0, (int) (21 + wobble * 2))
                 : String.format("P 14.7 psi  T %+d°C", (int) (21 + wobble * 2));
         g.drawString(font, TextFit.fit(font, flavour, lampX - 4 - gx), gx, y + 36, CREAM, false);
 
         // alerts under the panel
-        if (settings.airless() && creative) {
+        if (airless && creative) {
             g.drawString(font, TextFit.str("gui.retrocosmos.hud.creative"), x + 2, y + PANEL_H + 3, AMBER, true);
         } else if (warning && blink) {
             String alert = TextFit.str(suit != LaunchSite.SUIT_FULL ? "gui.retrocosmos.hud.suit_breach" : "gui.retrocosmos.hud.o2_low");

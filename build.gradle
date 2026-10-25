@@ -32,6 +32,8 @@ neoForge {
         gameTestServer {
             type = 'gameTestServer'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            // builds Freedom Station on startup and logs STATION SMOKE OK/FAIL (checked by CI)
+            systemProperty 'retrocosmos.smokeStation', 'true'
         }
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'

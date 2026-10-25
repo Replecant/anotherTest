@@ -53,7 +53,7 @@ public class LaunchPadBlock extends Block {
         return level.getBlockState(pos).getBlock() instanceof LaunchPadBlock;
     }
 
-    private static BlockState shapeFor(BlockState state, BlockGetter level, BlockPos pos) {
+    public static BlockState shapeFor(BlockState state, BlockGetter level, BlockPos pos) {
         boolean n = isPad(level, pos.north());
         boolean s = isPad(level, pos.south());
         boolean e = isPad(level, pos.east());

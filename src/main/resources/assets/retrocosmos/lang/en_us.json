@@ -186,6 +186,15 @@
   "gui.retrocosmos.map.status.home": "HOME - GO",
   "gui.retrocosmos.map.status.locked": "LOCKED",
   "gui.retrocosmos.map.belt": "Scrapyard Belt",
+  "gui.retrocosmos.map.status.station": "DOCKING - GO",
+  "gui.retrocosmos.map.station_hint": "Uncrewed station. Fuel and oxygen in the supply room.",
+  "gui.retrocosmos.map.dock": "DOCK",
+  "message.retrocosmos.flight.approach_station": "Transfer burn complete. Approaching Freedom Station...",
+  "message.retrocosmos.flight.docked": "Docked at Freedom Station. Nobody home - the supply room is next to the bay.",
+  "message.retrocosmos.flight.no_trajectory": "Mission Control: no trajectory to that destination.",
+  "message.retrocosmos.station.no_sleep": "Station bunks aren't rated for sleep in zero-g yet",
+  "advancements.retrocosmos.stage2.freedom_station.title": "Freedom Station",
+  "advancements.retrocosmos.stage2.freedom_station.description": "Dock at the uncrewed orbital station «Freedom»",
   "gui.retrocosmos.map.locked_hint": "Trajectory not computed yet. Coming in the next stages.",
   "gui.retrocosmos.map.home_hint": "Ready for the deorbit burn.",
   "gui.retrocosmos.map.return": "RETURN HOME",
@@ -224,5 +233,10 @@
   "gui.retrocosmos.map.body.halo.line0": "8.70 AU",
   "gui.retrocosmos.map.body.halo.line1": "1.12 g",
   "gui.retrocosmos.map.body.halo.line2": "Ice giant",
-  "gui.retrocosmos.map.body.halo.line3": "Bright ring"
+  "gui.retrocosmos.map.body.halo.line3": "Bright ring",
+  "gui.retrocosmos.map.body.freedom_station": "Stn. Freedom",
+  "gui.retrocosmos.map.body.freedom_station.line0": "Orbit: Home",
+  "gui.retrocosmos.map.body.freedom_station.line1": "Crew: none",
+  "gui.retrocosmos.map.body.freedom_station.line2": "Docking: open",
+  "gui.retrocosmos.map.body.freedom_station.line3": "Supplies: yes"
 }

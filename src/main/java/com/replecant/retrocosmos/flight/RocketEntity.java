@@ -4,9 +4,11 @@ import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.block.RocketBlock;
 import com.replecant.retrocosmos.block.RocketPart;
 import com.replecant.retrocosmos.launch.LaunchSite;
+import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModBlocks;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModItems;
+import com.replecant.retrocosmos.station.FreedomStation;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -15,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -30,6 +33,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -47,6 +52,11 @@ public class RocketEntity extends Entity {
     public static final int PHASE_DESCENT = 3;
     /** Touched down; the crew climbs out on the next tick (once clients know the phase) and the rocket turns back into blocks. */
     public static final int PHASE_LANDED = 4;
+    /** Leaving orbit for another destination: the crew is moved to the target dimension on the next tick. */
+    public static final int PHASE_TRANSFER = 5;
+
+    public static final String HOMESTEAD = "homestead";
+    public static final String FREEDOM_STATION = "freedom_station";
 
     public static final int PAD_COUNTDOWN = 10 * 20;
     /** Height above the world's build limit at which the rocket is considered to be in orbit. */
@@ -60,6 +70,7 @@ public class RocketEntity extends Entity {
     private static final EntityDataAccessor<Integer> PAD_Y = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     private BlockPos padBase = BlockPos.ZERO;
+    private String destination = "";
 
     public RocketEntity(EntityType<? extends RocketEntity> type, Level level) {
         super(type, level);
@@ -84,6 +95,9 @@ public class RocketEntity extends Entity {
         level.addFreshEntity(rocket);
         for (Player player : crew) {
             player.startRiding(rocket, true, true);
+            if (level.dimension() == Level.OVERWORLD) {
+                player.setData(ModAttachments.HOME_PAD, new HomePad(base.immutable(), true));
+            }
         }
         if (!countdown) {
             rocket.onLiftoff(level);
@@ -127,6 +141,7 @@ public class RocketEntity extends Entity {
             case PHASE_ASCENT -> (float) (1.0 - 0.8 * Math.min(1, alt / span));
             case PHASE_ORBIT -> 0.2F;
             case PHASE_LANDED -> 0.0F;
+            case PHASE_TRANSFER -> 0.2F;
             default -> (float) (0.2 * Math.min(1, alt / span));
         };
     }
@@ -135,6 +150,7 @@ public class RocketEntity extends Entity {
     protected void readAdditionalSaveData(ValueInput input) {
         entityData.set(PHASE, input.getIntOr("phase", PHASE_DESCENT));
         entityData.set(PHASE_TICKS, input.getIntOr("phase_ticks", 0));
+        destination = input.getStringOr("destination", "");
         padBase = new BlockPos(input.getIntOr("pad_x", (int) Math.floor(getX())), input.getIntOr("pad_y", 64),
                 input.getIntOr("pad_z", (int) Math.floor(getZ())));
         entityData.set(PAD_Y, padBase.getY());
@@ -144,6 +160,7 @@ public class RocketEntity extends Entity {
     protected void addAdditionalSaveData(ValueOutput output) {
         output.putInt("phase", phase());
         output.putInt("phase_ticks", phaseTicks());
+        output.putString("destination", destination);
         output.putInt("pad_x", padBase.getX());
         output.putInt("pad_y", padBase.getY());
         output.putInt("pad_z", padBase.getZ());
@@ -185,7 +202,7 @@ public class RocketEntity extends Entity {
 
     /** Whether the crew may leave right now (only while still on the pad). */
     public boolean canDisembark() {
-        return phase() == PHASE_PAD || phase() == PHASE_LANDED;
+        return phase() == PHASE_PAD || phase() == PHASE_LANDED || phase() == PHASE_TRANSFER;
     }
 
     @Override
@@ -214,6 +231,7 @@ public class RocketEntity extends Entity {
             case PHASE_ORBIT -> tickOrbit(level, ticks);
             case PHASE_DESCENT -> tickDescent(level, ticks);
             case PHASE_LANDED -> land(level);
+            case PHASE_TRANSFER -> transfer(level);
             default -> setPhase(PHASE_DESCENT);
         }
     }
@@ -275,6 +293,70 @@ public class RocketEntity extends Entity {
         }
     }
 
+    /** The body this rocket is currently orbiting. */
+    public String currentBody() {
+        if (FreedomStation.isStation(level())) {
+            return FREEDOM_STATION;
+        }
+        return level().dimension() == Level.OVERWORLD ? HOMESTEAD : "";
+    }
+
+    /** Called when the crew picks a destination on the system map. */
+    public void travelTo(String target) {
+        if (phase() != PHASE_ORBIT || !(target.equals(HOMESTEAD) || target.equals(FREEDOM_STATION))) {
+            return;
+        }
+        if (target.equals(currentBody())) {
+            beginDescent();
+        } else {
+            destination = target;
+            setPhase(PHASE_TRANSFER);
+        }
+    }
+
+    private void transfer(ServerLevel level) {
+        if (phaseTicks() < 2) {
+            return; // let clients learn about the phase first, so they accept the dismount
+        }
+        MinecraftServer server = level.getServer();
+        List<ServerPlayer> crew = getPassengers().stream().filter(e -> e instanceof ServerPlayer).map(e -> (ServerPlayer) e).toList();
+        ServerLevel target;
+        BlockPos pad;
+        if (destination.equals(FREEDOM_STATION)) {
+            target = FreedomStation.level(server);
+            FreedomStation.Layout layout = target == null ? null : FreedomStation.ensureBuilt(target);
+            pad = layout == null ? null : layout.padBase();
+        } else {
+            target = server.overworld();
+            HomePad home = crew.isEmpty() ? HomePad.UNKNOWN : crew.get(0).getData(ModAttachments.HOME_PAD);
+            pad = home.known() ? home.pos() : target.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.ZERO);
+        }
+        if (target == null || pad == null) {
+            RetroCosmos.LOGGER.error("Retro Cosmos: destination {} unavailable", destination);
+            broadcast(level, Component.translatable("message.retrocosmos.flight.no_trajectory").withStyle(ChatFormatting.RED));
+            setPhase(PHASE_ORBIT);
+            return;
+        }
+        RocketEntity rocket = new RocketEntity(ModEntities.ROCKET.get(), target);
+        rocket.padBase = pad.immutable();
+        rocket.entityData.set(PAD_Y, pad.getY());
+        rocket.setPos(pad.getX() + 0.5, target.getMaxY() + ORBIT_ABOVE_MAX, pad.getZ() + 0.5);
+        rocket.setPhase(PHASE_DESCENT);
+
+        ejectPassengers();
+        for (ServerPlayer player : crew) {
+            player.teleport(new TeleportTransition(target, new Vec3(rocket.getX(), rocket.getY() + CABIN_Y, rocket.getZ()), Vec3.ZERO,
+                    player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
+        }
+        target.addFreshEntity(rocket);
+        for (ServerPlayer player : crew) {
+            player.startRiding(rocket, true, true);
+            player.displayClientMessage(Component.translatable(destination.equals(FREEDOM_STATION)
+                    ? "message.retrocosmos.flight.approach_station" : "message.retrocosmos.flight.deorbit").withStyle(ChatFormatting.GOLD), false);
+        }
+        discard();
+    }
+
     /** Called when the crew picks "Return home" on the system map. */
     public void beginDescent() {
         if (phase() == PHASE_ORBIT) {
@@ -323,6 +405,10 @@ public class RocketEntity extends Entity {
             if (passenger instanceof ServerPlayer player) {
                 player.displayClientMessage(Component.translatable("message.retrocosmos.flight.landed").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD), false);
                 LaunchSite.award(player, "stage2/splashdown", "landed");
+                if (FreedomStation.isStation(level)) {
+                    player.displayClientMessage(Component.translatable("message.retrocosmos.flight.docked").withStyle(ChatFormatting.AQUA), false);
+                    LaunchSite.award(player, "stage2/freedom_station", "docked");
+                }
             }
         }
         restoreOnPad(level, 0, 0);

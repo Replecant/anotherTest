@@ -4,7 +4,7 @@ Called from gen_resources.main() via generate().
 
   gui/system_map/frame.png      320x200  orrery screen panel (Googie bezel, star viewport, phosphor info CRT)
   gui/system_map/<body>.png     pulp-illustration sprites of the invented Vesper system
-                                (vesper, cinder, mirage, homestead, lantern, verdigris, goliath, halo, belt_rock)
+                                (vesper, cinder, mirage, homestead, lantern, verdigris, goliath, halo, belt_rock, freedom_station)
   gui/system_map/selection.png  24x24    amber targeting reticle
   gui/system_map/lock.png       7x9      chrome padlock
   gui/system_map/button.png     80x48    push-button, 3 states (normal / hover / disabled), 80x16 each
@@ -370,6 +370,43 @@ def belt_rock():
     return img
 
 
+def freedom_station():
+    """Freedom Station: a tiny Googie wheel station - white/chrome ring on a hub, red accent, blue panel glint."""
+    img = new(11, 11)
+    O = (18, 14, 28)
+    Wt, Wd, Ch, Cd = (246, 246, 242), (196, 200, 206), (214, 222, 230), (120, 130, 144)
+    rows = [
+        "....OOO....",
+        "..OOWWWOO..",
+        ".OWdO.OdWO.",
+        ".OW.....WO.",
+        "OW..OCO..WO",
+        "OW.OCRCO.WO",
+        "OW..OCO..WO",
+        ".OW.....WO.",
+        ".OWdO.OdWO.",
+        "..OOWWWOO..",
+        "....OOO....",
+    ]
+    pal = {"O": O, "W": Wt, "d": Wd, "C": Ch, "R": RED, "c": Cd}
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                img.putpixel((x, y), rgba(pal[ch]))
+    # ring shading: lower-right of the ring goes grey, top-left stays white
+    for (x, y) in ((8, 7), (7, 8), (6, 9), (9, 5), (9, 6), (5, 9)):
+        if img.getpixel((x, y))[3]:
+            img.putpixel((x, y), rgba(Wd))
+    # four spokes from hub to ring (dark chrome)
+    px(img, [(5, 2), (5, 3), (5, 7), (5, 8), (2, 5), (3, 5), (7, 5), (8, 5)], Cd)
+    px(img, [(5, 1), (1, 5), (9, 5), (5, 9)], Wt)
+    # solar panel glint (blue) on the top-right spoke, antenna tip top-left
+    px(img, [(7, 3), (8, 2)], (70, 130, 220))
+    px(img, [(7, 2)], (160, 200, 250))
+    px(img, [(4, 4)], (255, 240, 220))
+    return img
+
+
 def selection():
     img = new(24, 24)
     d = ImageDraw.Draw(img)
@@ -433,7 +470,7 @@ def generate_system_map():
     save(map_frame(), "gui", "system_map", "frame")
     for name, fn in (("vesper", vesper), ("cinder", cinder), ("mirage", mirage), ("homestead", homestead),
                      ("lantern", lantern), ("verdigris", verdigris), ("goliath", goliath), ("halo", halo),
-                     ("belt_rock", belt_rock)):
+                     ("belt_rock", belt_rock), ("freedom_station", freedom_station)):
         save(fn(), "gui", "system_map", name)
     save(selection(), "gui", "system_map", "selection")
     save(lock(), "gui", "system_map", "lock")

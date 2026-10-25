@@ -1,7 +1,7 @@
 package com.replecant.retrocosmos.client;
 
 import com.replecant.retrocosmos.RetroCosmos;
-import com.replecant.retrocosmos.network.ReturnHomePayload;
+import com.replecant.retrocosmos.network.FlyToPayload;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -17,8 +17,8 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * The orbital chart the crew sees once the Liberty I reaches orbit: a tilted Googie orrery of the Vesper
- * system, an invented star system whose third world, Homestead, is the player's home. Every other
- * destination is locked for now; the only way out is "Return home".
+ * system, an invented star system whose third world, Homestead, is the player's home. Homestead and
+ * Freedom Station (in orbit around it) are open; the other worlds are locked for now.
  */
 public class SystemMapScreen extends Screen {
     private static final String DIR = "textures/gui/system_map/";
@@ -45,26 +45,30 @@ public class SystemMapScreen extends Screen {
     private static final int BTN_TEXT_OFF = 0xFF3A3838;
 
     /** A body on the chart. Radius in chart pixels, period in ticks per orbit, sprite size. */
-    private record Body(String id, int radius, float period, float phase, int w, int h, boolean home) {
+    private record Body(String id, int radius, float period, float phase, int w, int h, boolean home, boolean station) {
         Identifier texture() {
             return tex(id);
         }
     }
 
+    private static final Body HOMESTEAD = new Body("homestead", 40, 2400, 4.0F, 14, 14, true, false);
+    /** Freedom Station circles Homestead (radius relative to the planet). */
+    private static final Body STATION = new Body("freedom_station", 17, 700, 3.75F, 11, 11, false, true);
     private static final List<Body> BODIES = List.of(
-            new Body("cinder", 18, 900, 0.3F, 10, 10, false),
-            new Body("mirage", 28, 1600, 2.1F, 12, 12, false),
-            new Body("homestead", 40, 2400, 4.0F, 14, 14, true),
-            new Body("verdigris", 52, 3600, 5.2F, 14, 14, false),
-            new Body("goliath", 72, 6000, 1.0F, 26, 26, false),
-            new Body("halo", 84, 8400, 3.0F, 28, 18, false));
+            new Body("cinder", 18, 900, 0.3F, 10, 10, false, false),
+            new Body("mirage", 28, 1600, 2.1F, 12, 12, false, false),
+            HOMESTEAD,
+            new Body("verdigris", 52, 3600, 5.2F, 14, 14, false, false),
+            new Body("goliath", 72, 6000, 1.0F, 26, 26, false, false),
+            new Body("halo", 84, 8400, 3.0F, 28, 18, false, false),
+            STATION);
     /** Orbits are drawn as ellipses: the chart is tilted like a desk orrery. */
     private static final float TILT = 0.58F;
     private static final int BELT_INNER = 60, BELT_OUTER = 65, BELT_ROCKS = 46;
 
     private int left, top;
     private int ticks;
-    private Body selected = BODIES.get(2);
+    private Body selected = HOMESTEAD;
 
     public SystemMapScreen() {
         super(Component.translatable("gui.retrocosmos.map.title"));
@@ -105,10 +109,19 @@ public class SystemMapScreen extends Screen {
         return super.keyPressed(event);
     }
 
+    private static boolean open(Body body) {
+        return body.home() || body.station();
+    }
+
     private int[] position(Body body, float partialTick) {
         float angle = body.phase() + (ticks + partialTick) / body.period() * Mth.TWO_PI;
         int cx = left + MAP_X + MAP_W / 2;
         int cy = top + MAP_Y + MAP_H / 2;
+        if (body.station()) {
+            int[] home = position(HOMESTEAD, partialTick);
+            cx = home[0];
+            cy = home[1];
+        }
         return new int[] {cx + Math.round(Mth.cos(angle) * body.radius()), cy + Math.round(Mth.sin(angle) * body.radius() * TILT)};
     }
 
@@ -124,8 +137,12 @@ public class SystemMapScreen extends Screen {
         int cy = top + MAP_Y + MAP_H / 2;
         g.enableScissor(left + MAP_X, top + MAP_Y, left + MAP_X + MAP_W, top + MAP_Y + MAP_H);
         for (Body body : BODIES) {
-            ring(g, cx, cy, body.radius(), body == selected ? 0xFF3C5498 : ORBIT);
+            if (!body.station()) {
+                ring(g, cx, cy, body.radius(), body == selected ? 0xFF3C5498 : ORBIT);
+            }
         }
+        int[] homePos = position(HOMESTEAD, partialTick);
+        ring(g, homePos[0], homePos[1], STATION.radius(), selected == STATION ? 0xFF4A62A8 : 0xFF34467C);
         // the Scrapyard belt between Verdigris and Goliath, drifting slowly
         for (int i = 0; i < BELT_ROCKS; i++) {
             float a = i * 2.399F + (ticks + partialTick) / 12000F * Mth.TWO_PI;
@@ -138,6 +155,9 @@ public class SystemMapScreen extends Screen {
 
         Body hovered = null;
         for (Body body : BODIES) {
+            if (body.station()) {
+                continue;
+            }
             int[] p = position(body, partialTick);
             g.blit(RenderPipelines.GUI_TEXTURED, body.texture(), p[0] - body.w() / 2, p[1] - body.h() / 2, 0, 0,
                     body.w(), body.h(), body.w(), body.h());
@@ -146,7 +166,7 @@ public class SystemMapScreen extends Screen {
                 int mx = p[0] + Math.round(Mth.cos(moonAngle) * 11) - 3;
                 int my = p[1] + Math.round(Mth.sin(moonAngle) * 11 * TILT) - 3;
                 g.blit(RenderPipelines.GUI_TEXTURED, MOON, mx, my, 0, 0, 6, 6, 6, 6);
-            } else {
+            } else if (!open(body)) {
                 g.blit(RenderPipelines.GUI_TEXTURED, LOCK, p[0] + body.w() / 2 - 2, p[1] - body.h() / 2 - 6, 0, 0, 7, 9, 7, 9);
             }
             if (Math.abs(mouseX - p[0]) <= body.w() / 2 + 3 && Math.abs(mouseY - p[1]) <= body.h() / 2 + 3) {
@@ -155,6 +175,12 @@ public class SystemMapScreen extends Screen {
         }
         int[] sel = position(selected, partialTick);
         g.blit(RenderPipelines.GUI_TEXTURED, SELECTION, sel[0] - 12, sel[1] - 12, 0, 0, 24, 24, 24, 24);
+        // the station is drawn over the reticle so it never hides behind Homestead's brackets
+        int[] st = position(STATION, partialTick);
+        g.blit(RenderPipelines.GUI_TEXTURED, STATION.texture(), st[0] - 5, st[1] - 5, 0, 0, 11, 11, 11, 11);
+        if (Math.abs(mouseX - st[0]) <= 7 && Math.abs(mouseY - st[1]) <= 7) {
+            hovered = STATION;
+        }
         if (hovered != null) {
             int[] p = position(hovered, partialTick);
             String name = TextFit.str("gui.retrocosmos.map.body." + hovered.id());
@@ -195,8 +221,9 @@ public class SystemMapScreen extends Screen {
         String key = "gui.retrocosmos.map.body." + selected.id();
         g.drawString(font, TextFit.fit(font, TextFit.str(key), w), x, y, PHOSPHOR, false);
         y += 11;
-        boolean home = selected.home();
-        String status = TextFit.str(home ? "gui.retrocosmos.map.status.home" : "gui.retrocosmos.map.status.locked");
+        boolean home = open(selected);
+        String status = TextFit.str(selected.station() ? "gui.retrocosmos.map.status.station"
+                : home ? "gui.retrocosmos.map.status.home" : "gui.retrocosmos.map.status.locked");
         g.drawString(font, TextFit.fit(font, status, w), x, y, home ? AMBER : RED, false);
         y += 14;
         for (int line = 0; line < 4; line++) {
@@ -211,7 +238,8 @@ public class SystemMapScreen extends Screen {
                 y += 10;
             }
         } else {
-            for (net.minecraft.util.FormattedCharSequence seq : font.split(Component.translatable("gui.retrocosmos.map.home_hint"), w)) {
+            String hint = selected.station() ? "gui.retrocosmos.map.station_hint" : "gui.retrocosmos.map.home_hint";
+            for (net.minecraft.util.FormattedCharSequence seq : font.split(Component.translatable(hint), w)) {
                 g.drawString(font, seq, x, y, PHOSPHOR, false);
                 y += 10;
             }
@@ -223,10 +251,10 @@ public class SystemMapScreen extends Screen {
     }
 
     private void renderButton(GuiGraphics g, int mouseX, int mouseY) {
-        boolean enabled = selected.home();
+        boolean enabled = open(selected);
         int v = !enabled ? 32 : overButton(mouseX, mouseY) ? 16 : 0;
         g.blit(RenderPipelines.GUI_TEXTURED, BUTTON, left + BTN_X, top + BTN_Y, 0, v, BTN_W, BTN_H, BTN_W, 48);
-        String label = TextFit.fit(font, TextFit.str("gui.retrocosmos.map.return"), BTN_W - 8);
+        String label = TextFit.fit(font, TextFit.str(selected.station() ? "gui.retrocosmos.map.dock" : "gui.retrocosmos.map.return"), BTN_W - 8);
         g.drawString(font, label, left + BTN_X + (BTN_W - font.width(label)) / 2, top + BTN_Y + 4,
                 enabled ? BTN_TEXT : BTN_TEXT_OFF, false);
     }
@@ -234,8 +262,8 @@ public class SystemMapScreen extends Screen {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mx = event.x(), my = event.y();
-        if (overButton(mx, my) && selected.home()) {
-            ClientPacketDistributor.sendToServer(ReturnHomePayload.INSTANCE);
+        if (overButton(mx, my) && open(selected)) {
+            ClientPacketDistributor.sendToServer(new FlyToPayload(selected.id()));
             if (minecraft != null) {
                 minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
                         net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -243,9 +271,15 @@ public class SystemMapScreen extends Screen {
             onClose();
             return true;
         }
+        // the station first: it sits right next to Homestead
+        int[] st = position(STATION, 0);
+        if (Math.abs(mx - st[0]) <= 7 && Math.abs(my - st[1]) <= 7) {
+            selected = STATION;
+            return true;
+        }
         for (Body body : BODIES) {
             int[] p = position(body, 0);
-            if (Math.abs(mx - p[0]) <= body.w() / 2 + 3 && Math.abs(my - p[1]) <= body.h() / 2 + 3) {
+            if (!body.station() && Math.abs(mx - p[0]) <= body.w() / 2 + 3 && Math.abs(my - p[1]) <= body.h() / 2 + 3) {
                 selected = body;
                 return true;
             }

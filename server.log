@@ -1,0 +1,89 @@
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+
+> Task :downloadAssets
+Loaded 127 artifacts from /home/runner/work/anotherTest/anotherTest/build/tmp/downloadAssets/nfrt_artifact_manifest.properties
+Downloading asset index 29
+Using Minecraft asset root: /home/runner/.gradle/caches/neoformruntime/assets
+  ↓ https://piston-meta.mojang.com/v1/packages/a2f0558bd140ae4f8f6a48d0ea6f1dbc16a84baa/29.json
+
+> Task :prepareGameTestServerRun
+
+> Task :runGameTestServer
+2026-10-25T14:23:21.040744852Z main WARN Advanced terminal features are not available in this environment
+[14:23:21] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 111ms
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/run
+[14:23:21] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 24ms
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[14:23:21] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[14:23:21] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[14:23:21] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/classes/java/main:retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/resources/main from env
+[14:23:21] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[14:23:21] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		NeoForge 21.11.48 (neoforge)
+		Retro Cosmos 0.1.0 (retrocosmos)
+[14:23:21] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[14:23:21] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[14:23:22] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+ - retrocosmos (composite(folder(/home/runner/work/anotherTest/anotherTest/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/build/resources/main)))
+[14:23:22] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 26ms
+[14:23:22] [main/INFO] [minecraft/GameTestMainUtil]: Running GameTestMain with cwd '/home/runner/work/anotherTest/anotherTest/run', universe path 'gametestserver'
+[14:23:22] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[14:23:28] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[14:23:28] [modloading-worker-0/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: countdown initiated. Stage 1 - preparation.
+[14:23:31] [main/INFO] [minecraft/RecipeManager]: Loaded 1571 recipes
+[14:23:31] [main/INFO] [minecraft/AdvancementTree]: Loaded 1609 advancements
+[14:23:31] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[14:23:32] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[14:23:32] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[14:23:32] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[14:23:32] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 478 ms
+[14:23:32] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[14:23:32] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[14:23:32] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos smoke: dimension retrocosmos:dimension/freedom_station.json decodes fine
+[14:23:32] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos smoke: dimension retrocosmos:dimension/venus.json decodes fine
+[14:23:32] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos smoke: dimension definition decodes fine, building the station in the test world
+[14:23:34] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Freedom Station built at BlockPos{x=-38, y=96, z=-38}
+[14:23:34] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos smoke: station supplies RP-1=104 LOX=130
+[14:23:34] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Venus expedition camp built at BlockPos{x=400, y=-61, z=400}
+[14:23:34] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos smoke: Venus camp pad=9/9 tower=8
+[14:23:34] [Server thread/INFO] [co.re.re.RetroCosmos/]: STATION SMOKE OK: origin=BlockPos{x=-38, y=96, z=-38} pad=9/9 tower=8 blockedAbovePad=0 arrivalPressurized=true compartments=157 auditProblems=0
+[14:23:34] [Server thread/INFO] [minecraft/GameTestServer]: 1 tests are now running at position 632674, -59, 14257561!
+[14:23:34] [Server thread/INFO] [minecraft/GameTestRunner]: Running test environment 'minecraft:default' batch 0 (1 tests)...
+[14:23:35] [Server thread/INFO] [minecraft/GameTestServer]: [+]
+[14:23:35] [Server thread/INFO] [minecraft/GameTestServer]: ========= 1 GAME TESTS COMPLETE IN 440.4 ms ======================
+[14:23:35] [Server thread/INFO] [minecraft/GameTestServer]: All 1 required tests passed :)
+[14:23:35] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[14:23:35] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[14:23:35] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[14:23:35] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[14:23:36] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld
+[14:23:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether
+[14:23:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end
+[14:23:37] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (gametestworld): All chunks are saved
+[14:23:37] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[14:23:37] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[14:23:37] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[14:23:37] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/smoke-1792938199271.json
+
+BUILD SUCCESSFUL in 18s
+6 actionable tasks: 3 executed, 3 up-to-date

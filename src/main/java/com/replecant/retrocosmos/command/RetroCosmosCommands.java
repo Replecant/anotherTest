@@ -4,16 +4,26 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.replecant.retrocosmos.flight.HomePad;
+import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.oxygen.OxygenSystem;
+import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModItems;
+import com.replecant.retrocosmos.station.FreedomStation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /**
@@ -21,6 +31,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * /retrocosmos oxygen on|off [player]      - airless-environment simulation (test toggle, permission level 2)
  * /retrocosmos oxygen set &lt;seconds&gt; [player] - set the worn suit's oxygen
  * /retrocosmos hud on|off                  - suit telemetry HUD
+ * /retrocosmos tp station|homestead [player] - teleport to Freedom Station / to the player's home pad (level 2)
+ * /retrocosmos station rebuild             - wipe and rebuild Freedom Station from the current design (level 2)
  * </pre>
  */
 public final class RetroCosmosCommands {
@@ -47,7 +59,20 @@ public final class RetroCosmosCommands {
                 .then(Commands.literal("on").executes(ctx -> setHud(ctx, true)))
                 .then(Commands.literal("off").executes(ctx -> setHud(ctx, false)));
 
-        event.getDispatcher().register(Commands.literal("retrocosmos").then(oxygen).then(hud));
+        LiteralArgumentBuilder<CommandSourceStack> tp = Commands.literal("tp")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
+        for (String target : new String[] {RocketEntity.FREEDOM_STATION, "station", RocketEntity.HOMESTEAD, "home"}) {
+            tp.then(Commands.literal(target)
+                    .executes(ctx -> teleport(ctx, ctx.getSource().getPlayerOrException(), target))
+                    .then(Commands.argument("player", EntityArgument.player())
+                            .executes(ctx -> teleport(ctx, EntityArgument.getPlayer(ctx, "player"), target))));
+        }
+
+        LiteralArgumentBuilder<CommandSourceStack> station = Commands.literal("station")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("rebuild").executes(RetroCosmosCommands::rebuildStation));
+
+        event.getDispatcher().register(Commands.literal("retrocosmos").then(oxygen).then(hud).then(tp).then(station));
     }
 
     private static int setAirless(CommandContext<CommandSourceStack> ctx, ServerPlayer player, boolean airless) {
@@ -59,6 +84,46 @@ public final class RetroCosmosCommands {
         }
         ctx.getSource().sendSuccess(() -> Component.translatable("command.retrocosmos.oxygen.toggled", player.getName(),
                 Component.translatable(airless ? "command.retrocosmos.on" : "command.retrocosmos.off")), true);
+        return 1;
+    }
+
+    private static int teleport(CommandContext<CommandSourceStack> ctx, ServerPlayer player, String target) {
+        MinecraftServer server = ctx.getSource().getServer();
+        boolean toStation = target.equals(RocketEntity.FREEDOM_STATION) || target.equals("station");
+        if (player.isPassenger()) {
+            player.stopRiding();
+        }
+        ServerLevel level;
+        Vec3 pos;
+        if (toStation) {
+            level = FreedomStation.level(server);
+            FreedomStation.Layout layout = level == null ? null : FreedomStation.ensureBuilt(level);
+            if (layout == null) {
+                ctx.getSource().sendFailure(Component.translatable("command.retrocosmos.tp.no_station"));
+                return 0;
+            }
+            pos = Vec3.atBottomCenterOf(layout.arrival().above());
+        } else {
+            level = server.overworld();
+            HomePad home = player.getData(ModAttachments.HOME_PAD);
+            BlockPos base = home.known() ? home.pos().offset(2, 0, 0)
+                    : level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.ZERO);
+            pos = Vec3.atBottomCenterOf(base);
+        }
+        player.teleport(new TeleportTransition(level, pos, Vec3.ZERO, player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
+        ctx.getSource().sendSuccess(() -> Component.translatable(toStation ? "command.retrocosmos.tp.station" : "command.retrocosmos.tp.home",
+                player.getName()), true);
+        return 1;
+    }
+
+    private static int rebuildStation(CommandContext<CommandSourceStack> ctx) {
+        ServerLevel level = FreedomStation.level(ctx.getSource().getServer());
+        FreedomStation.Layout layout = level == null ? null : FreedomStation.rebuild(level);
+        if (layout == null) {
+            ctx.getSource().sendFailure(Component.translatable("command.retrocosmos.tp.no_station"));
+            return 0;
+        }
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.retrocosmos.station.rebuilt"), true);
         return 1;
     }
 

@@ -33,6 +33,12 @@ public class StationData extends SavedData {
         return version;
     }
 
+    public void reset() {
+        this.placed = false;
+        this.version = 0;
+        setDirty();
+    }
+
     public void markPlaced(int version) {
         this.placed = true;
         this.version = version;

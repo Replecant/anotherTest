@@ -107,6 +107,14 @@ public final class FreedomStation {
         return new BlockPos(a.get(0).getAsInt(), a.get(1).getAsInt(), a.get(2).getAsInt());
     }
 
+    /** Wipes the station area and builds the current design again (for /retrocosmos station rebuild). */
+    @Nullable
+    public static Layout rebuild(ServerLevel level) {
+        clearOldStation(level);
+        level.getDataStorage().computeIfAbsent(StationData.TYPE).reset();
+        return ensureBuilt(level);
+    }
+
     /** Builds the station in its dimension if that hasn't happened yet. Returns the layout, or null on failure. */
     @Nullable
     public static Layout ensureBuilt(ServerLevel level) {
@@ -144,7 +152,7 @@ public final class FreedomStation {
         return layout;
     }
 
-    private static void clearOldStation(ServerLevel level) {
+    static void clearOldStation(ServerLevel level) {
         BlockState air = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         for (int x = -CLEAR_RADIUS; x <= CLEAR_RADIUS; x++) {

@@ -1,6 +1,7 @@
 package com.replecant.retrocosmos.tribe.mutant;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.registry.ModSounds;
 import com.replecant.retrocosmos.tribe.ModTribes;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -14,6 +15,7 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
@@ -41,10 +43,9 @@ public class BlasterBolt extends ThrowableProjectile {
                 shooter.getZ() + side.z + direction.z * 0.6);
         bolt.shoot(direction.x, direction.y, direction.z, SPEED, inaccuracy);
         shooter.level().addFreshEntity(bolt);
-        shooter.level().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST,
-                SoundSource.HOSTILE, 0.8F, 1.9F + shooter.getRandom().nextFloat() * 0.2F);
-        shooter.level().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.BEACON_POWER_SELECT,
-                SoundSource.HOSTILE, 0.5F, 2.0F);
+        SoundSource source = shooter instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE;
+        shooter.level().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), ModSounds.BLASTER_SHOT.get(),
+                source, 1.0F, 0.95F + shooter.getRandom().nextFloat() * 0.1F);
         return bolt;
     }
 

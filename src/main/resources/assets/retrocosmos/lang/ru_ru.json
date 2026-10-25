@@ -480,6 +480,7 @@
   "death.attack.retrocosmos.blaster": "%1$s испепелён лучом: %2$s",
   "death.attack.retrocosmos.blaster.item": "%1$s испепелён лучом: %2$s, оружие: %3$s",
   "item.retrocosmos.ray_blaster.desc": "Лучевой пистолет доктора Ойнштайна. Перезаряжается между выстрелами; чинится редстоуном.",
+  "subtitles.retrocosmos.blaster_shot": "Выстрел бластера",
   "entity.retrocosmos.thrown_spear": "Брошенное копьё",
   "tribe.retrocosmos.name.0": "Угг",
   "tribe.retrocosmos.name.1": "Грок",

@@ -1592,6 +1592,8 @@ EN[f"death.attack.{MOD}.blaster.item"] = "%1$s was zapped by %2$s using %3$s"
 RU[f"death.attack.{MOD}.blaster.item"] = "%1$s испепелён лучом: %2$s, оружие: %3$s"
 EN[f"item.{MOD}.ray_blaster.desc"] = "Dr. Oinstein's ray pistol. Recharges between shots; repair with redstone."
 RU[f"item.{MOD}.ray_blaster.desc"] = "Лучевой пистолет доктора Ойнштайна. Перезаряжается между выстрелами; чинится редстоуном."
+EN[f"subtitles.{MOD}.blaster_shot"] = "Blaster fires"
+RU[f"subtitles.{MOD}.blaster_shot"] = "Выстрел бластера"
 EN[f"entity.{MOD}.thrown_spear"], RU[f"entity.{MOD}.thrown_spear"] = "Thrown Spear", "Брошенное копьё"
 for _i, (_en, _ru) in enumerate(NAMES):
     EN[f"tribe.{MOD}.name.{_i}"], RU[f"tribe.{MOD}.name.{_i}"] = _en, _ru

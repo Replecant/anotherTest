@@ -22,6 +22,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -32,6 +34,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.world.phys.AABB;
 
 /**
  * The expedition camp on Venus: a cleared patch of jungle with a 3x3 launch pad, a service tower, floodlights
@@ -40,6 +43,13 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 public final class VenusLanding {
     /** Clearing radius around the pad and how far up the jungle canopy is cut away. */
     private static final int CLEAR_RADIUS = 5, CLEAR_HEIGHT = 32;
+    /**
+     * Block flags for building the camp: sync to clients but never drop items. Cutting the jungle away and laying the
+     * deck triggers shape updates that would otherwise break the surrounding plants and lianas into loose items.
+     */
+    private static final int QUIET = Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS;
+    /** Half-extent of the box swept of stray item entities once the camp is built. */
+    private static final int SWEEP = 48;
     /** Bump when the camp design changes: older camps are cleared and rebuilt on the next flight there. */
     public static final int VERSION = 2;
     private static final Identifier TEMPLATE = Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "venus_expedition_camp");
@@ -108,7 +118,7 @@ public final class VenusLanding {
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-radius, down, -radius), center.offset(radius, up, radius))) {
             if (!level.getBlockState(p).isAir()) {
                 level.removeBlockEntity(p);
-                level.setBlock(p, air, Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
+                level.setBlock(p, air, QUIET);
             }
         }
         level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(center).inflate(radius, up, radius),
@@ -181,10 +191,12 @@ public final class VenusLanding {
         BlockPos padCenter = surface.below(); // the pad replaces the top layer of ground
         BlockPos fromTemplate = placeTemplate(level, surface);
         if (fromTemplate != null) {
+            sweepItems(level, fromTemplate);
             RetroCosmos.LOGGER.info("Retro Cosmos: Venus expedition camp built at {}", fromTemplate);
             return fromTemplate.above().immutable();
         }
         build(level, padCenter);
+        sweepItems(level, padCenter);
         RetroCosmos.LOGGER.info("Retro Cosmos: Venus expedition camp (fallback) built at {}", padCenter);
         return padCenter.above().immutable();
     }
@@ -212,7 +224,7 @@ public final class VenusLanding {
                 for (int y = groundY + 1; y < size.getY() + CLEAR_HEIGHT; y++) {
                     BlockPos p = origin.offset(x, y, z);
                     if (!level.getBlockState(p).isAir()) {
-                        level.setBlock(p, air, Block.UPDATE_CLIENTS);
+                        level.setBlock(p, air, QUIET);
                     }
                 }
                 // footings down to solid ground
@@ -222,23 +234,28 @@ public final class VenusLanding {
                     if (y < groundY && state.isSolidRender()) {
                         break;
                     }
-                    level.setBlock(p, footing, Block.UPDATE_CLIENTS);
+                    level.setBlock(p, footing, QUIET);
                 }
             }
         }
-        template.placeInWorld(level, origin, origin, new StructurePlaceSettings(), level.getRandom(), Block.UPDATE_CLIENTS);
+        template.placeInWorld(level, origin, origin, new StructurePlaceSettings(), level.getRandom(), QUIET);
         BlockPos padCenter = origin.offset(pos(anchors.getAsJsonArray("pad_center")));
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 BlockPos p = padCenter.offset(dx, 0, dz);
                 BlockState state = level.getBlockState(p);
                 if (state.is(ModBlocks.LAUNCH_PAD.get())) {
-                    level.setBlock(p, LaunchPadBlock.shapeFor(state, level, p), Block.UPDATE_CLIENTS);
+                    level.setBlock(p, LaunchPadBlock.shapeFor(state, level, p), QUIET);
                 }
             }
         }
         NpcAnchor.spawnAll(level, NpcAnchor.read(anchors, origin));
         return padCenter;
+    }
+
+    /** Removes loose items left around the site (plants and vines knocked off by the levelling). */
+    private static void sweepItems(ServerLevel level, BlockPos center) {
+        level.getEntitiesOfClass(ItemEntity.class, new AABB(center).inflate(SWEEP)).forEach(Entity::discard);
     }
 
     @Nullable
@@ -269,36 +286,36 @@ public final class VenusLanding {
                 for (int dy = 1; dy <= CLEAR_HEIGHT; dy++) {
                     BlockPos p = center.offset(dx, dy, dz);
                     if (!level.getBlockState(p).isAir()) {
-                        level.setBlock(p, air, Block.UPDATE_CLIENTS);
+                        level.setBlock(p, air, QUIET);
                     }
                 }
                 boolean deck = Math.abs(dx) <= 3 && Math.abs(dz) <= 3;
                 for (int dy = 0; dy >= -2; dy--) {
                     level.setBlock(center.offset(dx, dy, dz), (dy == 0 && deck ? ModFurniture.HULL_PANEL.get() : Blocks.COBBLESTONE)
-                            .defaultBlockState(), Block.UPDATE_CLIENTS);
+                            .defaultBlockState(), QUIET);
                 }
             }
         }
         // 3x3 pad, then give it its edge/corner/centre look
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                level.setBlock(center.offset(dx, 0, dz), ModBlocks.LAUNCH_PAD.get().defaultBlockState(), Block.UPDATE_CLIENTS);
+                level.setBlock(center.offset(dx, 0, dz), ModBlocks.LAUNCH_PAD.get().defaultBlockState(), QUIET);
             }
         }
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 BlockPos p = center.offset(dx, 0, dz);
-                level.setBlock(p, LaunchPadBlock.shapeFor(level.getBlockState(p), level, p), Block.UPDATE_CLIENTS);
+                level.setBlock(p, LaunchPadBlock.shapeFor(level.getBlockState(p), level, p), QUIET);
             }
         }
         // service tower at dx = +2
         for (int dy = 0; dy < 8; dy++) {
-            level.setBlock(center.offset(2, dy, 0), ModBlocks.SERVICE_TOWER.get().defaultBlockState(), Block.UPDATE_CLIENTS);
+            level.setBlock(center.offset(2, dy, 0), ModBlocks.SERVICE_TOWER.get().defaultBlockState(), QUIET);
         }
         // floodlights on the deck corners
         for (int[] c : new int[][] {{-3, -3}, {3, -3}, {-3, 3}, {3, 3}}) {
             level.setBlock(center.offset(c[0], 1, c[1]), ModFurniture.ATOMIC_FLOOR_LAMP.get().defaultBlockState()
-                    .setValue(FurnitureBlock.LIT, true), Block.UPDATE_CLIENTS);
+                    .setValue(FurnitureBlock.LIT, true), QUIET);
         }
         // supply cabinets with propellant for the way home, facing the pad
         BlockPos cabinet = center.offset(-3, 1, 0);

@@ -1,0 +1,8 @@
+{
+  "blaster_shot": {
+    "subtitle": "subtitles.retrocosmos.blaster_shot",
+    "sounds": [
+      "retrocosmos:item/blaster_shot"
+    ]
+  }
+}

@@ -480,6 +480,7 @@
   "death.attack.retrocosmos.blaster": "%1$s was zapped by %2$s",
   "death.attack.retrocosmos.blaster.item": "%1$s was zapped by %2$s using %3$s",
   "item.retrocosmos.ray_blaster.desc": "Dr. Oinstein's ray pistol. Recharges between shots; repair with redstone.",
+  "subtitles.retrocosmos.blaster_shot": "Blaster fires",
   "entity.retrocosmos.thrown_spear": "Thrown Spear",
   "tribe.retrocosmos.name.0": "Ugg",
   "tribe.retrocosmos.name.1": "Grok",

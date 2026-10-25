@@ -1,6 +1,7 @@
 package com.replecant.retrocosmos.dinosaur.robot;
 
 import com.replecant.retrocosmos.dinosaur.DinosaurAnimated;
+import com.replecant.retrocosmos.registry.ModSounds;
 import com.replecant.retrocosmos.tribe.Tribesman;
 import java.util.EnumSet;
 import javax.annotation.Nullable;
@@ -247,7 +248,7 @@ public class AtomicSentry extends Monster implements DinosaurAnimated {
                 SentryBolt bolt = new SentryBolt(sentry.level(), sentry, dir);
                 bolt.setPos(eye.add(dir.scale(0.9)));
                 sentry.level().addFreshEntity(bolt);
-                sentry.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.9F);
+                sentry.playSound(ModSounds.BLASTER_SHOT.get(), 1.0F, 1.35F);
             }
         }
     }

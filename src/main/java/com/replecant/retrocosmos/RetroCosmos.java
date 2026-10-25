@@ -16,6 +16,7 @@ import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModFurniture;
 import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.registry.ModMenus;
+import com.replecant.retrocosmos.registry.ModSounds;
 import com.replecant.retrocosmos.ruins.ModRuins;
 import com.replecant.retrocosmos.station.StationProtection;
 import com.replecant.retrocosmos.station.StationSmokeTest;
@@ -52,6 +53,7 @@ public class RetroCosmos {
         ModCreativeTabs.TABS.register(modEventBus);
         ModDataComponents.COMPONENTS.register(modEventBus);
         ModAttachments.ATTACHMENTS.register(modEventBus);
+        ModSounds.SOUNDS.register(modEventBus);
         modEventBus.addListener(ModNetwork::register);
         NeoForge.EVENT_BUS.addListener(OxygenSystem::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(FlightEvents::onMount);

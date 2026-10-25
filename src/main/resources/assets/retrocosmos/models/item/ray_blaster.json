@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "retrocosmos:item/blaster_template",
   "textures": {
     "layer0": "retrocosmos:item/ray_blaster"
   }

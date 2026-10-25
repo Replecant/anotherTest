@@ -78,8 +78,8 @@ public final class ModTribes {
     /** Hominus Sapiens: the brain under glass with the ray pistol. */
     public static final DeferredHolder<EntityType<?>, EntityType<HominusSapiens>> HOMINUS_SAPIENS = ModEntities.ENTITIES.register("hominus_sapiens",
             id -> EntityType.Builder.of(HominusSapiens::new, MobCategory.MONSTER)
-                    .sized(0.6F, 1.95F)
-                    .eyeHeight(1.55F)
+                    .sized(0.6F, 1.8F)
+                    .eyeHeight(1.45F)
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
     /** The glowing ray-gun bolt (fired by the Sapiens and by the player's ray blaster). */

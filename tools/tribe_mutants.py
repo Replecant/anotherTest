@@ -34,12 +34,14 @@ def novus_spec():
         ]),
         P("collar", "body", (0, -21.5, -5), (-lean + 0.2, 0, 0), [
             B(-6, -2, -6, 12, 4, 12, "collar"),
-            B(-1, -1.5, -7, 2, 2, 1, "lamp"),
+            # the signal lamps stand out on both sides of the collar, where the head does not hide them
+            B(6, -3, -2, 2, 2, 2, "lamp"),
+            B(-8, -3, -2, 2, 2, 2, "lamp"),
         ]),
         P("head", "body", (0, -22.5, -4.5), (-lean + 0.25, 0, 0), [
             B(-4.5, -8, -7, 9, 8, 8, "nhead"),
-            B(-5, -6.5, -8, 10, 2, 2, "nbrow"),
-            B(-3.5, -4, -9, 7, 4, 3, "nmuzzle"),
+            B(-5, -6, -8, 10, 1, 2, "nbrow"),
+            B(-3.5, -3, -9, 7, 3, 3, "nmuzzle"),
         ]),
         P("jaw", "head", (0, 0, -3), (0, 0, 0), [
             B(-3.5, -0.5, -6, 7, 2, 4, "njaw"),
@@ -119,7 +121,7 @@ def paint_novus(t, layer="main"):
     glow = layer == "glow"
     lamp_layer = layer == "lamp"
     if glow or lamp_layer:
-        if lamp_layer and mat == "lamp" and f != "south":
+        if lamp_layer and mat == "lamp":
             return (255, 60, 40, 255) if (t.i + t.j) % 3 else (255, 200, 170, 255)
         if glow and mat == "nhead" and f == "north" and t.j == 3 and t.i in (2, 6):
             return (255, 60, 30, 255)
@@ -162,14 +164,16 @@ def paint_novus(t, layer="main"):
         if f == "north" and t.j == 0:
             c = pal["hazard"] if t.i % 2 else (40, 40, 40)
     elif mat == "lamp":
-        c = (180, 30, 24) if f != "south" else pal["steel_d"]
+        c = (180, 30, 24) if f != "bottom" else pal["steel_d"]
     elif mat == "nhead":
         if f == "north":
             c = pal["skin_d"]
             if t.j == 3:
                 c = D.mul(pal["skin_d"], 0.6)
                 if t.i in (2, 6):
-                    c = (200, 40, 30)  # bloodshot eyes
+                    c = (200, 40, 30)  # bloodshot eyes, just under the brow ridge
+                if t.i in (1, 7):
+                    c = (226, 214, 196)
             if t.j >= 4 and t.i in (0, 8):
                 c = fur(pal, t)
         elif f == "top":
@@ -190,7 +194,7 @@ def paint_novus(t, layer="main"):
             c = pal["skin_d"]
             if t.j == 0 and t.i in (2, 4):
                 c = (50, 32, 30)  # nostrils
-            if t.j == 3:
+            if t.j == 2:
                 c = (70, 30, 30)  # lips
         if f in ("east", "west"):
             c = D.mul(pal["skin"], 0.9)
@@ -216,20 +220,22 @@ def sapiens_spec():
             B(-4.5, -8.5, -2.5, 9, 3, 5, "harness"),
             B(-2, -7, 2, 4, 5, 2, "pack"),
         ]),
+        # a hominid head - with a small glass cap set into the back of the skull: the outside tampering
         P("head", "body", (0, -8, -0.5), (-0.08, 0, 0), [
-            B(-3.5, -6, -3.5, 7, 6, 7, "sface"),
-            B(-5, -13, -5, 10, 8, 10, "glass"),
-            B(-5.5, -6, -5.5, 11, 1, 11, "ring"),
-            B(-1.5, -12, 5, 3, 3, 2, "valve"),
+            B(-3.5, -7, -3.5, 7, 7, 7, "sface"),
+            B(-2, -3, -4.5, 4, 2, 1, "smuzzle"),
+            B(-2.5, -10, -1.5, 5, 4, 5, "glass"),
+            B(-3, -7.5, -2, 6, 1, 6, "ring"),
+            B(3.5, -2, -0.5, 1, 1, 1, "bolt"),
+            B(-4.5, -2, -0.5, 1, 1, 1, "bolt"),
         ]),
-        P("brain", "head", (0, -6, 0), (0, 0, 0), [
-            B(-4, -6, -4, 8, 6, 8, "brain"),
+        P("brain", "head", (0, -7.5, 1), (0, 0, 0), [
+            B(-2, -1.5, -2, 4, 3, 4, "brain"),
         ]),
-        P("tube_l", "head", (2, -8, 5), (0.35, 0, 0), [
-            B(-0.5, 0, 0, 1, 8, 1, "tube"),
+        P("tube", "head", (1, -8.5, 3.5), (0.55, 0, 0), [
+            B(-0.5, 0, 0, 1, 6, 1, "tube"),
         ]),
     ]
-    parts.append(mirrored(parts[-1], "tube_r"))
     arm_l = P("arm_l", "body", (5, -7, 0), (0, 0, -0.06), [
         B(-1, -1, -1.5, 3, 10, 3, "sleeve"),
     ])
@@ -237,14 +243,15 @@ def sapiens_spec():
         B(-2, 0, -2, 4, 10, 4, "pants"),
     ])
     parts += [arm_l, mirrored(arm_l, "arm_r"), leg_l, mirrored(leg_l, "leg_r")]
-    # the ray pistol in the right hand: the barrel runs down the arm axis, so it points ahead when the arm is raised
-    parts.append(P("blaster", "arm_r", (-0.5, 9, 0), (0, 0, 0), [
-        B(-0.5, -1, -0.5, 1, 3, 2, "grip"),
-        B(-1, 1, -2.5, 2, 5, 3, "gun"),
-        B(-0.5, 6, -1.5, 1, 2, 1, "barrel"),
-        B(-2, 2, -3, 4, 1, 4, "fin"),
-        B(-2, 4, -3, 4, 1, 4, "fin"),
-        B(-1, 8, -2, 2, 2, 2, "emitter"),
+    # the ray pistol in the right fist: grip down into the hand, barrel along -z. The model counter-rotates this part
+    # against the arm's pitch, so the barrel points ahead at rest and straight at the target when aiming.
+    parts.append(P("blaster", "arm_r", (-0.5, 8.5, 0), (0, 0, 0), [
+        B(-0.5, -0.5, -1, 1, 3, 2, "grip"),
+        B(-1, -1.5, -6.5, 2, 2, 5, "gun"),
+        B(-1.5, -2, -5, 3, 3, 1, "fin"),
+        B(-1.5, -2, -3, 3, 3, 1, "fin"),
+        B(-0.5, -1, -8.5, 1, 1, 2, "barrel"),
+        B(-1, -1.5, -10.5, 2, 2, 2, "emitter"),
     ]))
     return {"name": "hominus_sapiens", "tex_w": 128, "parts": parts, "palette": {}}
 
@@ -253,7 +260,7 @@ SAPIENS = {
     "skin": (174, 162, 172), "skin_d": (132, 120, 134), "fur": (96, 90, 104), "fur_l": (124, 116, 132),
     "suit": (120, 126, 132), "suit_d": (84, 88, 96), "suit_l": (158, 164, 170), "strap": (66, 56, 50),
     "brass": (196, 156, 72), "brain": (232, 136, 160), "brain_d": (184, 88, 116), "brain_l": (250, 186, 200),
-    "eye": (250, 230, 90), "chrome": (204, 212, 220), "chrome_d": (132, 142, 154), "red": (208, 44, 48),
+    "eye": (250, 230, 90), "scar": (168, 112, 118), "chrome": (204, 212, 220), "chrome_d": (132, 142, 154), "red": (208, 44, 48),
     "glow": (110, 255, 200),
 }
 
@@ -312,7 +319,7 @@ def paint_sapiens(t, layer="main"):
         if mat == "brain" and f != "bottom":
             c = brain_texel(pal, t)
             return tuple(int(v * 0.35) for v in c) + (255,)
-        if mat == "sface" and f == "north" and t.j == 2 and t.i in (1, 2, 4, 5):
+        if mat == "sface" and f == "north" and t.j == 3 and t.i in (2, 4):
             return pal["eye"] + (255,)
         if mat == "emitter" or (mat == "fin" and f in ("north", "south", "east", "west") and t.i == 1):
             return pal["glow"] + (255,)
@@ -378,39 +385,49 @@ def paint_sapiens(t, layer="main"):
         if f == "north":
             c = pal["skin"]
             if t.j == 0:
-                c = pal["skin_d"]
-            if t.j == 1:
-                c = D.mul(pal["skin_d"], 0.85)  # slight brow
+                c = pal["fur"]  # hairline
             if t.j == 2:
+                c = D.mul(pal["skin_d"], 0.8)  # heavy brow
+            if t.j == 3:
                 c = D.mul(pal["skin_d"], 0.9)
                 if t.i in (1, 5):
-                    c = (30, 24, 26)
+                    c = (236, 228, 214)
                 if t.i in (2, 4):
                     c = pal["eye"]
-            if t.j == 3 and t.i == 3:
+            if t.j >= 4 and t.i in (0, 6):
                 c = pal["skin_d"]
-            if t.j == 4 and 1 < t.i < 5:
-                c = D.mul(pal["skin_d"], 0.75)  # thin mouth
-            if t.j == 5:
-                c = D.mul(pal["skin"], 0.94)
+            if t.j == 6:
+                c = D.mul(pal["skin"], 0.92)
         elif f in ("east", "west"):
             c = pal["skin"] if t.lz - t.z0 < 3 else pal["fur"]
-            if 2 <= t.lz - t.z0 < 3 and t.j in (2, 3):
+            if 2 <= t.lz - t.z0 < 3 and t.j in (3, 4):
                 c = pal["skin_d"]  # ear
+            if t.lz - t.z0 >= 3 and t.j == 0:
+                c = pal["scar"] if t.i % 2 else D.mul(pal["skin"], 0.95)  # stitched incision running back to the cap
         elif f == "top":
-            c = pal["brain_d"]
+            c = pal["fur"] if (t.i + t.j) % 3 else pal["fur_l"]
+            if t.lz < -1.5 and abs(t.lx) < 3.2 and t.j % 2 == 0:
+                c = pal["scar"]
         else:
             c = pal["fur"]
+    elif mat == "smuzzle":
+        c = pal["skin_d"]
+        if f == "north":
+            c = pal["skin"]
+            if t.j == 0 and t.i in (1, 2):
+                c = D.mul(pal["skin_d"], 0.7)  # nostrils
+            if t.j == 1:
+                c = D.mul(pal["skin_d"], 0.75)  # thin mouth
+    elif mat == "bolt":
+        c = pal["chrome"] if f != "north" else pal["chrome_d"]
     elif mat == "brain":
         c = brain_texel(pal, t)
         if f == "top" and abs(t.lx) < 0.6:
             c = D.mul(pal["brain_d"], 0.8)
     elif mat == "ring":
         c = pal["brass"] if (t.i % 3) else pal["chrome"]
-        if f in ("top",) and abs(t.lx) < 4.5 and abs(t.lz) < 4.5:
-            return (0, 0, 0, 0)
-        if f == "bottom" and abs(t.lx) < 3.6 and abs(t.lz) < 3.6:
-            return (0, 0, 0, 0)
+        if f in ("top", "bottom") and abs(t.lx) < 2.5 and -1.5 < t.lz < 3.5:
+            return (0, 0, 0, 0)  # the glass sits in the ring
     elif mat == "valve":
         c = pal["chrome"] if f != "south" else pal["red"]
     elif mat == "tube":
@@ -508,6 +525,25 @@ def sprite(rows, colours):
                 continue
             img.putpixel((x, y), tuple(int(v) for v in colours[ch]) + (255,))
     return img
+
+
+# Parent model for every pistol-style blaster sprite (barrel pointing right along rows 5-7, grip down at the lower
+# left). Display transforms worked out by simulating vanilla's ItemInHandLayer / ItemInHandRenderer chain (calibrated
+# on the vanilla handheld sword): barrel straight ahead, grip in the fist, one-handed pistol size.
+BLASTER_TEMPLATE = {
+    "parent": "minecraft:item/generated",
+    "gui_light": "front",
+    "display": {
+        "thirdperson_righthand": {"rotation": [0, 90, 90], "translation": [0, 1.13, 3.33], "scale": [0.55, 0.55, 0.55]},
+        "thirdperson_lefthand": {"rotation": [0, -90, -90], "translation": [0, 1.13, 3.33], "scale": [0.55, 0.55, 0.55]},
+        "firstperson_righthand": {"rotation": [0, 95, 0], "translation": [0.37, 1.75, -2.4], "scale": [0.55, 0.55, 0.55]},
+        "firstperson_lefthand": {"rotation": [0, -85, 0], "translation": [0.37, 1.75, -2.4], "scale": [0.55, 0.55, 0.55]},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.5, 0.5, 0.5]},
+        "gui": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+        "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+        "head": {"rotation": [0, 180, 0], "translation": [0, 13, 7], "scale": [1, 1, 1]},
+    },
+}
 
 
 def item_ray_blaster():

@@ -7,12 +7,12 @@ import com.replecant.retrocosmos.tribe.mutant.HominusSapiens;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.phys.AABB;
@@ -57,7 +57,10 @@ public class MutantRenderer<T extends Monster> extends MobRenderer<T, MutantRend
                 @Override
                 public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, MutantRenderState state, float yRot, float xRot) {
                     if (!state.isInvisibleToPlayer) {
-                        collector.order(2).submitModel(getParentModel(), state, poseStack, glassType, light, OverlayTexture.NO_OVERLAY, -1, null);
+                        // the full overload, as vanilla's EyesLayer calls it: (light, overlay, tint colour, sprite, outline colour).
+                        // NB the short overload's last int is the OUTLINE colour - passing -1 there drew a white glowing silhouette.
+                        collector.order(2).submitModel(getParentModel(), state, poseStack, glassType, light,
+                                LivingEntityRenderer.getOverlayCoords(state, 0.0F), -1, null, state.outlineColor, null);
                     }
                 }
             });

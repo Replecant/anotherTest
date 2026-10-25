@@ -9,7 +9,7 @@ import net.minecraft.util.Mth;
 public class SapiensModel extends EntityModel<MutantRenderState> {
     private static final float DEG = Mth.DEG_TO_RAD;
     private final Function<String, ModelPart> parts;
-    private final ModelPart body, head, brain, armL, armR, legL, legR;
+    private final ModelPart body, head, brain, armL, armR, legL, legR, blaster;
 
     public SapiensModel(ModelPart root) {
         super(root);
@@ -21,6 +21,7 @@ public class SapiensModel extends EntityModel<MutantRenderState> {
         legL = part("leg_l");
         legR = part("leg_r");
         brain = part("brain");
+        blaster = part("blaster");
     }
 
     private ModelPart part(String name) {
@@ -53,6 +54,8 @@ public class SapiensModel extends EntityModel<MutantRenderState> {
         armR.yRot += s.yRot * DEG * s.aim;
         float kick = s.attackAnim <= 0.0F ? 0.0F : Mth.sin(s.attackAnim * Mth.PI);
         armR.xRot -= kick * 0.35F;
+        // keep the pistol level in the fist: cancel the arm's (and torso's) pitch, then tip it to where it looks
+        blaster.xRot = -(armR.xRot + body.xRot) + s.xRot * DEG * s.aim - kick * 0.25F;
         // that brain: a slow, wet throb
         float throb = 1.0F + 0.012F * Mth.sin(t * 0.12F);
         brain.xScale = throb;

@@ -1611,10 +1611,11 @@ def mutant_assets():
         for layer in layers:
             save(MU.build_texture(spec, layer), "entity", "tribe", spec["name"] + ("" if layer == "main" else "_" + layer))
     save(MU.bolt_texture(), "entity", "tribe", "blaster_bolt")
+    write_json(os.path.join(ASSETS, "models", "item", "blaster_template.json"), MU.BLASTER_TEMPLATE)
     for name, fn in (("ray_blaster", MU.item_ray_blaster), ("control_collar", MU.item_control_collar),
                      ("brain_flask", MU.item_brain_flask)):
         save(fn(), "item", name)
-        parent = "minecraft:item/handheld" if name == "ray_blaster" else "minecraft:item/generated"
+        parent = f"{MOD}:item/blaster_template" if name == "ray_blaster" else "minecraft:item/generated"
         write_json(os.path.join(ASSETS, "models", "item", name + ".json"),
                    {"parent": parent, "textures": {"layer0": f"{MOD}:item/{name}"}})
         item_def(name, f"{MOD}:item/{name}")

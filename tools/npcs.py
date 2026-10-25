@@ -1315,6 +1315,9 @@ LINES = {
     "cooper.first.brain_flask": (
         "Good Lord, it's still warm. A brain - an ape's brain, three times too big. I'll need a stiff drink and a bigger jar.",
         "Господи, он ещё тёплый. Мозг - обезьяний мозг, втрое больше положенного. Мне нужно выпить и банку побольше."),
+    "cooper.first.atomic_core": (
+        "Still warm! An atomic core from one of Oinstein's machines... Wrap it in lead, please, and never tell me where you got it.",
+        "Ещё тёплое! Атомное ядро из машины Ойнштайна... Заверните в свинец, прошу вас, и никогда не говорите, где вы его взяли."),
     "cooper.first.generic": ("Now THAT is something I've never seen before. Into the collection!",
                              "Вот ЭТОГО я ещё никогда не видел. В коллекцию!"),
     # ---- guards ----

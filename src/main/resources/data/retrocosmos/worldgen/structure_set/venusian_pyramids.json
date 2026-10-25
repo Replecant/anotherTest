@@ -6,9 +6,15 @@
     }
   ],
   "placement": {
-    "type": "minecraft:random_spread",
+    "type": "retrocosmos:exclusive_spread",
     "spacing": 64,
     "separation": 28,
-    "salt": 471103221
+    "salt": 471103221,
+    "exclusion_zones": [
+      {
+        "other_set": "retrocosmos:oinstein_institute",
+        "chunk_count": 10
+      }
+    ]
   }
 }

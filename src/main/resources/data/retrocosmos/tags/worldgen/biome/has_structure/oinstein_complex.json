@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "retrocosmos:venus_jungle",
+    "retrocosmos:venus_cycad_plains",
+    "retrocosmos:venus_fern_swamp",
+    "retrocosmos:venus_volcanic_highlands",
+    "retrocosmos:venus_glowcap_hollows",
+    "retrocosmos:venus_steaming_sea"
+  ]
+}

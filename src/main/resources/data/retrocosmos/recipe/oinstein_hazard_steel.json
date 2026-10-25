@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SY",
+    "YS"
+  ],
+  "key": {
+    "S": "retrocosmos:oinstein_riveted_steel",
+    "Y": "minecraft:yellow_dye"
+  },
+  "result": {
+    "id": "retrocosmos:oinstein_hazard_steel",
+    "count": 4
+  }
+}

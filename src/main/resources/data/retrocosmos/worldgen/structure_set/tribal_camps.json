@@ -1,13 +1,19 @@
 {
   "placement": {
-    "type": "minecraft:random_spread",
+    "type": "retrocosmos:exclusive_spread",
     "salt": 581273921,
     "separation": 22,
     "spacing": 52,
-    "exclusion_zone": {
-      "other_set": "retrocosmos:venusian_ruined_villages",
-      "chunk_count": 6
-    }
+    "exclusion_zones": [
+      {
+        "other_set": "retrocosmos:venusian_ruined_villages",
+        "chunk_count": 6
+      },
+      {
+        "other_set": "retrocosmos:oinstein_institute",
+        "chunk_count": 8
+      }
+    ]
   },
   "structures": [
     {

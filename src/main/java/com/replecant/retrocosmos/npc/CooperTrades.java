@@ -101,7 +101,7 @@ public final class CooperTrades {
     public static final Set<String> EXCITING = Set.of("venusian_idol", "glyph_tablet", "sun_disk_fragment", "ancient_amulet",
             "tribal_mask", "bone_spear", "raptor_tooth", "dino_hide", "venus_amber", "shaman_charm", "tyrannosaurus_fang",
             "plesiosaur_tooth", "deinosuchus_tooth", "ankylosaurus_plate",
-            "control_collar", "brain_flask");
+            "control_collar", "brain_flask", "atomic_core");
 
     private static Optional<Item> item(String id) {
         Identifier key = Identifier.parse(id);

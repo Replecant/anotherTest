@@ -1,5 +1,6 @@
 package com.replecant.retrocosmos.ruins;
 
+import com.replecant.retrocosmos.oinstein.ModOinstein;
 import com.replecant.retrocosmos.registry.ModBlocks;
 import com.replecant.retrocosmos.registry.ModItems;
 import java.util.ArrayList;
@@ -85,11 +86,14 @@ public final class ModRuins {
 
     /** Called from the mod constructor before the deferred registers are attached. */
     public static void init(IEventBus modEventBus) {
+        ModOinstein.init(modEventBus);
     }
 
     /** Items for the Venus creative tab, in order. */
     public static List<DeferredItem<? extends Item>> items() {
-        return Collections.unmodifiableList(ITEMS);
+        List<DeferredItem<? extends Item>> all = new ArrayList<>(ITEMS);
+        all.addAll(ModOinstein.items());
+        return Collections.unmodifiableList(all);
     }
 
     private static BlockBehaviour.Properties bricks(BlockBehaviour.Properties p) {

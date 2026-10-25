@@ -1427,8 +1427,11 @@ def write_camps():
         "terrain_adaptation": "beard_thin",
         "use_expansion_hack": False})
     write_json(os.path.join(DATA, "worldgen", "structure_set", "tribal_camps.json"), {
-        "placement": {"type": "minecraft:random_spread", "salt": 581273921, "separation": 22, "spacing": 52,
-                      "exclusion_zone": {"other_set": f"{MOD}:venusian_ruined_villages", "chunk_count": 6}},
+        # Clear of ruined villages and of Dr. Oinstein's Institute. Only sets that never exclude tribal camps
+        # themselves may be listed here (the outposts already keep away from us), or the checks would recurse.
+        "placement": {"type": f"{MOD}:exclusive_spread", "salt": 581273921, "separation": 22, "spacing": 52,
+                      "exclusion_zones": [{"other_set": f"{MOD}:venusian_ruined_villages", "chunk_count": 6},
+                                          {"other_set": f"{MOD}:oinstein_institute", "chunk_count": 8}]},
         "structures": [{"structure": f"{MOD}:tribal_camp", "weight": 1}]})
     write_json(os.path.join(DATA, "tags", "worldgen", "biome", "has_structure", "tribal_camp.json"), {
         "replace": False, "values": [f"{MOD}:venus_jungle", f"{MOD}:venus_cycad_plains", f"{MOD}:venus_fern_swamp"]})

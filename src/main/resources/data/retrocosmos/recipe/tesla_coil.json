@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "pattern": [
+    " I ",
+    " C ",
+    "SRS"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:copper_ingot",
+    "S": "retrocosmos:oinstein_riveted_steel",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "retrocosmos:tesla_coil",
+    "count": 1
+  }
+}

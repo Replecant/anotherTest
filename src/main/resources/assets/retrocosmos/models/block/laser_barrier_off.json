@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "retrocosmos:block/laser_barrier"
+  },
+  "render_type": "minecraft:translucent",
+  "elements": []
+}

@@ -1,0 +1,1860 @@
+"""Dr. Oinstein - the mad scientist of Venus and his Institute (the planet's antagonist storyline).
+
+Generates the assets and data of Oinstein's blocks (laser barrier and emitter, riveted / hazard steel, Tesla coil,
+brain jar, three propaganda posters), his insignia banner pattern, the laser damage type, loot tables, lore books and
+signs, and - with the structure builder of ruins.py - his structures on Venus:
+  * oinstein_capture_camp / oinstein_field_lab / oinstein_relay_pylon / oinstein_checkpoint: the outposts (one
+    structure set "oinstein_outposts", spread with retrocosmos:exclusive_spread away from tribal camps, ruins and the
+    Institute),
+  * oinstein_complex: the Oinstein Institute, exactly one per world (concentric_rings, count 1), its laboratory
+    entrance sealed by an unbreakable laser barrier.
+
+Called from ruins.generate(); EN / RU are merged into ruins.EN / RU.
+
+Mobs of the other Venus agents (hominid_novus, hominus_sapiens, atomic_sentry, atomic_automaton) are written into the
+templates as entities (unknown ids are skipped by the template loader); structure spawn_overrides with them are only
+written once those entity ids are registered in Java (or with OINSTEIN_SPAWNS=1 / 0).
+"""
+import math
+import os
+import random
+
+from PIL import Image
+
+from gen_resources import ASSETS, DATA, MOD, new, shaped, tag, write_json
+from furniture import add_to_tag
+from furniture_art import Model, T, block_item, state_simple, tex, tex_anim
+import station_furniture_art as sfa
+import ruins as R_
+from ruins import AIR, DIRS, FULL, HORIZ, OPP, Ruin, S_AIR, barrel_state, chest_state, st, write_template
+from station import Compound, List, Str, Int, Byte, TAG_COMPOUND, TAG_DOUBLE, TAG_INT
+from venus import P, put, tonal
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+JAVA = os.path.join(HERE, "..", "src", "main", "java", "com", "replecant", "retrocosmos")
+
+# =====================================================================================================================
+# Palette: gunmetal, chrome, concrete, hazard yellow, laser red, specimen green
+# =====================================================================================================================
+STEEL = [(40, 44, 50), (56, 61, 68), (74, 80, 88), (94, 100, 108), (122, 128, 136)]
+CHROME = [(110, 116, 124), (150, 156, 164), (190, 196, 204), (232, 236, 240)]
+HAZ_Y = (226, 178, 36)
+HAZ_YD = (176, 132, 22)
+HAZ_K = (34, 32, 30)
+LASER = [(120, 10, 8), (200, 24, 16), (255, 64, 40), (255, 150, 120), (255, 230, 220)]
+COPPER = [(110, 56, 36), (160, 86, 52), (204, 120, 74), (236, 168, 120)]
+GOO = [(40, 120, 40), (80, 190, 60), (150, 240, 110)]
+BRAIN = [(150, 70, 90), (204, 110, 130), (240, 160, 176)]
+BONE = [(176, 168, 140), (216, 208, 178), (244, 238, 214)]
+NAVY = (26, 30, 52)
+RED = (196, 32, 36)
+RED_D = (130, 20, 24)
+CYAN = (90, 220, 230)
+
+
+def Tm(name):
+    return f"{MOD}:{name}"
+
+
+# =====================================================================================================================
+# The insignia: a stylised atom over an ape skull
+# =====================================================================================================================
+SKULL = ["...BBBBB...",
+         "..BBBBBBB..",
+         ".BBBBBBBBB.",
+         "BBBBBBBBBBB",
+         "BDDBBBBBDDB",
+         "BDDDBBBDDDB",
+         ".BDBBDBBDB.",
+         "..BBDBDBB..",
+         "..BBBBBBB..",
+         "..BDBDBDB..",
+         "...BBBBB..."]
+
+
+def draw_skull(img, ox, oy, bone=BONE, dark=None, outline=None):
+    for y, row in enumerate(SKULL):
+        for x, ch in enumerate(row):
+            if ch == "B":
+                c = bone[2] if y < 3 else bone[1] if y < 8 else bone[0]
+                if x in (0, 10) or (y > 6 and x in (2, 8)):
+                    c = bone[0]
+                put(img, ox + x, oy + y, c)
+            elif ch == "D" and dark:
+                put(img, ox + x, oy + y, dark)
+    if outline:
+        pts = {(ox + x, oy + y) for y, row in enumerate(SKULL) for x, ch in enumerate(row) if ch != "."}
+        for (x, y) in list(pts):
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                q = (x + dx, y + dy)
+                if q not in pts and 0 <= q[0] < img.width and 0 <= q[1] < img.height and img.getpixel(q)[3] < 255:
+                    put(img, q[0], q[1], outline)
+
+
+def draw_atom(img, cx, cy, rx, ry, ring, nucleus, steps=None):
+    """Three thin orbits (0, +60, -60 degrees) around a nucleus; one pixel per step along each orbit."""
+    steps = steps or int(8 * rx)
+    pts = set()
+    for k in range(3):
+        a = k * math.pi / 3
+        for i in range(steps):
+            t = 2 * math.pi * i / steps
+            x, y = rx * math.cos(t), ry * math.sin(t)
+            pts.add((int(math.floor(cx + x * math.cos(a) - y * math.sin(a))),
+                     int(math.floor(cy + x * math.sin(a) + y * math.cos(a)))))
+    for (x, y) in pts:
+        put(img, x, y, ring)
+    r = max(1, int(rx / 6))
+    for dx in range(-r, r):
+        for dy in range(-r, r):
+            put(img, int(cx) + dx, int(cy) + dy, nucleus)
+
+
+# =====================================================================================================================
+# Block textures
+# =====================================================================================================================
+
+def riveted(seed, base=STEEL, plates=((0, 0, 16, 8), (0, 8, 8, 16), (8, 8, 16, 16))):
+    img = tonal(seed, base[1:4], [25, 50, 25], octaves=((4, 0.5), (8, 0.3)), jitter=0.3)
+    for (x0, y0, x1, y1) in plates:
+        for x in range(x0, x1):
+            put(img, x, y0, base[4])
+            put(img, x, y1 - 1, base[0])
+        for y in range(y0, y1):
+            put(img, x0, y, base[3])
+            put(img, x1 - 1, y, base[0])
+        for (rx, ry) in ((x0 + 2, y0 + 2), (x1 - 3, y0 + 2), (x0 + 2, y1 - 3), (x1 - 3, y1 - 3)):
+            put(img, rx, ry, CHROME[2])
+            put(img, rx + 1, ry + 1, base[0])
+    return img
+
+
+def tex_hazard():
+    img = riveted(902)
+    for y in range(1, 15):
+        for x in range(1, 15):
+            put(img, x, y, HAZ_Y if ((x + y) // 4) % 2 == 0 else HAZ_K)
+            if ((x + y) // 4) % 2 == 0 and (x + y) % 4 == 3:
+                put(img, x, y, HAZ_YD)
+    for (rx, ry) in ((1, 1), (14, 1), (1, 14), (14, 14)):
+        put(img, rx, ry, CHROME[2])
+    return img
+
+
+def laser_frames(n=8):
+    frames = []
+    rows = (2, 6, 10, 13)
+    for f in range(n):
+        img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        rnd = random.Random(1000 + f)
+        pulse = 0.5 + 0.5 * math.sin(2 * math.pi * f / n)
+        for y in range(16):
+            for x in range(16):
+                haze = 40 + int(25 * pulse) + int(12 * math.sin((x + f * 2) * 0.9 + y * 0.6))
+                img.putpixel((x, y), (*LASER[1], max(20, haze)))
+        for i, y in enumerate(rows):
+            for x in range(16):
+                wob = math.sin((x + f * 2 + i * 3) * 0.8)
+                core = LASER[4] if wob > 0.2 else LASER[3]
+                img.putpixel((x, y), (*core, 235))
+                for dy, a in ((-1, 150), (1, 150)):
+                    if 0 <= y + dy < 16:
+                        img.putpixel((x, y + dy), (*LASER[2], int(a * (0.75 + 0.25 * pulse))))
+        for _ in range(3):   # sparks running along the beams
+            y = rnd.choice(rows)
+            x = (rnd.randrange(16) + f * 3) % 16
+            img.putpixel((x, y), (255, 255, 255, 255))
+        frames.append(img)
+    return frames
+
+
+def tex_emitter_side():
+    img = riveted(911, plates=((0, 0, 16, 16),))
+    for y in range(16):
+        put(img, 3, y, STEEL[0])
+        put(img, 12, y, STEEL[0])
+    for y in range(5, 11):
+        for x in range(5, 11):
+            put(img, x, y, STEEL[0])
+    for y in range(6, 10):
+        for x in range(6, 10):
+            put(img, x, y, LASER[3] if (x, y) in ((7, 7), (8, 7)) else LASER[2] if 6 < x < 9 and 6 < y < 9 else LASER[1])
+    for x in range(4, 12):
+        put(img, x, 0, HAZ_Y if x % 2 else HAZ_K)
+        put(img, x, 15, HAZ_Y if x % 2 else HAZ_K)
+    return img
+
+
+def tex_emitter_lens():
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if d < 7.5:
+                put(img, x, y, LASER[4] if d < 2 else LASER[3] if d < 4 else LASER[2] if d < 6 else LASER[1])
+    return img
+
+
+def tex_emitter_top():
+    img = riveted(912, plates=((0, 0, 16, 16),))
+    for y in range(4, 12):
+        for x in range(4, 12):
+            put(img, x, y, HAZ_Y if ((x + y) // 2) % 2 else HAZ_K)
+    return img
+
+
+def tex_coil():
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            c = COPPER[(y % 2) + (1 if x < 6 else 0) + (1 if x < 3 else 0)]
+            if x > 12:
+                c = COPPER[0]
+            put(img, x, y, c)
+    return img
+
+
+def tex_chrome():
+    img = tonal(921, CHROME[0:4], [15, 35, 35, 15], jitter=0.2,
+                field=lambda x, y: -0.06 * (x + y))
+    return img
+
+
+def tex_jar_glass():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            a = 50
+            if x in (0, 15) or y in (0, 15):
+                a = 140
+            if x in (2, 3) and 2 < y < 13:
+                a = 170
+            img.putpixel((x, y), (210, 240, 220, a))
+    return img
+
+
+def tex_goo():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    rnd = random.Random(931)
+    for y in range(16):
+        for x in range(16):
+            c = GOO[1] if (x + y) % 5 else GOO[2]
+            img.putpixel((x, y), (*c, 150))
+    for _ in range(6):
+        img.putpixel((rnd.randrange(16), rnd.randrange(16)), (*GOO[2], 230))
+    return img
+
+
+def tex_brain():
+    img = tonal(941, BRAIN, [30, 45, 25], octaves=((8, 0.6), (4, 0.3)), jitter=0.2)
+    for x in range(16):
+        put(img, x, 7, BRAIN[0])
+    for y in range(16):
+        put(img, 8, y, BRAIN[0])
+    return img
+
+
+def tex_concrete_label():
+    return riveted(951)
+
+
+def poster_insignia():
+    img = new(16, 32)
+    sfa.bands(img, [(0, 31, NAVY)])
+    for y in range(32):
+        for x in range(16):
+            if (x + y) % 7 == 0:
+                put(img, x, y, (34, 40, 66))
+    draw_atom(img, 8, 8, 7.0, 1.6, CYAN, RED)
+    draw_skull(img, 3, 15, dark=NAVY)
+    for y in range(28, 31):
+        for x in range(1, 15):
+            put(img, x, y, HAZ_Y if ((x + y) // 2) % 2 == 0 else HAZ_K)
+    sfa.poster_frame(img)
+    return img
+
+
+def poster_better_ape():
+    img = new(16, 32)
+    sfa.bands(img, [(0, 15, HAZ_Y), (16, 31, (236, 210, 140))])
+    # an ape head with a glass brain dome
+    head = ["....GGGGGG......",
+            "...GgggggggG....",
+            "...GgBBBBggG....",
+            "....GBBBBBG.....",
+            "...FFFFFFFFF....",
+            "..FFfffffffFF...",
+            "..FfKfffKffF....",
+            "..FFfffffffF....",
+            "...FMMMMMMF.....",
+            "...FMWMWMMF.....",
+            "....FFFFFF......"]
+    pal = {"G": CHROME[2], "g": (190, 240, 210), "B": BRAIN[1], "F": (92, 60, 40), "f": (150, 110, 80),
+           "K": (20, 20, 20), "M": (200, 150, 120), "W": (250, 250, 240)}
+    for y, row in enumerate(head):
+        for x, ch in enumerate(row):
+            if ch in pal:
+                put(img, x + 2, y + 2, pal[ch])
+    sfa.text(img, None, 16, "NEW", RED)
+    sfa.text(img, None, 23, "APE!", RED_D)
+    sfa.poster_frame(img)
+    return img
+
+
+def poster_restricted():
+    img = new(16, 32)
+    sfa.bands(img, [(0, 31, (232, 228, 214))])
+    for y in range(32):
+        for x in range(16):
+            if y < 3 or y > 28:
+                put(img, x, y, HAZ_Y if ((x + y) // 2) % 2 == 0 else HAZ_K)
+    draw_skull(img, 3, 5, dark=RED_D)
+    # lightning bolts either side
+    for (x, y) in ((1, 6), (2, 7), (1, 8), (2, 9), (13, 6), (14, 7), (13, 8), (14, 9)):
+        put(img, x, y, RED)
+    sfa.text(img, None, 18, "STOP", RED, condensed=True)
+    sfa.text(img, None, 24, "OUT", HAZ_K)
+    sfa.poster_frame(img)
+    return img
+
+
+POSTERS = {"oinstein_poster_insignia": poster_insignia, "oinstein_poster_better_ape": poster_better_ape,
+           "oinstein_poster_restricted": poster_restricted}
+
+
+def banner_pattern_images():
+    """White masks for the banner (front 20x40 at 1,1) and shield (front 12x22 at 1,1) layouts."""
+    W = (255, 255, 255)
+    ban = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    big = Image.new("RGBA", (20, 40), (0, 0, 0, 0))
+    draw_atom(big, 10, 11, 9.0, 2.6, W, W)
+    sk = Image.new("RGBA", (11, 11), (0, 0, 0, 0))
+    draw_skull(sk, 0, 0, bone=[W, W, W])
+    sk = sk.resize((16, 16), Image.NEAREST)
+    big.alpha_composite(sk, (2, 20))
+    for (x, y) in [(x, y) for y in range(40) for x in range(20)]:
+        if big.getpixel((x, y))[3]:
+            ban.putpixel((1 + x, 1 + y), (255, 255, 255, 255))
+    shield = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    small = Image.new("RGBA", (12, 22), (0, 0, 0, 0))
+    draw_atom(small, 6, 5, 5.5, 1.4, W, W)
+    draw_skull(small, 0, 11, bone=[W, W, W])
+    for y in range(22):
+        for x in range(12):
+            if small.getpixel((x, y))[3]:
+                shield.putpixel((1 + x, 1 + y), (255, 255, 255, 255))
+    return ban, shield
+
+
+# =====================================================================================================================
+# Models, blockstates, items, data
+# =====================================================================================================================
+BARRIER = "laser_barrier"
+EMITTER = "laser_emitter"
+RSTEEL = "oinstein_riveted_steel"
+HSTEEL = "oinstein_hazard_steel"
+TESLA = "tesla_coil"
+JAR = "brain_jar"
+BLOCKS = [BARRIER, EMITTER, RSTEEL, HSTEEL, TESLA, JAR] + list(POSTERS)
+
+
+def write_block_textures():
+    tex_anim(BARRIER, laser_frames(), 2, interpolate=True)
+    tex("laser_emitter_side", tex_emitter_side())
+    tex("laser_emitter_top", tex_emitter_top())
+    tex("laser_emitter_lens", tex_emitter_lens())
+    tex(RSTEEL, riveted(901, plates=((0, 0, 16, 16),)))
+    tex(HSTEEL, tex_hazard())
+    tex("tesla_coil_winding", tex_coil())
+    tex("oinstein_chrome", tex_chrome())
+    tex("brain_jar_glass", tex_jar_glass())
+    tex("brain_jar_goo", tex_goo())
+    tex("brain_jar_brain", tex_brain())
+    for name, fn in POSTERS.items():
+        art = fn()
+        tex(f"{name}_upper", art.crop((0, 0, 16, 16)))
+        tex(f"{name}_lower", art.crop((0, 16, 16, 32)))
+    ban, shield = banner_pattern_images()
+    for kind, img in (("banner", ban), ("shield", shield)):
+        path = os.path.join(ASSETS, "textures", "entity", kind, "oinstein.png")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        img.save(path)
+
+
+def emissive(e):
+    e["light_emission"] = 15
+    e["shade"] = False
+    return e
+
+
+def write_models():
+    # the beam: one translucent emissive sheet through the middle of the block, along x (turned for axis=z)
+    m = Model({"beam": BARRIER}, BARRIER, ao=False, render_type="minecraft:translucent")
+    emissive(m.box((0, 0, 8), (16, 16, 8), "beam", faces=("north", "south")))
+    m.write(BARRIER)
+    m = Model({}, BARRIER, render_type="minecraft:translucent")
+    m.write(f"{BARRIER}_off")
+    variants = {}
+    for axis, rot in (("x", 0), ("z", 90)):
+        for powered in ("true", "false"):
+            v = {"model": T(BARRIER if powered == "true" else f"{BARRIER}_off")}
+            if rot:
+                v["y"] = rot
+            variants[f"axis={axis},powered={powered}"] = v
+    write_json(os.path.join(ASSETS, "blockstates", BARRIER + ".json"), {"variants": variants})
+    write_json(os.path.join(ASSETS, "items", BARRIER + ".json"),
+               {"model": {"type": "minecraft:model", "model": T(BARRIER)}})
+    # emitter post with glowing lenses on all four sides
+    for lit in (True, False):
+        m = Model({"side": "laser_emitter_side", "top": "laser_emitter_top", "lens": "laser_emitter_lens"},
+                  "laser_emitter_side")
+        m.box((4, 0, 4), (12, 16, 12), "side", face_tex={"up": "top", "down": "top"},
+              face_uv={f: [4, 0, 12, 16] for f in HORIZ} | {"up": [4, 4, 12, 12], "down": [4, 4, 12, 12]})
+        for f, frm, to in (("north", (6, 6, 3.9), (10, 10, 4)), ("south", (6, 6, 12), (10, 10, 12.1)),
+                           ("west", (3.9, 6, 6), (4, 10, 10)), ("east", (12, 6, 6), (12.1, 10, 10))):
+            e = m.box(frm, to, "lens", faces=(f,), face_uv={f: [0, 0, 16, 16]})
+            if lit:
+                emissive(e)
+        m.write(EMITTER + ("" if lit else "_off"))
+    write_json(os.path.join(ASSETS, "blockstates", EMITTER + ".json"), {"variants": {
+        "powered=true": {"model": T(EMITTER)}, "powered=false": {"model": T(f"{EMITTER}_off")}}})
+    block_item(EMITTER)
+    for name in (RSTEEL, HSTEEL):
+        write_json(os.path.join(ASSETS, "models", "block", name + ".json"),
+                   {"parent": "minecraft:block/cube_all", "textures": {"all": T(name)}})
+        state_simple(name)
+        block_item(name)
+    # Tesla coil: steel base, copper winding, chrome toroid
+    m = Model({"steel": RSTEEL, "coil": "tesla_coil_winding", "chrome": "oinstein_chrome"}, "tesla_coil_winding")
+    m.box((4, 0, 4), (12, 4, 12), "steel")
+    m.box((6, 4, 6), (10, 12, 10), "coil")
+    m.octagon((3, 12, 3), (13, 15, 13), "chrome")
+    m.box((7.5, 15, 7.5), (8.5, 16, 8.5), "chrome")
+    m.write(TESLA)
+    state_simple(TESLA)
+    block_item(TESLA)
+    # brain in a jar
+    m = Model({"glass": "brain_jar_glass", "goo": "brain_jar_goo", "brain": "brain_jar_brain", "chrome": "oinstein_chrome",
+               "steel": RSTEEL}, "brain_jar_glass", render_type="minecraft:translucent")
+    m.box((5, 0, 5), (11, 1, 11), "steel")
+    m.box((6, 2, 6), (10, 7, 10), "brain")
+    emissive(m.box((5.2, 1, 5.2), (10.8, 10, 10.8), "goo"))
+    m.box((5, 1, 5), (11, 12, 11), "glass")
+    m.box((4.5, 12, 4.5), (11.5, 14, 11.5), "chrome")
+    m.write(JAR)
+    state_simple(JAR)
+    block_item(JAR)
+    for name in POSTERS:
+        sfa.poster_models(name)
+        sfa.state_facing_half(name)
+        sfa.poster_item_model(name)
+
+
+def write_data():
+    write_json(os.path.join(DATA, "damage_type", "laser.json"),
+               {"message_id": f"{MOD}.laser", "exhaustion": 0.1, "scaling": "never"})
+    write_json(os.path.join(DATA, "banner_pattern", "oinstein.json"),
+               {"asset_id": f"{MOD}:oinstein", "translation_key": f"block.{MOD}.banner.oinstein"})
+    add_to_tag("banner_pattern/no_item_required", [f"{MOD}:oinstein"])
+    add_to_tag("block/mineable/pickaxe", [P(RSTEEL), P(HSTEEL), P(TESLA)])
+    add_to_tag("block/needs_stone_tool", [P(RSTEEL), P(HSTEEL)])
+    for t in ("block/dragon_immune", "block/wither_immune", "block/features_cannot_replace"):
+        add_to_tag(t, [P(BARRIER), P(EMITTER)])
+    for b in (RSTEEL, HSTEEL, TESLA, JAR) + tuple(POSTERS):
+        pools = [{"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": P(b)}],
+                  "conditions": [{"condition": "minecraft:survives_explosion"}]}]
+        if b in POSTERS:
+            pools[0]["conditions"].append({"condition": "minecraft:block_state_property", "block": P(b),
+                                           "properties": {"half": "lower"}})
+        write_json(os.path.join(DATA, "loot_table", "blocks", b + ".json"),
+                   {"type": "minecraft:block", "pools": pools, "random_sequence": f"{MOD}:blocks/{b}"})
+    shaped(RSTEEL, ["III", "INI", "III"], {"I": "minecraft:iron_ingot", "N": "minecraft:iron_nugget"}, RSTEEL, count=8,
+           category="building")
+    shaped(HSTEEL, ["SY", "YS"], {"S": RSTEEL, "Y": "minecraft:yellow_dye"}, HSTEEL, count=4, category="building")
+    shaped(TESLA, [" I ", " C ", "SRS"], {"I": "minecraft:iron_ingot", "C": "minecraft:copper_ingot", "S": RSTEEL,
+                                          "R": "minecraft:redstone"}, TESLA, category="decorations")
+    chest_loot()
+
+
+# =====================================================================================================================
+# Loot
+# =====================================================================================================================
+OPTIONAL_ITEMS = ("atomic_scrap", "control_collar", "brain_flask")   # other agents' items, used once they exist
+
+
+def mod_item_exists(name):
+    for root, _dirs, files in os.walk(JAVA):
+        for f in files:
+            if f.endswith(".java"):
+                with open(os.path.join(root, f), encoding="utf-8") as fh:
+                    if f'"{name}"' in fh.read():
+                        return True
+    return False
+
+
+def lab_notes(weight):
+    return {"type": "minecraft:item", "name": "minecraft:written_book", "weight": weight, "functions": [
+        {"function": "minecraft:set_book_cover", "title": {"raw": "Lab Notes"}, "author": "Dr. Oinstein",
+         "generation": 1},
+        {"function": "minecraft:set_written_book_pages", "mode": "replace_all",
+         "pages": [{"raw": {"translate": f"book.{MOD}.oinstein_notes.page_{i}"}} for i in range(len(NOTES_PAGES))]},
+        {"function": "minecraft:set_name", "target": "custom_name",
+         "name": {"translate": f"book.{MOD}.oinstein_notes.title", "italic": False, "color": "red"}}]}
+
+
+def chest_loot():
+    it = R_.it
+    extra = [it(n, 6, 1, 4 if n == "atomic_scrap" else 1) for n in OPTIONAL_ITEMS if mod_item_exists(n)]
+    core = [it("atomic_core", 3)] if mod_item_exists("atomic_core") else []
+    blaster = [it("ray_blaster", 1)] if mod_item_exists("ray_blaster") else []
+    base = [it("minecraft:iron_ingot", 14, 2, 6), it("minecraft:redstone", 14, 3, 9), it("minecraft:copper_ingot", 12, 2, 8),
+            it("minecraft:iron_nugget", 10, 4, 12), it("minecraft:gold_nugget", 6, 2, 6), it("vacuum_tube", 6, 1, 3),
+            it("aluminum_ingot", 6, 1, 4), it("minecraft:glass_bottle", 5, 1, 3), it("minecraft:bread", 5, 1, 3),
+            it("minecraft:quartz", 5, 2, 6)] + extra
+    R_.chest("chests/oinstein_outpost", [
+        (R_.rolls(3, 6), base),
+        (R_.rolls(0, 1), [lab_notes(3), it("empty_fuel_canister", 3), it("rocket_fuel_canister", 1), R_.empty(4)])])
+    R_.chest("chests/oinstein_lab", [
+        (R_.rolls(3, 6), base + [it("minecraft:redstone_block", 3), it("minecraft:experience_bottle", 6, 1, 4),
+                                 it("guidance_computer", 1)] + core + [it("minecraft:potion", 4, extra=[
+                                     {"function": "minecraft:set_potion", "id": "minecraft:strength"}])]),
+        (1.0, [lab_notes(1)]),
+        (R_.rolls(0, 2), [it("glyph_tablet", 3), it("venusian_idol", 1), R_.empty(4)])])
+    R_.chest("chests/oinstein_armory", [
+        (R_.rolls(4, 7), base + [it("minecraft:iron_block", 2), it("minecraft:diamond", 2, 1, 2),
+                                 it("minecraft:golden_apple", 2), it("titanium_ingot", 5, 1, 4),
+                                 it("minecraft:iron_chestplate", 2), it("minecraft:crossbow", 2),
+                                 it("minecraft:arrow", 6, 4, 12)] + core),
+        (R_.rolls(0, 1), [lab_notes(2), it("ancient_amulet", 1), R_.empty(3)] + blaster)])
+
+
+# =====================================================================================================================
+# Structure helpers (on top of ruins.Ruin)
+# =====================================================================================================================
+NOVUS = f"{MOD}:hominid_novus"
+SAPIENS = f"{MOD}:hominus_sapiens"
+SENTRY = f"{MOD}:atomic_sentry"
+AUTOMATON = f"{MOD}:atomic_automaton"
+TRIBESMAN = f"{MOD}:tribesman"
+MOBS = (NOVUS, SAPIENS, SENTRY, AUTOMATON)
+
+
+class Double(float):
+    tag = TAG_DOUBLE
+
+
+def M(name):
+    return "minecraft:" + name
+
+
+def V(name, **props):
+    return st(M(name), **props)
+
+
+CON = V("gray_concrete")
+LCON = V("light_gray_concrete")
+WCON = V("white_concrete")
+BCON = V("black_concrete")
+YCON = V("yellow_concrete")
+RCON = V("red_concrete")
+IRON = V("iron_block")
+GLASS = V("glass")
+TINT = V("tinted_glass")
+LANTERN_SEA = V("sea_lantern")
+RSTEEL_S = st(RSTEEL)
+HSTEEL_S = st(HSTEEL)
+GRATE = st("floor_grate")
+HULL = st("hull_panel")
+STRIPE = st("hull_panel_striped")
+EMITTER_S = st(EMITTER, powered=True)
+TESLA_S = st(TESLA)
+JAR_S = st(JAR)
+COARSE = V("coarse_dirt")
+DOUBLE_SLAB = V("smooth_stone_slab", type="double", waterlogged=False)
+
+
+def barrier(axis):
+    return st(BARRIER, axis=axis, powered=True)
+
+
+def bars():
+    return V("iron_bars", north=False, east=False, south=False, west=False, waterlogged=False)
+
+
+def pane(color=None):
+    name = f"{color}_stained_glass_pane" if color else "glass_pane"
+    return V(name, north=False, east=False, south=False, west=False, waterlogged=False)
+
+
+def chain(axis="y"):
+    return V("chain", axis=axis, waterlogged=False)
+
+
+def pipe(axis):
+    return st("chrome_trim", axis=axis)
+
+
+def lamp():
+    return V("redstone_lamp", lit=True)
+
+
+def light_on():
+    return st("ceiling_light", lit=True)
+
+
+def computer(facing):
+    return st("computer_bank", facing=facing, lit=True)
+
+
+def panel(facing):
+    return st("control_panel", facing=facing, lit=True)
+
+
+def campfire(signal=True):
+    return V("campfire", facing="north", lit=True, signal_fire=signal, waterlogged=False)
+
+
+def poster(s, x, y, z, name, facing):
+    s.set(x, y, z, st(name, facing=facing, half="lower"))
+    s.set(x, y + 1, z, st(name, facing=facing, half="upper"))
+
+
+def text_nbt(keys, color="black", glow=False):
+    msgs = [Compound({"translate": Str(k)}) if k else Compound({"text": Str("")}) for k in keys]
+    msgs += [Compound({"text": Str("")})] * (4 - len(msgs))
+    return Compound({"messages": List(msgs, TAG_COMPOUND), "color": Str(color), "has_glowing_text": Byte(1 if glow else 0)})
+
+
+def sign(facing, lines, color="red", wood="pale_oak", glow=True):
+    """A waxed wall sign (attached to the block behind it, opposite to facing) with translatable lines."""
+    keys = [f"sign.{MOD}.{l}" if l else None for l in lines]
+    return (M(f"{wood}_wall_sign"), {"facing": facing, "waterlogged": "false"},
+            Compound({"id": Str("minecraft:sign"), "is_waxed": Byte(1), "front_text": text_nbt(keys, color, glow),
+                      "back_text": text_nbt([None] * 4)}))
+
+
+SIGN_RESTRICTED = ["restricted_1", "restricted_2", "restricted_3", "restricted_4"]
+SIGN_SLOGAN = ["slogan_1", "slogan_2", "slogan_3", "slogan_4"]
+SIGN_DANGER = ["danger_1", "danger_2", "danger_3", "danger_4"]
+SIGN_CHECKPOINT = ["checkpoint_1", "checkpoint_2", "checkpoint_3", "checkpoint_4"]
+SIGN_SEALED = ["sealed_1", "sealed_2", "sealed_3", "sealed_4"]
+
+
+def banner_nbt():
+    return Compound({"id": Str("minecraft:banner"), "patterns": List([
+        Compound({"pattern": Str("minecraft:border"), "color": Str("black")}),
+        Compound({"pattern": Str(f"{MOD}:oinstein"), "color": Str("white")})], TAG_COMPOUND)})
+
+
+def wall_banner(facing):
+    return (M("red_wall_banner"), {"facing": facing}, banner_nbt())
+
+
+def standing_banner(rotation):
+    return (M("red_banner"), {"rotation": str(rotation)}, banner_nbt())
+
+
+def book_item(book):
+    title, pages = BOOKS[book]
+    return Compound({"id": Str("minecraft:written_book"), "count": Int(1), "components": Compound({
+        "minecraft:written_book_content": Compound({
+            "title": Compound({"raw": Str(title)}), "author": Str("Dr. Oinstein"), "generation": Int(0),
+            "pages": List([Compound({"raw": Compound({"translate": Str(f"book.{MOD}.{book}.page_{i}")})})
+                           for i in range(pages)], TAG_COMPOUND),
+            "resolved": Byte(0)}),
+        "minecraft:custom_name": Compound({"translate": Str(f"book.{MOD}.{book}.title"), "italic": Byte(0),
+                                           "color": Str("red")})})})
+
+
+def lectern(facing, book):
+    return (M("lectern"), {"facing": facing, "has_book": "true", "powered": "false"},
+            Compound({"id": Str("minecraft:lectern"), "Book": book_item(book), "Page": Int(0)}))
+
+
+class Base(Ruin):
+    """A Ruin with entities: Oinstein's people (and his captives) standing in the template."""
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.entities = []
+
+    def mob(self, x, y, z, eid, **extra):
+        nbt = Compound({"id": Str(eid), "PersistenceRequired": Byte(1)})
+        for k, v in extra.items():
+            nbt[k] = v
+        self.entities.append(((x, y, z), nbt))
+
+    def captive(self, x, y, z, specimen=False):
+        extra = {"Captive": Byte(1), "Role": Str(self.rnd.choice(("hunter", "gatherer", "hunter", "shaman")))}
+        if specimen:
+            extra.update(NoAI=Byte(1), Silent=Byte(1), Invulnerable=Byte(1))
+        self.mob(x, y, z, TRIBESMAN, **extra)
+
+    def entity_nbt(self):
+        out = []
+        for (x, y, z), nbt in self.entities:
+            out.append(Compound({"pos": List([Double(x + 0.5), Double(y), Double(z + 0.5)], TAG_DOUBLE),
+                                 "blockPos": List([Int(x), Int(y), Int(z)], TAG_INT), "nbt": nbt}))
+        return out
+
+    def ring(self, x0, z0, x1, z1, y, state):
+        for x in range(x0, x1 + 1):
+            for z in (z0, z1):
+                self.set(x, y, z, state() if callable(state) else state)
+        for z in range(z0, z1 + 1):
+            for x in (x0, x1):
+                self.set(x, y, z, state() if callable(state) else state)
+
+    def walls(self, x0, z0, x1, z1, y0, y1, state):
+        for y in range(y0, y1 + 1):
+            self.ring(x0, z0, x1, z1, y, state)
+
+    def box(self, x0, y0, z0, x1, y1, z1, wall, floor=None, roof=None):
+        """A hollow building: walls, floor at y0-1 and roof at y1+1 (if given), air inside."""
+        self.fill(x0 + 1, y0, z0 + 1, x1 - 1, y1, z1 - 1, S_AIR)
+        self.walls(x0, z0, x1, z1, y0, y1, wall)
+        if floor:
+            self.fill(x0, y0 - 1, z0, x1, y0 - 1, z1, floor)
+        if roof:
+            self.fill(x0, y1 + 1, z0, x1, y1 + 1, z1, roof)
+
+
+PANES = {M("iron_bars")} | {M(f"{c}_stained_glass_pane") for c in ("lime", "red", "black", "light_blue", "gray")} | {
+    M("glass_pane")}
+SOLID_EXTRA = {M(n) for n in ("gray_concrete", "light_gray_concrete", "white_concrete", "black_concrete",
+                              "yellow_concrete", "red_concrete", "iron_block", "glass", "tinted_glass", "sea_lantern",
+                              "redstone_lamp", "redstone_block", "smooth_stone", "hay_block", "coarse_dirt",
+                              "polished_andesite", "lime_stained_glass", "black_stained_glass", "red_stained_glass",
+                              "bookshelf", "blast_furnace", "packed_mud", "cut_copper")} | {
+    P(n) for n in (RSTEEL, HSTEEL, "floor_grate", "hull_panel", "hull_panel_striped", "aluminum_block", "titanium_block",
+                   "cargo_crate", "reactor_core", "computer_bank", "tape_archive")} | {M("smooth_stone_slab")}
+FULL.update(SOLID_EXTRA)
+
+
+def connect_panes(s):
+    for (x, y, z), (name, props, nbt) in list(s.b.items()):
+        if name in PANES:
+            p = dict(props)
+            for d, (dx, dz) in DIRS.items():
+                n = s.name_at(x + dx, y, z + dz)
+                p[d] = "true" if (n in PANES or (n in FULL and n != M("smooth_stone_slab"))) else "false"
+            s.b[(x, y, z)] = (name, p, nbt)
+
+
+WALL_HUNG = {M("pale_oak_wall_sign"), M("dark_oak_wall_sign"), M("red_wall_banner"), M("ladder")} | {P(p) for p in POSTERS} | {
+    P("control_panel"), P("wall_sconce"), P("poster_freedom")}
+NEEDS_FLOOR = {M("rail"), M("lectern"), M("campfire"), M("red_banner"), M("lantern"), P(JAR), P(TESLA), M("chest"),
+               M("barrel"), P("computer_bank"), P("lab_sink"), P("tape_archive"), P("crew_bunk"), P("crew_locker"),
+               P("radar_scope"), M("lightning_rod"), M("end_rod"), M("cauldron"), M(f"{'red'}_bed")}
+
+
+def audit(s):
+    """Supports: wall-hung pieces need a full block behind them, floor pieces something solid below; no gravity
+    blocks; every entity stands in open space on something solid."""
+    problems = []
+    gravity = {M(n) for n in ("sand", "red_sand", "gravel", "anvil")}
+    for (x, y, z), (name, props, _n) in s.b.items():
+        if name in gravity or name.endswith("concrete_powder"):
+            problems.append(f"gravity block {name} at {(x, y, z)}")
+        if name in WALL_HUNG and props.get("half") != "upper":
+            dx, dz = DIRS[OPP[props["facing"]]]
+            if not s.full(x + dx, y, z + dz):
+                problems.append(f"{name} at {(x, y, z)} hangs on nothing")
+        if name in NEEDS_FLOOR and props.get("half", "lower") == "lower" and props.get("facing") not in ("up", "down") \
+                and not (name in (M("end_rod"), M("lightning_rod")) and props.get("facing") in ("east", "west", "north", "south")):
+            below = s.name_at(x, y - 1, z)
+            if not (below in FULL or (below is None and y - 1 <= s.G) or (below or "").endswith("_slab")
+                    or below in (M("hay_block"), P(RSTEEL)) or below == name):
+                problems.append(f"{name} at {(x, y, z)} stands on {below}")
+    for (x, y, z), nbt in s.entities:
+        feet = s.name_at(x, y, z)
+        head = s.name_at(x, y + 1, z)
+        below = s.name_at(x, y - 1, z)
+        tall = nbt["id"] in (AUTOMATON, NOVUS) and s.name_at(x, y + 2, z) not in (None, AIR)
+        if feet not in (None, AIR) or head not in (None, AIR) or tall:
+            problems.append(f"entity {nbt['id']} at {(x, y, z)} is stuck in {feet}/{head}")
+        if not (s.full(x, y - 1, z) or (below is None and y - 1 <= s.G) or (below or "").endswith("_slab")
+                or below in (M("iron_trapdoor"),)):
+            problems.append(f"entity {nbt['id']} at {(x, y, z)} floats over {below}")
+    if problems:
+        raise SystemExit(f"oinstein.py: {s.name}:\n  " + "\n  ".join(problems[:40]))
+
+
+# vanilla property schemas the Oinstein templates use (checked by ruins.validate)
+_B = ("true", "false")
+_H = ("north", "east", "south", "west")
+for _n in ("gray_concrete", "light_gray_concrete", "white_concrete", "black_concrete", "yellow_concrete", "red_concrete",
+           "iron_block", "glass", "tinted_glass", "sea_lantern", "redstone_block", "smooth_stone", "coarse_dirt",
+           "polished_andesite", "lime_stained_glass", "black_stained_glass", "red_stained_glass", "bookshelf",
+           "packed_mud", "cut_copper", "water", "gray_carpet", "red_carpet"):
+    R_.VANILLA[M(_n)] = {}
+R_.VANILLA[M("water")] = {"level": tuple(str(i) for i in range(16))}
+for _n in ("iron_bars", "glass_pane", "lime_stained_glass_pane", "red_stained_glass_pane", "black_stained_glass_pane",
+           "light_blue_stained_glass_pane", "gray_stained_glass_pane"):
+    R_.VANILLA[M(_n)] = {d: _B for d in ("north", "east", "south", "west", "waterlogged")}
+R_.VANILLA.update({
+    M("chain"): {"axis": ("x", "y", "z"), "waterlogged": _B},
+    M("redstone_lamp"): {"lit": _B},
+    M("hay_block"): {"axis": ("x", "y", "z")},
+    M("smooth_stone_slab"): {"type": ("top", "bottom", "double"), "waterlogged": _B},
+    M("polished_andesite_slab"): {"type": ("top", "bottom", "double"), "waterlogged": _B},
+    M("polished_andesite_stairs"): R_.STAIR_SCHEMA,
+    M("lightning_rod"): {"facing": _H + ("up", "down"), "powered": _B, "waterlogged": _B},
+    M("end_rod"): {"facing": _H + ("up", "down")},
+    M("rail"): {"shape": ("north_south", "east_west", "ascending_east", "ascending_west", "ascending_north",
+                          "ascending_south", "south_east", "south_west", "north_west", "north_east"), "waterlogged": _B},
+    M("lectern"): {"facing": _H, "has_book": _B, "powered": _B},
+    M("pale_oak_wall_sign"): {"facing": _H, "waterlogged": _B},
+    M("dark_oak_wall_sign"): {"facing": _H, "waterlogged": _B},
+    M("red_wall_banner"): {"facing": _H},
+    M("red_banner"): {"rotation": tuple(str(i) for i in range(16))},
+    M("iron_trapdoor"): {"facing": _H, "half": ("top", "bottom"), "open": _B, "powered": _B, "waterlogged": _B},
+    M("blast_furnace"): {"facing": _H, "lit": _B},
+    M("cauldron"): {},
+    M("red_bed"): {"facing": _H, "occupied": _B, "part": ("head", "foot")},
+    M("lever"): {"face": ("floor", "wall", "ceiling"), "facing": _H, "powered": _B},
+    M("dark_oak_fence_gate"): {"facing": _H, "in_wall": _B, "open": _B, "powered": _B},
+})
+
+
+# =====================================================================================================================
+# Lore: books, signs, names (EN / RU)
+# =====================================================================================================================
+JOURNAL_PAGES = [
+    ("LAB JOURNAL - Dr. A. Oinstein. Day 1 on Venus. The hominids of this jungle are a gift: strong backs, nimble "
+     "hands, and minds as empty as a fresh notebook. I shall fill them.",
+     "ЛАБОРАТОРНЫЙ ЖУРНАЛ - д-р А. Ойнштайн. День 1-й на Венере. Здешние гоминиды - настоящий подарок: крепкие "
+     "спины, ловкие руки и пустые, как новая тетрадь, головы. Я их заполню."),
+    ("Day 112. Specimen 14 survived the serum. Twice the muscle, half the patience. I name the type HOMINID NOVUS. "
+     "It obeys whoever holds the whistle. I hold the whistle.",
+     "День 112-й. Образец 14 пережил сыворотку. Вдвое больше мышц, вдвое меньше терпения. Нарекаю тип HOMINID NOVUS. "
+     "Он слушается того, у кого свисток. Свисток у меня."),
+    ("Day 260. Brain-flask grafts at last! Specimen 31 recited the periodic table and then shot an assistant. A "
+     "success. HOMINUS SAPIENS walks. A better ape for a better tomorrow!",
+     "День 260-й. Наконец-то пересадка мозга в колбу! Образец 31 прочитал таблицу Менделеева, а затем застрелил "
+     "ассистента. Успех. HOMINUS SAPIENS ходит. Лучшая обезьяна ради лучшего завтра!"),
+    ("Day 301. The Earth expedition is snooping around the ruins. The barrier stays up. Nobody enters the lower "
+     "laboratory. NOBODY. Not even you, Kessler - I know you read this.",
+     "День 301-й. Земная экспедиция рыщет у руин. Барьер не отключать. В нижнюю лабораторию не входит никто. НИКТО. "
+     "Даже вы, Кесслер, - я знаю, что вы это читаете."),
+]
+ORDERS_PAGES = [
+    ("STANDING ORDERS. 1. Capture hominids alive. Damaged specimens are deducted from your rations.",
+     "ПОСТОЯННЫЙ ПРИКАЗ. 1. Ловить гоминидов живыми. Повреждённые образцы вычитаются из вашего пайка."),
+    ("2. Sentries hold their posts. Automatons patrol. Novus units do not eat the specimens. 3. Laser barriers "
+     "stay ON. Touching them is a firing offence. Literally.",
+     "2. Часовые держат посты. Автоматоны патрулируют. Особям Новус не есть образцы. 3. Лазерные барьеры НЕ "
+     "выключать. Прикосновение карается увольнением. Буквально."),
+    ("4. Visitors from Earth are to be welcomed warmly - into Cage 3. Glory to science! - Dr. A. Oinstein, "
+     "Director, Oinstein Institute.",
+     "4. Гостей с Земли встречать радушно - в клетке №3. Слава науке! - д-р А. Ойнштайн, директор Института "
+     "Ойнштайна."),
+]
+NOTES_PAGES = [
+    ("Field notes, outpost 7. Serum batch V-9: three Novus, one fatality, one tail (?). The doctor is pleased.",
+     "Полевые заметки, аванпост 7. Сыворотка партии V-9: трое Новус, один погибший, у одного вырос хвост (?). "
+     "Доктор доволен."),
+    ("Relay pylons must stay powered - the Institute barrier draws on all of them. If a pylon goes dark, run.",
+     "Ретрансляционные пилоны должны быть под током - барьер Института питается от всех сразу. Если пилон погас - "
+     "бегите."),
+]
+BOOKS = {"oinstein_journal": ("Lab Journal", len(JOURNAL_PAGES)),
+         "oinstein_orders": ("Standing Orders", len(ORDERS_PAGES))}
+SIGNS = {
+    "restricted_1": ("RESTRICTED", "ЗАПРЕТНАЯ ЗОНА"), "restricted_2": ("PROPERTY OF", "СОБСТВЕННОСТЬ"),
+    "restricted_3": ("DR. OINSTEIN", "Д-РА ОЙНШТАЙНА"), "restricted_4": ("KEEP OUT!", "НЕ ВХОДИТЬ!"),
+    "slogan_1": ("OINSTEIN INSTITUTE", "ИНСТИТУТ ОЙНШТАЙНА"), "slogan_2": ("A BETTER APE", "ЛУЧШАЯ ОБЕЗЬЯНА"),
+    "slogan_3": ("FOR A BETTER", "РАДИ ЛУЧШЕГО"), "slogan_4": ("TOMORROW", "ЗАВТРА"),
+    "danger_1": ("DANGER!", "ОПАСНО!"), "danger_2": ("LASER BARRIER", "ЛАЗЕРНЫЙ БАРЬЕР"),
+    "danger_3": ("10 000 VOLTS", "10 000 ВОЛЬТ"), "danger_4": ("DO NOT TOUCH", "НЕ ПРИКАСАТЬСЯ"),
+    "checkpoint_1": ("CHECKPOINT", "КОНТРОЛЬНЫЙ ПУНКТ"), "checkpoint_2": ("HALT!", "СТОЙ!"),
+    "checkpoint_3": ("PAPERS, PLEASE", "ПРЕДЪЯВИТЕ ПРОПУСК"), "checkpoint_4": ("- OINSTEIN INST.", "- ИНСТИТУТ О."),
+    "sealed_1": ("LOWER LABORATORY", "НИЖНЯЯ ЛАБОРАТОРИЯ"), "sealed_2": ("SEALED", "ЗАКРЫТО"),
+    "sealed_3": ("BY ORDER OF", "ПО ПРИКАЗУ"), "sealed_4": ("THE DIRECTOR", "ДИРЕКТОРА"),
+}
+NAMES = {
+    BARRIER: ("Laser Barrier", "Лазерный барьер"),
+    EMITTER: ("Laser Emitter", "Лазерный излучатель"),
+    RSTEEL: ("Riveted Steel", "Клёпаная сталь"),
+    HSTEEL: ("Hazard Steel", "Сталь с предупредительной разметкой"),
+    TESLA: ("Tesla Coil", "Катушка Теслы"),
+    JAR: ("Brain in a Jar", "Мозг в банке"),
+    "oinstein_poster_insignia": ("Oinstein Institute Poster", "Плакат «Институт Ойнштайна»"),
+    "oinstein_poster_better_ape": ("\"New Ape!\" Poster", "Плакат «Новая обезьяна!»"),
+    "oinstein_poster_restricted": ("\"Stop - Keep Out\" Poster", "Плакат «Стой - не входить»"),
+}
+EN = {f"block.{MOD}.{k}": v[0] for k, v in NAMES.items()}
+RU = {f"block.{MOD}.{k}": v[1] for k, v in NAMES.items()}
+EN[f"block.{MOD}.banner.oinstein"], RU[f"block.{MOD}.banner.oinstein"] = "Oinstein Insignia", "Эмблема Ойнштайна"
+for _c in ("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple",
+           "blue", "brown", "green", "red", "black"):
+    EN[f"block.{MOD}.banner.oinstein.{_c}"] = f"{_c.replace('_', ' ').title()} Oinstein Insignia"
+    RU[f"block.{MOD}.banner.oinstein.{_c}"] = "Эмблема Ойнштайна"
+EN[f"death.attack.{MOD}.laser"] = "%1$s was fried by a laser barrier"
+RU[f"death.attack.{MOD}.laser"] = "%1$s поджарен лазерным барьером"
+EN[f"death.attack.{MOD}.laser.player"] = "%1$s was fried by a laser barrier whilst fighting %2$s"
+RU[f"death.attack.{MOD}.laser.player"] = "%1$s поджарен лазерным барьером, сражаясь с %2$s"
+for _k, (_en, _ru) in SIGNS.items():
+    EN[f"sign.{MOD}.{_k}"], RU[f"sign.{MOD}.{_k}"] = _en, _ru
+for _book, _pages in (("oinstein_journal", JOURNAL_PAGES), ("oinstein_orders", ORDERS_PAGES), ("oinstein_notes", NOTES_PAGES)):
+    for _i, (_en, _ru) in enumerate(_pages):
+        EN[f"book.{MOD}.{_book}.page_{_i}"], RU[f"book.{MOD}.{_book}.page_{_i}"] = _en, _ru
+EN.update({f"book.{MOD}.oinstein_journal.title": "Dr. Oinstein's Lab Journal",
+           f"book.{MOD}.oinstein_orders.title": "Standing Orders", f"book.{MOD}.oinstein_notes.title": "Lab Notes"})
+RU.update({f"book.{MOD}.oinstein_journal.title": "Лабораторный журнал д-ра Ойнштайна",
+           f"book.{MOD}.oinstein_orders.title": "Постоянный приказ", f"book.{MOD}.oinstein_notes.title": "Лабораторные заметки"})
+EN.update({f"structure.{MOD}.oinstein_complex": "Oinstein Institute"})
+RU.update({f"structure.{MOD}.oinstein_complex": "Институт Ойнштайна"})
+
+
+# =====================================================================================================================
+# Outposts (G = 1: y = 0 foundation, y = 1 replaces the surface)
+# =====================================================================================================================
+
+def watchtower(s, x0, z0, top, ladder_side="east"):
+    """A 5x5 steel watchtower: four legs, a grated platform at y=top with a railing, a searchlight and a ladder."""
+    G = s.G
+    for (x, z) in ((x0, z0), (x0 + 4, z0), (x0, z0 + 4), (x0 + 4, z0 + 4)):
+        s.fill(x, G, z, x, top - 1, z, RSTEEL_S)
+    for y in range(G + 3, top, 3):          # cross bracing
+        for x in range(x0 + 1, x0 + 4):
+            s.set(x, y, z0, chain("x"))
+            s.set(x, y, z0 + 4, chain("x"))
+        for z in range(z0 + 1, z0 + 4):
+            s.set(x0, y, z, chain("z"))
+            s.set(x0 + 4, y, z, chain("z"))
+    s.fill(x0, top, z0, x0 + 4, top, z0 + 4, GRATE)
+    s.ring(x0, z0, x0 + 4, z0 + 4, top + 1, bars)
+    s.fill(x0 + 1, top + 1, z0 + 1, x0 + 3, top + 3, z0 + 3, S_AIR)
+    for (x, z) in ((x0, z0), (x0 + 4, z0), (x0, z0 + 4), (x0 + 4, z0 + 4)):
+        s.fill(x, top + 1, z, x, top + 3, z, RSTEEL_S)
+    for (x, z) in ((x0, z0), (x0 + 4, z0), (x0, z0 + 4), (x0 + 4, z0 + 4)):
+        s.set(x, top + 4, z, V("smooth_stone_slab", type="bottom", waterlogged=False))
+    s.set(x0, top + 2, z0, LANTERN_SEA)            # searchlight head on the front corner
+    s.set(x0 + 4, top + 2, z0, LANTERN_SEA)
+    # ladder up the inside of one leg: the ladder hangs on the leg, the platform has a hatch above it
+    lx, lz = x0 + 1, z0 + 4
+    for y in range(G + 1, top + 1):
+        s.set(lx, y, lz, V("ladder", facing="east", waterlogged=False))
+    s.protect.add((lx, top, lz))
+    s.set(lx, top + 1, lz, S_AIR)
+    s.mob(x0 + 2, top + 1, z0 + 2, SENTRY)
+
+
+
+
+def gate(s, x, y, z, facing):
+    """The cage gate: a closed fence gate under an open bar; the captives walk free once a player opens it."""
+    s.set(x, y, z, V("dark_oak_fence_gate", facing=facing, in_wall=False, open=False, powered=False))
+    s.set(x, y + 1, z, S_AIR)
+    s.protect.add((x, y, z))
+
+
+def cage(s, x0, z0, w=4, d=4, captives=1):
+    G = s.G
+    s.fill(x0, G, z0, x0 + w - 1, G, z0 + d - 1, GRATE)
+    for y in range(G + 1, G + 4):
+        s.ring(x0, z0, x0 + w - 1, z0 + d - 1, y, bars)
+    for (x, z) in ((x0, z0), (x0 + w - 1, z0), (x0, z0 + d - 1), (x0 + w - 1, z0 + d - 1)):
+        s.fill(x, G + 1, z, x, G + 3, z, RSTEEL_S)
+    s.fill(x0 + 1, G + 1, z0 + 1, x0 + w - 2, G + 3, z0 + d - 2, S_AIR)
+    s.fill(x0, G + 4, z0, x0 + w - 1, G + 4, z0 + d - 1, RSTEEL_S)
+    gate(s, x0 + 1, G + 1, z0, "north")
+    for i in range(captives):
+        s.captive(x0 + 1 + i % (w - 2), G + 1, z0 + 1 + (i // (w - 2)) % (d - 2))
+
+
+def truck(s, x0, z0, facing_north=True):
+    """A 1950s flatbed truck (3 wide, 8 long, cab at the north end) loaded with crates."""
+    G = s.G
+    for z in range(z0, z0 + 8):
+        s.set(x0 + 1, G + 1, z, IRON)
+        for x in (x0, x0 + 2):
+            s.set(x, G + 1, z, BCON if z - z0 in (1, 2, 5, 6) else S_AIR)
+        for x in range(x0, x0 + 3):
+            s.set(x, G + 2, z, RCON if z - z0 < 3 else RSTEEL_S)
+    for x in range(x0, x0 + 3):
+        s.set(x, G + 3, z0, GLASS)
+        s.set(x, G + 3, z0 + 1, RCON)
+        s.set(x, G + 3, z0 + 2, RCON)
+        s.set(x, G + 4, z0 + 1, RCON)
+        s.set(x, G + 4, z0 + 2, RCON)
+    s.set(x0 + 1, G + 4, z0, RCON)
+    s.set(x0, G + 2, z0 - 1, V("end_rod", facing="north"))
+    s.set(x0 + 2, G + 2, z0 - 1, V("end_rod", facing="north"))
+    s.set(x0, G + 3, z0 + 4, st("cargo_crate"))
+    s.set(x0 + 2, G + 3, z0 + 4, st("cargo_crate"))
+    s.set(x0 + 1, G + 3, z0 + 6, st("cargo_crate"))
+    s.set(x0, G + 3, z0 + 7, barrel_state("chests/oinstein_outpost"))
+    s.set(x0 + 2, G + 3, z0 + 6, st("cargo_crate"))
+    s.set(x0, G + 4, z0 + 4, st("cargo_crate"))
+
+
+def build_capture_camp():
+    """A capture camp: a steel palisade, cages full of captive tribesmen, a watchtower with a sentry, a supply
+    truck and crate depot, and a guard hut with the standing orders."""
+    W, D = 25, 24
+    s = Base("oinstein_capture_camp", (W, 14, D), seed=8101, ground=1)
+    G = s.G
+    rnd = s.rnd
+    s.fill(0, 0, 1, W - 1, 0, D - 1, CON)
+    for x in range(W):
+        for z in range(1, D):
+            if rnd.random() < 0.55:
+                s.set(x, G, z, COARSE if rnd.random() < 0.7 else CON)
+    # palisade
+    for x in range(W):
+        for z in (1, D - 1):
+            s.fill(x, G + 1, z, x, G + 3, z, bars())
+            s.set(x, G + 4, z, chain("x"))
+    for z in range(1, D):
+        for x in (0, W - 1):
+            s.fill(x, G + 1, z, x, G + 3, z, bars())
+            s.set(x, G + 4, z, chain("z"))
+    for x in range(0, W, 4):
+        for z in (1, D - 1):
+            s.fill(x, G + 1, z, x, G + 4, z, RSTEEL_S)
+    for z in range(1, D, 4):
+        for x in (0, W - 1):
+            s.fill(x, G + 1, z, x, G + 4, z, RSTEEL_S)
+    for z in (1, D - 1):
+        for x in (0, W - 1):
+            s.fill(x, G + 1, z, x, G + 4, z, RSTEEL_S)
+    # the gate (north, 3 wide) between hazard posts
+    gx = W // 2
+    s.fill(gx - 1, G + 1, 1, gx + 1, G + 4, 1, S_AIR)
+    for x in (gx - 2, gx + 2):
+        s.fill(x, G + 1, 1, x, G + 5, 1, HSTEEL_S)
+    s.fill(gx - 2, G + 5, 1, gx + 2, G + 5, 1, HSTEEL_S)
+    s.set(gx, G + 5, 0, sign("north", SIGN_RESTRICTED))
+    s.set(gx - 3, G + 2, 0, wall_banner("north"))
+    s.fill(gx - 3, G + 1, 1, gx - 3, G + 3, 1, RSTEEL_S)
+    s.set(gx + 3, G + 2, 0, wall_banner("north"))
+    s.fill(gx + 3, G + 1, 1, gx + 3, G + 3, 1, RSTEEL_S)
+    s.protect_box(gx - 1, G + 1, 0, gx + 1, G + 3, 2)
+    # cages along the east side
+    for i, z in enumerate((4, 9, 14)):
+        cage(s, 18, z, 4, 4, captives=2 if i == 1 else 1)
+    s.mob(16, G + 1, 10, NOVUS)
+    # watchtower in the north-west corner
+    watchtower(s, 2, 3, G + 7)
+    # truck and crate depot (south-west)
+    truck(s, 3, 13)
+    for (x, z, h) in ((8, 19, 2), (9, 19, 1), (8, 20, 1), (10, 20, 3), (11, 20, 1)):
+        s.fill(x, G + 1, z, x, G + h, z, st("cargo_crate"))
+    s.set(9, G + 1, 20, barrel_state("chests/oinstein_outpost"))
+    # guard hut (south-east): concrete, a desk, the orders on a lectern, a chest
+    s.box(15, G + 1, 18, 22, G + 3, 22, CON, floor=None, roof=RSTEEL_S)
+    s.fill(15, G, 18, 22, G, 22, CON)
+    s.fill(18, G + 1, 18, 18, G + 2, 18, S_AIR)
+    s.protect_box(18, G + 1, 17, 18, G + 2, 19)
+    s.set(19, G + 2, 18, GLASS)
+    s.set(16, G + 2, 18, GLASS)
+    s.set(16, G + 1, 21, lectern("east", "oinstein_orders"))
+    s.set(21, G + 1, 21, chest_state("west", "chests/oinstein_outpost"))
+    s.set(21, G + 1, 19, computer("west"))
+    s.set(18, G + 3, 20, light_on())
+    poster(s, 19, G + 1, 21, "oinstein_poster_better_ape", "north")
+    s.set(17, G + 1, 17, wall_banner("north"))
+    # forces
+    s.mob(gx - 1, G + 1, 3, NOVUS)
+    s.mob(gx + 1, G + 1, 3, NOVUS)
+    s.mob(12, G + 1, 12, AUTOMATON)
+    s.mob(14, G + 1, 15, SAPIENS)
+    s.set(13, G + 1, 6, standing_banner(rnd.randrange(16)))
+    s.set(13, G + 1, 8, campfire(False))
+    return s
+
+
+def build_field_lab():
+    """A half-buried concrete field laboratory: specimen tanks (one holds a tribesman), a brain-jar shelf, computer
+    banks and a Tesla coil; reached down a stair trench through an airlock door."""
+    W, D, G = 17, 20, 3
+    s = Base("oinstein_field_lab", (W, 11, D), seed=8202, ground=G)
+    rnd = s.rnd
+    x0, x1, z0, z1 = 1, 15, 5, 19
+    s.fill(x0, 0, z0, x1, 0, z1, CON)
+    s.box(x0, 1, z0, x1, 4, z1, CON, roof=CON)
+    s.ring(x0, z0, x1, z1, 5, HSTEEL_S)
+    s.fill(x0 + 1, 6, z0 + 1, x1 - 1, 6, z1 - 1, S_AIR)
+    for x in range(x0, x1 + 1, 2):        # hazard band below the roof and a concrete berm
+        s.set(x, 4, z0, YCON)
+    s.fill(x0 + 1, 0, z0 + 1, x1 - 1, 0, z1 - 1, LCON)
+    for z in range(z0 + 1, z1):
+        for x in range(x0 + 1, x1):
+            if (x + z) % 2:
+                s.set(x, 0, z, WCON)
+    # earth berm against the outside walls (camouflage)
+    for z in range(z0 - 1, z1 + 2):
+        for x in range(x0 - 1, x1 + 2):
+            if s.name_at(x, 1, z) is None and s.inside(x, 1, z) and z >= z0:
+                for y in range(1, G + 1):
+                    s.set(x, y, z, st("venus_soil"))
+                s.set(x, G + 1, z, st("venus_moss")) if rnd.random() < 0.6 else None
+    # stair trench to the door (north)
+    dx = 8
+    for x in (dx - 2, dx + 2):
+        s.fill(x, 0, 0, x, G, z0 - 1, CON)
+    for k, (z, y) in enumerate(((0, 3), (1, 2), (2, 1))):
+        for x in range(dx - 1, dx + 2):
+            s.fill(x, 0, z, x, y - 1, z, CON)
+            s.set(x, y, z, V("polished_andesite_stairs", facing="south", half="bottom", shape="straight",
+                                 waterlogged=False))
+            s.fill(x, y + 1, z, x, y + 4, z, S_AIR)
+    for z in (3, 4):
+        for x in range(dx - 1, dx + 2):
+            s.set(x, 0, z, CON)
+            s.fill(x, 1, z, x, 4, z, S_AIR)
+    s.fill(dx - 1, 5, 3, dx + 1, 5, 4, HSTEEL_S)
+    s.set(dx, 1, z0, st("airlock_door", facing="north", half="lower", hinge="left", open=False))
+    s.set(dx, 2, z0, st("airlock_door", facing="north", half="upper", hinge="left", open=False))
+    s.set(dx - 1, 3, z0 - 1, sign("north", SIGN_RESTRICTED))
+    s.set(dx + 1, 3, z0 - 1, wall_banner("north"))
+    s.protect_box(dx - 1, 1, 0, dx + 1, 4, z0 + 1)
+    # inside: specimen tanks along the west wall
+    for z in (8, 11, 14):
+        s.set(2, 1, z, IRON)
+        s.set(2, 4, z, IRON)
+        specimen = z == 14
+        for y in (2, 3):
+            s.set(2, y, z, S_AIR if specimen else V("water", level=0))
+            s.set(3, y, z, V("lime_stained_glass") if specimen else GLASS)
+            s.set(2, y, z - 1, GLASS)
+            s.set(2, y, z + 1, GLASS)
+        s.set(3, 1, z, RSTEEL_S)
+        s.set(3, 4, z, RSTEEL_S)
+        if specimen:
+            s.set(2, 2, z, S_AIR)
+            s.set(2, 3, z, S_AIR)
+            s.captive(2, 2, z, specimen=True)
+    # brain-jar shelf (east wall)
+    for z in range(8, 15):
+        s.set(14, 2, z, V("smooth_stone_slab", type="top", waterlogged=False))
+        if z % 2 == 0:
+            s.set(14, 3, z, JAR_S)
+        s.set(14, 1, z, st("tape_archive", facing="west") if z % 3 == 0 else S_AIR)
+    # computers and the coil
+    for x in (10, 11, 12):
+        s.set(x, 1, z0 + 1, computer("south"))
+    s.set(8, 1, 12, RSTEEL_S)
+    s.set(8, 2, 12, TESLA_S)
+    s.set(6, 1, 17, st("lab_sink", facing="north"))
+    s.set(5, 1, 18, lectern("north", "oinstein_journal"))
+    s.set(10, 1, 18, chest_state("north", "chests/oinstein_lab"))
+    s.set(11, 1, 18, st("cargo_crate"))
+    s.set(12, 1, 18, V("smooth_stone_slab", type="double", waterlogged=False))   # operating table
+    s.set(12, 1, 17, V("smooth_stone_slab", type="double", waterlogged=False))
+    for (x, z) in ((5, 9), (11, 9), (5, 15), (11, 15)):
+        s.set(x, 4, z, light_on())
+    poster(s, 9, 2, 18, "oinstein_poster_insignia", "north")
+    s.set(13, 2, 18, wall_banner("north"))
+    s.mob(8, 1, 9, SAPIENS)
+    s.mob(10, 1, 15, SAPIENS)
+    s.mob(dx + 3, G + 1, 2, NOVUS)
+    # roof furniture: green skylights over the lab, vent stacks, a radio mast, sandbagged hatches
+    for x in range(5, 12):
+        for z in (10, 11, 13, 14):
+            s.set(x, 5, z, V("lime_stained_glass"))
+    for (x, z) in ((3, 16), (13, 12)):
+        s.set(x, 5, z, HSTEEL_S)
+    for (x, z) in ((4, 8), (12, 16)):
+        s.fill(x, 6, z, x, 7, z, pipe("y"))
+    for y in range(6, 10):
+        s.set(13, y, 8, V("lightning_rod", facing="up", powered=False, waterlogged=False) if y == 9 else IRON if y == 6
+              else chain("y"))
+    s.set(13, 10, 8, V("end_rod", facing="up"))
+    return s
+
+
+def build_relay_pylon():
+    """A relay pylon: a steel lattice tower crowned by a Tesla coil and a red beacon, a generator shed, cables, a
+    fenced yard and two sentries."""
+    W, D = 17, 17
+    s = Base("oinstein_relay_pylon", (W, 28, D), seed=8303, ground=1)
+    G = s.G
+    c = 8
+    s.fill(0, 0, 0, W - 1, 0, D - 1, CON)
+    s.fill(c - 3, G, c - 3, c + 3, G, c + 3, CON)
+    top = G + 20
+    tiers = ((G + 1, G + 6, 3), (G + 7, G + 13, 2), (G + 14, top - 1, 1))
+    for (y0, y1, hw) in tiers:
+        for y in range(y0, y1 + 1):
+            for (x, z) in ((c - hw, c - hw), (c + hw, c - hw), (c - hw, c + hw), (c + hw, c + hw)):
+                s.set(x, y, z, RSTEEL_S)
+        # a steel collar at the top of each tier ties the legs to the narrower ones above
+        s.ring(c - hw, c - hw, c + hw, c + hw, y1, RSTEEL_S)
+        for y in range(y0 + 2, y1 - 1, 3):
+            for t in range(-hw + 1, hw):
+                for (x, z, a) in ((c + t, c - hw, "x"), (c + t, c + hw, "x"), (c - hw, c + t, "z"), (c + hw, c + t, "z")):
+                    s.set(x, y, z, bars())
+    for (x, z) in ((c - 3, c - 3), (c + 3, c - 3), (c - 3, c + 3), (c + 3, c + 3)):
+        s.set(x, G, z, HSTEEL_S)
+    s.fill(c - 1, top, c - 1, c + 1, top, c + 1, GRATE)
+    s.ring(c - 1, c - 1, c + 1, c + 1, top + 1, bars)
+    s.set(c, top + 1, c, RSTEEL_S)
+    s.set(c, top + 2, c, TESLA_S)
+    s.set(c - 1, top + 1, c - 1, V("redstone_block"))
+    s.set(c - 1, top + 2, c - 1, lamp())
+    s.set(c + 1, top + 1, c + 1, V("redstone_block"))
+    s.set(c + 1, top + 2, c + 1, lamp())
+    for y in range(top + 3, top + 6):
+        s.set(c, y, c, V("lightning_rod", facing="up", powered=False, waterlogged=False) if y == top + 5 else chain("y"))
+    s.set(c + 1, top + 1, c, S_AIR)
+    s.mob(c + 1, top + 1, c, SENTRY)
+    # generator shed (south-west) and cables to the pylon
+    s.box(1, G + 1, 11, 6, G + 3, 15, CON, roof=RSTEEL_S)
+    s.fill(1, G, 11, 6, G, 15, CON)
+    s.fill(4, G + 1, 11, 4, G + 2, 11, S_AIR)
+    s.protect_box(4, G + 1, 10, 4, G + 2, 12)
+    s.set(3, G + 1, 13, st("reactor_core", lit=True))
+    s.set(2, G + 1, 14, computer("east"))
+    s.set(5, G + 1, 14, barrel_state("chests/oinstein_outpost"))
+    s.set(2, G + 1, 12, V("blast_furnace", facing="east", lit=False))
+    s.set(4, G + 3, 13, light_on())
+    s.set(3, G + 2, 10, sign("north", SIGN_DANGER))
+    for x in range(4, c - 2):
+        s.set(x, G + 5, 11, chain("x"))
+    s.set(3, G + 4, 11, RSTEEL_S)
+    s.set(3, G + 5, 11, IRON)
+    # fence with a gate on the north side
+    for x in range(W):
+        for z in (0, D - 1):
+            s.fill(x, G + 1, z, x, G + 2, z, bars())
+    for z in range(D):
+        for x in (0, W - 1):
+            s.fill(x, G + 1, z, x, G + 2, z, bars())
+    for x in range(0, W, 4):
+        for z in (0, D - 1):
+            s.fill(x, G + 1, z, x, G + 3, z, RSTEEL_S)
+    for z in range(0, D, 4):
+        for x in (0, W - 1):
+            s.fill(x, G + 1, z, x, G + 3, z, RSTEEL_S)
+    s.fill(c - 1, G + 1, 0, c + 1, G + 2, 0, S_AIR)
+    s.fill(12, G + 1, 12, 12, G + 1, 12, S_AIR)
+    s.set(c + 2, G + 1, 2, standing_banner(8))
+    s.mob(c, G + 1, 4, SENTRY)
+    s.mob(10, G + 1, 13, AUTOMATON)
+    return s
+
+
+def build_checkpoint():
+    """A road checkpoint: a striped road, a guard booth with windows and a searchlight, a boom barrier, hazard
+    barricades, and its guards."""
+    W, D = 15, 13
+    s = Base("oinstein_checkpoint", (W, 9, D), seed=8404, ground=1)
+    G = s.G
+    s.fill(0, 0, 0, W - 1, 0, D - 1, CON)
+    for z in range(D):                    # the road runs north-south, x 5..9
+        for x in range(5, 10):
+            s.set(x, G, z, CON if x not in (5, 9) else LCON)
+        if z % 3 != 2:
+            s.set(7, G, z, YCON)
+    # booth (west)
+    s.box(1, G + 1, 4, 3, G + 3, 7, CON, roof=RSTEEL_S)
+    s.fill(1, G, 4, 3, G, 7, CON)
+    for z in (5, 6):
+        s.set(3, G + 2, z, pane())
+        s.set(1, G + 2, z, pane())
+    s.fill(2, G + 1, 7, 2, G + 2, 7, S_AIR)
+    s.protect_box(2, G + 1, 7, 2, G + 2, 8)
+    s.set(2, G + 1, 5, computer("east"))
+    s.set(2, G + 3, 6, light_on())
+    s.set(2, G + 4, 5, RSTEEL_S)
+    s.set(2, G + 5, 5, LANTERN_SEA)
+    s.set(2, G + 2, 3, sign("north", SIGN_CHECKPOINT, color="black", glow=False))
+    s.set(1, G + 1, 8, barrel_state("chests/oinstein_outpost"))
+    # boom barrier across the road
+    s.fill(4, G + 1, 6, 4, G + 2, 6, HSTEEL_S)
+    for x in range(5, 10):
+        s.set(x, G + 2, 6, V("end_rod", facing="east"))
+    s.fill(10, G + 1, 6, 10, G + 1, 6, HSTEEL_S)
+    # barricades (east) and a sentry post
+    for (x, z) in ((11, 2), (12, 2), (11, 10), (12, 10), (13, 6)):
+        s.set(x, G + 1, z, HSTEEL_S)
+    s.fill(11, G + 1, 5, 13, G + 1, 7, RSTEEL_S)
+    s.fill(11, G + 2, 5, 13, G + 2, 7, GRATE)
+    s.ring(11, 5, 13, 7, G + 3, bars)
+    s.set(12, G + 3, 6, S_AIR)
+    s.mob(12, G + 3, 6, SENTRY)
+    s.set(13, G + 1, 8, standing_banner(12))
+    s.mob(6, G + 1, 3, NOVUS)
+    s.mob(8, G + 1, 9, AUTOMATON)
+    s.mob(3, G + 1, 9, NOVUS)
+    return s
+
+
+# =====================================================================================================================
+# World generation
+# =====================================================================================================================
+OUTPOSTS = {
+    # name: (builder, ground layers G, weight)
+    "oinstein_capture_camp": (build_capture_camp, 1, 3),
+    "oinstein_field_lab": (build_field_lab, 3, 3),
+    "oinstein_relay_pylon": (build_relay_pylon, 1, 2),
+    "oinstein_checkpoint": (build_checkpoint, 1, 2),
+}
+OUTPOST_BIOMES = ("venus_jungle", "venus_cycad_plains", "venus_fern_swamp", "venus_volcanic_highlands")
+LAND_BIOMES = ("venus_jungle", "venus_cycad_plains", "venus_fern_swamp", "venus_volcanic_highlands",
+               "venus_glowcap_hollows")
+COMPLEX = "oinstein_complex"
+
+
+# Mobs cleared by the coordinator for structure spawn_overrides (a missing entity id would break registry loading).
+# OINSTEIN_SPAWNS=1 / 0 forces all / none.
+SPAWNS_ENABLED = set(MOBS)
+
+
+def entity_registered(name):
+    import re
+    pat = re.compile(r'register\(\s*"' + re.escape(name) + '"')
+    for root, _dirs, files in os.walk(JAVA):
+        for f in files:
+            if f.endswith(".java"):
+                with open(os.path.join(root, f), encoding="utf-8") as fh:
+                    if pat.search(fh.read()):
+                        return True
+    return False
+
+
+def registered_entities():
+    flag = os.environ.get("OINSTEIN_SPAWNS")
+    if flag == "1":
+        return set(MOBS)
+    if flag == "0":
+        return set()
+    return {m for m in SPAWNS_ENABLED if entity_registered(m.split(":")[1])}
+
+
+def spawn_overrides(weights):
+    present = registered_entities()
+    spawns = [{"type": m, "weight": w, "minCount": lo, "maxCount": hi} for m, (w, lo, hi) in weights.items()
+              if m in present]
+    if not spawns:
+        return {}
+    return {"monster": {"bounding_box": "piece", "spawns": spawns}}
+
+
+OUTPOST_SPAWNS = {SENTRY: (4, 1, 1), AUTOMATON: (3, 1, 1), NOVUS: (6, 1, 2), SAPIENS: (2, 1, 1)}
+COMPLEX_SPAWNS = {SENTRY: (5, 1, 2), AUTOMATON: (5, 1, 2), NOVUS: (8, 1, 3), SAPIENS: (4, 1, 2)}
+
+
+def wg(kind, name, obj):
+    write_json(os.path.join(DATA, "worldgen", kind, name + ".json"), obj)
+
+
+def jigsaw_structure(name, pool, biomes_tag, start_height, adaptation, overrides):
+    wg("structure", name, {
+        "type": "minecraft:jigsaw", "biomes": f"#{MOD}:has_structure/{biomes_tag}", "step": "surface_structures",
+        "spawn_overrides": overrides, "terrain_adaptation": adaptation, "start_pool": f"{MOD}:{pool}", "size": 1,
+        "start_height": {"absolute": start_height}, "project_start_to_heightmap": "WORLD_SURFACE_WG",
+        "max_distance_from_center": 80, "use_expansion_hack": False})
+
+
+def single_pool(name, location, processors="oinstein_wear"):
+    wg("template_pool", name, {"elements": [{"weight": 1, "element": {
+        "element_type": "minecraft:single_pool_element", "location": f"{MOD}:{location}",
+        "processors": f"{MOD}:{processors}", "projection": "rigid"}}], "fallback": "minecraft:empty"})
+
+
+def zones(*pairs):
+    return [{"other_set": f"{MOD}:{s}", "chunk_count": n} for s, n in pairs]
+
+
+def worldgen():
+    wg("processor_list", "oinstein_wear", {"processors": [
+        {"processor_type": "minecraft:rule", "rules": [R_.rule(RSTEEL, RSTEEL, 0.0)]},
+        {"processor_type": "minecraft:protected_blocks", "value": "#minecraft:features_cannot_replace"}]})
+    tag("worldgen/biome/has_structure/oinstein_outpost", [P(b) for b in OUTPOST_BIOMES], namespace=MOD)
+    entries = []
+    for name, (_fn, G, weight) in OUTPOSTS.items():
+        single_pool(f"{name}/start", f"oinstein/{name}")
+        jigsaw_structure(name, f"{name}/start", "oinstein_outpost", -G, "beard_thin", spawn_overrides(OUTPOST_SPAWNS))
+        entries.append({"structure": f"{MOD}:{name}", "weight": weight})
+    wg("structure_set", "oinstein_outposts", {"structures": entries, "placement": {
+        "type": f"{MOD}:exclusive_spread", "spacing": 56, "separation": 24, "salt": 731940117,
+        "exclusion_zones": zones(("tribal_camps", 4), ("venusian_pyramids", 6), ("venusian_ziggurats", 6),
+                                 ("venusian_ruined_villages", 6), ("oinstein_institute", 12))}})
+    # the Institute: one per world, a journey away from spawn
+    tag("worldgen/biome/has_structure/oinstein_complex", [P(b) for b in LAND_BIOMES] + [P("venus_steaming_sea")],
+        namespace=MOD)
+    # plains and jungle: the paving keeps their trees out of the yard (highland cinder cones would not care)
+    tag("worldgen/biome/oinstein_complex_preferred", [P(b) for b in ("venus_cycad_plains", "venus_jungle")],
+        namespace=MOD)
+    single_pool(f"{COMPLEX}/start", f"oinstein/{COMPLEX}")
+    jigsaw_structure(COMPLEX, f"{COMPLEX}/start", COMPLEX, -1, "beard_box", spawn_overrides(COMPLEX_SPAWNS))
+    wg("structure_set", "oinstein_institute", {"structures": [{"structure": f"{MOD}:{COMPLEX}", "weight": 1}],
+                                               "placement": {"type": "minecraft:concentric_rings", "distance": 12,
+                                                             "spread": 1, "count": 1, "salt": 731940118,
+                                                             "preferred_biomes": f"#{MOD}:oinstein_complex_preferred"}})
+
+
+TEMPLATES = {f"oinstein/{n}": fn for n, (fn, _g, _w) in OUTPOSTS.items()}
+
+
+def finish(s):
+    connect_panes(s)
+    audit(s)
+    return s
+
+
+def generate():
+    write_block_textures()
+    write_models()
+    write_data()
+    total = 0
+    for path, fn in TEMPLATES.items():
+        total += write_template(finish(fn()), path)
+    worldgen()
+    print(f"oinstein: generated {len(TEMPLATES)} templates, {total} blocks; spawn overrides for "
+          f"{sorted(m.split(':')[1] for m in registered_entities()) or 'none'}")
+
+
+# =====================================================================================================================
+# The Oinstein Institute (G = 1)
+# =====================================================================================================================
+
+def hazard_band(s, x0, z0, x1, z1, y):
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            if x in (x0, x1) or z in (z0, z1):
+                s.set(x, y, z, YCON if ((x + z) // 2) % 2 == 0 else BCON)
+
+
+def guard_tower(s, x0, z0, size, top, lights=True):
+    """A concrete guard tower with a hazard band, an open steel platform, a railing, searchlights and a sentry."""
+    G = s.G
+    x1, z1 = x0 + size - 1, z0 + size - 1
+    s.fill(x0, G, z0, x1, top - 1, z1, CON)
+    s.fill(x0 + 1, G + 1, z0 + 1, x1 - 1, top - 1, z1 - 1, S_AIR)
+    hazard_band(s, x0, z0, x1, z1, G + 1)
+    s.ring(x0, z0, x1, z1, top - 2, WCON)
+    s.fill(x0, top, z0, x1, top, z1, GRATE)
+    s.ring(x0, z0, x1, z1, top + 1, bars)
+    for (x, z) in ((x0, z0), (x1, z0), (x0, z1), (x1, z1)):
+        s.fill(x, top + 1, z, x, top + 2, z, RSTEEL_S)
+        if lights:
+            s.set(x, top + 3, z, LANTERN_SEA)
+    # a ladder up the inside
+    for y in range(G + 1, top + 1):
+        s.set(x0 + 1, y, z0 + 1, V("ladder", facing="south", waterlogged=False))
+    s.set(x0 + 1, top + 1, z0 + 1, S_AIR)
+    s.mob(x0 + size // 2, top + 1, z0 + size // 2, SENTRY)
+
+
+def cooling_tower(s, cx, cz, y0, height, r_base, r_waist, r_top):
+    """A hyperboloid concrete cooling tower on open arches, with smoking fires (signal campfires) in its basin."""
+    def radius(h):
+        t = h / height
+        waist = 0.55
+        if t < waist:
+            return r_waist + (r_base - r_waist) * ((waist - t) / waist) ** 2
+        return r_waist + (r_top - r_waist) * ((t - waist) / (1 - waist)) ** 2
+
+    R = int(r_base) + 2
+    for h in range(height):
+        r = radius(h)
+        y = y0 + h
+        for x in range(cx - R, cx + R + 1):
+            for z in range(cz - R, cz + R + 1):
+                d = math.hypot(x - cx, z - cz)
+                if abs(d - r) <= 0.75:
+                    if h < 3 and int((math.atan2(z - cz, x - cx) + math.pi) * 8 / math.pi) % 2 == 0:
+                        continue                         # arches at the foot
+                    c = RCON if height - 5 <= h < height - 3 else WCON if h % 6 == 0 else LCON
+                    s.set(x, y, z, c)
+                elif d < r - 0.75:
+                    s.set(x, y, z, S_AIR)
+    G = s.G
+    for x in range(cx - R, cx + R + 1):
+        for z in range(cz - R, cz + R + 1):
+            d = math.hypot(x - cx, z - cz)
+            if d < 4.5:
+                s.set(x, G, z, V("water", level=0))
+                s.set(x, G - 1, z, CON)
+            elif d < r_base - 1:
+                s.set(x, G, z, CON)
+    for i in range(8):
+        a = i * math.pi / 4
+        x, z = round(cx + 6 * math.cos(a)), round(cz + 6 * math.sin(a))
+        s.set(x, G, z, V("hay_block", axis="y"))
+        s.set(x, G + 1, z, campfire(True))
+
+
+def smokestack(s, x0, z0, top):
+    G = s.G
+    s.fill(x0, G, z0, x0 + 2, top, z0 + 2, RCON)
+    for y in range(G, top + 1):
+        if (y // 4) % 2 == 1:
+            s.ring(x0, z0, x0 + 2, z0 + 2, y, WCON)
+    s.fill(x0 + 1, G + 1, z0 + 1, x0 + 1, top, z0 + 1, S_AIR)
+    s.set(x0 + 1, G, z0 + 1, V("hay_block", axis="y"))
+    s.set(x0 + 1, G + 1, z0 + 1, campfire(True))
+    s.ring(x0, z0, x0 + 2, z0 + 2, top, BCON)
+    s.set(x0, top - 6, z0 + 1, V("redstone_block"))
+
+
+def pipeline(s, pts, y, support_every=6):
+    """Twin chrome pipes along a polyline of (x, z) corners at height y, on steel trestles."""
+    G = s.G
+    for (xa, za), (xb, zb) in zip(pts, pts[1:]):
+        if xa == xb:
+            for z in range(min(za, zb), max(za, zb) + 1):
+                for dx in (0, 1):
+                    if s.name_at(xa + dx, y, z) in (None, AIR):
+                        s.set(xa + dx, y, z, pipe("z"))
+                if (z - min(za, zb)) % support_every == 0:
+                    for dx in (0, 1):
+                        for yy in range(G + 1, y):
+                            if s.name_at(xa + dx, yy, z) in (None, AIR):
+                                s.set(xa + dx, yy, z, RSTEEL_S if dx == 0 else S_AIR)
+        else:
+            for x in range(min(xa, xb), max(xa, xb) + 1):
+                for dz in (0, 1):
+                    if s.name_at(x, y, za + dz) in (None, AIR):
+                        s.set(x, y, za + dz, pipe("x"))
+                if (x - min(xa, xb)) % support_every == 0:
+                    for yy in range(G + 1, y):
+                        if s.name_at(x, yy, za) in (None, AIR):
+                            s.set(x, yy, za, RSTEEL_S)
+
+
+def cage_wagon(s, x0, z, y):
+    """A cage wagon standing on the track: grated floor, iron-bar cage, steel roof, a captive inside."""
+    for x in range(x0, x0 + 5):
+        for dz in (-1, 0, 1):
+            s.set(x, y, z + dz, GRATE if dz == 0 or x in (x0, x0 + 4) else BCON)
+    for yy in (y + 1, y + 2):
+        s.ring(x0, z - 1, x0 + 4, z + 1, yy, bars)
+        s.fill(x0 + 1, yy, z, x0 + 3, yy, z, S_AIR)
+    for x in range(x0, x0 + 5):
+        for dz in (-1, 0, 1):
+            s.set(x, y + 3, z + dz, RSTEEL_S)
+    gate(s, x0 + 2, y + 1, z - 1, "north")
+    s.captive(x0 + 2, y + 1, z)
+
+
+def build_complex():
+    """The Oinstein Institute: a walled industrial compound with guard towers and searchlights, a reactor hall,
+    smokestacks and a cooling tower, pipelines, a loading yard with cage wagons and a gantry crane, barracks and an
+    armory, and in the middle the great entrance hall of the (future) underground laboratory - its portal and the
+    lift inside both sealed by laser barriers, the foyer visible through them."""
+    N, H, G = 96, 34, 1
+    s = Base(COMPLEX, (N, H, N), seed=9001, ground=G)
+    rnd = s.rnd
+    s.fill(0, 0, 0, N - 1, 0, N - 1, CON)
+    # yard paving: concrete slabs in a 4-block grid
+    for x in range(N):
+        for z in range(N):
+            s.set(x, G, z, LCON if (x % 8 in (0, 7) or z % 8 in (0, 7)) else CON)
+            if rnd.random() < 0.05:
+                s.set(x, G, z, COARSE)
+    # the access road from the gate to the hall
+    for z in range(0, 41):
+        for x in range(43, 53):
+            s.set(x, G, z, BCON if x not in (43, 52) else YCON)
+    # ------------------------------------------------------------ perimeter wall
+    W0, W1 = 2, N - 3
+    for y in range(G + 1, G + 9):
+        for t in (0, 1):
+            s.ring(W0 + t, W0 + t, W1 - t, W1 - t, y, CON if y > G + 1 else (YCON if t == 0 else CON))
+    for i in range(W0, W1 + 1):
+        for (x, z) in ((i, W0), (i, W1), (W0, i), (W1, i)):
+            s.set(x, G + 1, z, YCON if (i // 2) % 2 == 0 else BCON)
+            s.set(x, G + 7, z, WCON)
+            s.set(x, G + 9, z, RSTEEL_S if i % 2 == 0 else S_AIR)
+    for i in range(W0 + 1, W1):
+        for (x, z) in ((i, W0 + 1), (i, W1 - 1), (W0 + 1, i), (W1 - 1, i)):
+            s.set(x, G + 9, z, S_AIR)
+    # towers: corners, mid-sides
+    T = 6
+    for (x, z) in ((0, 0), (N - T, 0), (0, N - T), (N - T, N - T), (0, 45), (N - T, 45), (45, N - T)):
+        guard_tower(s, x, z, T, G + 14)
+    # ------------------------------------------------------------ the main gate (north, sealed)
+    gx0, gx1 = 44, 51
+    for (tx0, tx1) in ((37, 43), (52, 58)):
+        s.fill(tx0, G, 1, tx1, G + 16, 8, CON)
+        s.fill(tx0 + 1, G + 1, 2, tx1 - 1, G + 15, 7, S_AIR)
+        hazard_band(s, tx0, 1, tx1, 8, G + 1)
+        s.ring(tx0, 1, tx1, 8, G + 12, WCON)
+        s.fill(tx0, G + 17, 1, tx1, G + 17, 8, GRATE)
+        s.ring(tx0, 1, tx1, 8, G + 18, bars)
+        for (x, z) in ((tx0, 1), (tx1, 1)):
+            s.set(x, G + 18, z, RSTEEL_S)
+            s.set(x, G + 19, z, LANTERN_SEA)
+        for y in range(G + 1, G + 18):
+            s.set(tx0 + 1, y, 7, V("ladder", facing="north", waterlogged=False))
+        s.set(tx0 + 1, G + 18, 7, S_AIR)
+        s.mob((tx0 + tx1) // 2, G + 18, 4, SENTRY)
+        for y in (G + 9, G + 10):
+            for x in range(tx0 + 2, tx1 - 1):
+                s.set(x, y, 1, TINT)
+    s.fill(gx0 - 1, G + 1, 1, gx1 + 1, G + 12, 4, CON)          # gate block and lintel
+    s.fill(gx0, G, 1, gx1, G + 6, 4, S_AIR)
+    s.fill(gx0, G, 1, gx1, G, 8, HSTEEL_S)
+    for x in range(gx0 - 1, gx1 + 2):
+        s.set(x, G + 7, 1, HSTEEL_S)
+    for y in range(G + 1, G + 8):
+        s.set(gx0 - 1, y, 1, HSTEEL_S)
+        s.set(gx1 + 1, y, 1, HSTEEL_S)
+    for y in range(G + 1, G + 7):
+        s.set(gx0, y, 2, EMITTER_S)
+        s.set(gx1, y, 2, EMITTER_S)
+        for x in range(gx0 + 1, gx1):
+            s.set(x, y, 2, barrier("x"))
+    for y in range(G + 1, G + 7):
+        for x in range(gx0, gx1 + 1):
+            s.set(x, y, 3, S_AIR)
+            s.set(x, y, 4, S_AIR)
+    s.set(gx0 + 2, G + 9, 0, sign("north", SIGN_RESTRICTED))
+    s.set(gx1 - 2, G + 9, 0, sign("north", SIGN_SLOGAN, color="black", glow=False))
+    s.set(gx0 + 3, G + 9, 0, wall_banner("north"))
+    s.set(gx1 - 3, G + 9, 0, wall_banner("north"))
+    s.fill(gx0 - 1, G + 9, 1, gx1 + 1, G + 11, 1, CON)
+    s.set(gx0 - 2, G + 3, 0, sign("north", SIGN_DANGER))
+    for x in (36, 59):
+        s.set(x, G + 2, 1, S_AIR)
+    poster(s, 35, G + 2, 1, "oinstein_poster_restricted", "north")
+    poster(s, 60, G + 2, 1, "oinstein_poster_restricted", "north")
+    poster(s, 33, G + 2, 1, "oinstein_poster_better_ape", "north")
+    poster(s, 62, G + 2, 1, "oinstein_poster_insignia", "north")
+    for x in (31, 64):
+        s.set(x, G + 4, 1, wall_banner("north"))
+    s.protect_box(gx0, G, 0, gx1, G + 6, 4)
+    # ------------------------------------------------------------ the Institute hall (lab entrance)
+    hx0, hx1, hz0, hz1, top = 32, 63, 40, 64, G + 15
+    s.fill(hx0, G, hz0, hx1, top, hz1, CON)
+    s.fill(hx0 + 1, G + 1, hz0 + 1, hx1 - 1, G + 9, hz1 - 1, S_AIR)
+    for x in range(hx0, hx1 + 1):                 # facade bands and high windows
+        for y in (G + 11, G + 12, G + 13):
+            if 3 < x - hx0 < hx1 - hx0 - 3 and (x - hx0) % 3 != 0:
+                s.set(x, y, hz0, TINT if y != G + 12 else V("black_stained_glass"))
+        s.set(x, G + 10, hz0, WCON)
+        s.set(x, top, hz0, HSTEEL_S)
+        s.set(x, G + 1, hz0, YCON if (x // 2) % 2 == 0 else BCON)
+    s.fill(hx0 + 1, G + 10, hz0 + 1, hx1 - 1, top - 1, hz1 - 1, S_AIR)
+    s.fill(hx0 + 1, G + 10, hz0 + 1, hx1 - 1, G + 10, hz1 - 1, CON)      # upper floor slab
+    s.fill(hx0 + 2, G + 10, hz0 + 4, hx1 - 2, G + 10, hz0 + 6, GLASS)    # gallery light well
+    for x in range(hx0 + 2, hx1 - 1, 4):
+        s.set(x, top - 1, hz0 + 8, light_on())
+    # roof: steel edge, skylight, antenna array
+    s.fill(hx0 + 6, top, hz0 + 8, hx1 - 6, top, hz1 - 6, GLASS)
+    for x in (hx0 + 3, hx1 - 3):
+        for y in range(top + 1, top + 8):
+            s.set(x, y, hz1 - 3, chain("y") if y < top + 7 else V("lightning_rod", facing="up", powered=False,
+                                                                     waterlogged=False))
+        s.set(x, top + 1, hz1 - 3, IRON)
+    s.set(hx0 + 16, top + 1, hz1 - 4, st("radar_scope", facing="north", lit=True))
+    # the portal: a hazard-striped blast frame and the laser barrier
+    px0, px1 = 42, 53
+    s.fill(px0, G + 1, hz0, px1, G + 9, hz0, HSTEEL_S)
+    s.fill(px0 + 1, G + 1, hz0, px1 - 1, G + 8, hz0, S_AIR)
+    for y in range(G + 1, G + 9):
+        s.set(px0 + 1, y, hz0, EMITTER_S)
+        s.set(px1 - 1, y, hz0, EMITTER_S)
+        for x in range(px0 + 2, px1 - 1):
+            s.set(x, y, hz0, barrier("x"))
+    for x in range(px0 - 2, px1 + 3):              # canopy over the portal
+        for z in (hz0 - 1, hz0 - 2):
+            s.set(x, G + 10, z, RSTEEL_S)
+    s.set(px0 - 1, G + 4, hz0 - 1, sign("north", SIGN_RESTRICTED))
+    s.set(px1 + 1, G + 4, hz0 - 1, sign("north", SIGN_DANGER))
+    s.set(px0 - 2, G + 4, hz0 - 1, wall_banner("north"))
+    s.set(px1 + 2, G + 4, hz0 - 1, wall_banner("north"))
+    for x in (px0 - 4, px1 + 3):
+        poster(s, x, G + 2, hz0 - 1, "oinstein_poster_insignia", "north")
+    s.set(47, G + 12, hz0 - 1, wall_banner("north"))
+    s.set(48, G + 12, hz0 - 1, wall_banner("north"))
+    s.set(47, G + 12, hz0, CON)
+    s.set(48, G + 12, hz0, CON)
+    # foyer: checkered floor, reception, lecterns, specimen tanks, pillars, the sealed lift
+    for x in range(hx0 + 1, hx1):
+        for z in range(hz0 + 1, hz1):
+            s.set(x, G, z, WCON if (x + z) % 2 else BCON)
+    for x in (37, 42, 53, 58):
+        for z in (46, 53):
+            s.fill(x, G + 1, z, x, G + 9, z, IRON)
+    for x in range(44, 52):
+        s.set(x, G + 1, 50, DOUBLE_SLAB)
+    s.set(46, G + 1, 51, computer("south"))
+    s.set(49, G + 1, 51, computer("south"))
+    s.set(44, G + 1, 47, lectern("north", "oinstein_journal"))
+    s.set(51, G + 1, 47, lectern("north", "oinstein_orders"))
+    for x in (hx0 + 1, hx1 - 1):
+        for z in (44, 48, 52, 56):
+            s.set(x, G + 1, z, IRON)
+            s.set(x, G + 4, z, IRON)
+            for y in (G + 2, G + 3):
+                s.set(x, y, z, V("water", level=0) if z != 52 else S_AIR)
+            for dz in (-1, 1):
+                for y in (G + 2, G + 3):
+                    s.set(x, y, z + dz, GLASS)
+            dx = 1 if x == hx0 + 1 else -1
+            for y in (G + 2, G + 3):
+                s.set(x + dx, y, z, V("lime_stained_glass"))
+            s.set(x + dx, G + 1, z, RSTEEL_S)
+            s.set(x + dx, G + 4, z, RSTEEL_S)
+            if z == 52:
+                s.captive(x, G + 2, z, specimen=True)
+    s.set(38, G + 1, 58, RSTEEL_S)
+    s.set(38, G + 2, 58, TESLA_S)
+    s.set(57, G + 1, 58, RSTEEL_S)
+    s.set(57, G + 2, 58, TESLA_S)
+    for (x, z) in ((40, 42), (55, 42)):
+        s.set(x, G + 1, z, DOUBLE_SLAB)
+        s.set(x, G + 2, z, JAR_S)
+    poster(s, 40, G + 2, hz1 - 1, "oinstein_poster_better_ape", "north")
+    poster(s, 55, G + 2, hz1 - 1, "oinstein_poster_insignia", "north")
+    for x in (44, 51):
+        s.set(x, G + 5, hz1 - 1, wall_banner("north"))
+    # the lift: a recess in the back wall behind a second barrier
+    lx0, lx1 = 45, 50
+    s.fill(lx0 - 1, G + 1, hz1 - 3, lx1 + 1, G + 7, hz1 - 1, HSTEEL_S)
+    s.fill(lx0, G, hz1 - 3, lx1, G + 6, hz1 - 1, S_AIR)
+    s.fill(lx0, G - 1, hz1 - 3, lx1, G - 1, hz1 - 1, GRATE)
+    s.fill(lx0, G, hz1 - 2, lx1, G, hz1 - 1, S_AIR)
+    for y in range(G, G + 7):
+        s.set(lx0, y, hz1 - 3, EMITTER_S)
+        s.set(lx1, y, hz1 - 3, EMITTER_S)
+        for x in range(lx0 + 1, lx1):
+            s.set(x, y, hz1 - 3, barrier("x"))
+    s.set(lx0 + 2, G + 4, hz1, CON)
+    s.set(lx0 + 1, G + 7, hz1 - 4, sign("north", SIGN_SEALED))
+    s.set(lx1 - 1, G + 7, hz1 - 4, sign("north", SIGN_DANGER))
+    for x in (lx0 + 1, lx1 - 1):
+        s.set(x, G + 7, hz1 - 3, HSTEEL_S)
+    s.set(lx0 + 2, G + 5, hz1 - 1, lamp())
+    s.set(lx0 + 2, G + 5, hz1, V("redstone_block"))
+    s.mob(47, G + 1, 55, SAPIENS)
+    s.mob(41, G + 1, 50, NOVUS)
+    s.mob(55, G + 1, 50, NOVUS)
+    s.protect_box(px0, G, hz0 - 2, px1, G + 8, hz0 + 1)
+    # ------------------------------------------------------------ reactor hall with its dome
+    rx0, rz0, rx1, rz1 = 8, 8, 27, 27
+    s.fill(rx0, G, rz0, rx1, G + 10, rz1, CON)
+    s.fill(rx0 + 1, G + 1, rz0 + 1, rx1 - 1, G + 10, rz1 - 1, S_AIR)
+    hazard_band(s, rx0, rz0, rx1, rz1, G + 1)
+    s.ring(rx0, rz0, rx1, rz1, G + 10, WCON)
+    cxr, czr = (rx0 + rx1) / 2, (rz0 + rz1) / 2
+    for h in range(0, 8):
+        r = 9.5 * math.sqrt(max(0.0, 1 - (h / 8.0) ** 2))
+        for x in range(rx0, rx1 + 1):
+            for z in range(rz0, rz1 + 1):
+                d = math.hypot(x - cxr, z - czr)
+                if d <= r:
+                    inner = d < r - 1.2 and h < 7
+                    s.set(x, G + 11 + h, z, S_AIR if inner else (GLASS if h in (2, 3) and int(d) % 2 else WCON))
+    for (x, z) in ((13, 13), (22, 13), (13, 22), (22, 22)):
+        s.set(x, G + 1, z, HSTEEL_S)
+        s.set(x, G + 2, z, st("reactor_core", lit=True))
+        s.set(x, G + 3, z, st("reactor_core", lit=True))
+        s.fill(x, G + 4, z, x, G + 9, z, pipe("y"))
+    for x in range(14, 22):
+        s.set(x, G + 9, 13, pipe("x"))
+        s.set(x, G + 9, 22, pipe("x"))
+    s.set(17, G + 1, 17, chest_state("north", "chests/oinstein_lab"))
+    s.set(18, G + 1, 17, st("cargo_crate"))
+    s.set(17, G + 1, rz0 + 1, computer("south"))
+    s.set(18, G + 1, rz0 + 1, computer("south"))
+    s.fill(17, G + 1, rz1, 18, G + 3, rz1, S_AIR)
+    s.set(17, G + 1, rz1, st("airlock_door", facing="south", half="lower", hinge="left", open=False))
+    s.set(17, G + 2, rz1, st("airlock_door", facing="south", half="upper", hinge="left", open=False))
+    s.set(18, G + 1, rz1, st("airlock_door", facing="south", half="lower", hinge="right", open=False))
+    s.set(18, G + 2, rz1, st("airlock_door", facing="south", half="upper", hinge="right", open=False))
+    s.set(16, G + 3, rz1 + 1, sign("south", SIGN_DANGER))
+    s.set(19, G + 3, rz1 + 1, wall_banner("south"))
+    s.mob(17, G + 1, 20, SAPIENS)
+    # smokestacks
+    smokestack(s, 30, 9, H - 4)
+    smokestack(s, 30, 22, H - 6)
+    # cooling tower
+    cooling_tower(s, 74, 20, G + 1, 26, 10.5, 6.5, 8.0)
+    # pipelines: reactor -> cooling tower, reactor -> hall
+    pipeline(s, [(28, 17), (63, 17)], G + 6)
+    pipeline(s, [(18, 29), (18, 52), (31, 52)], G + 5)
+    pipeline(s, [(64, 52), (84, 52), (84, 33)], G + 7)
+    # ------------------------------------------------------------ loading yard: tracks, wagons, gantry crane
+    for z in (72, 79):
+        for x in range(60, W1 - 1):
+            s.set(x, G + 1, z, V("rail", shape="east_west", waterlogged=False))
+    cage_wagon(s, 64, 72, G + 1)
+    cage_wagon(s, 71, 72, G + 1)
+    cage_wagon(s, 80, 79, G + 1)
+    for (x, z) in ((61, 68), (61, 83), (88, 68), (88, 83)):
+        s.fill(x, G + 1, z, x, G + 13, z, RSTEEL_S)
+    for x in range(61, 89):
+        s.set(x, G + 14, 68, HSTEEL_S)
+        s.set(x, G + 14, 83, HSTEEL_S)
+    for z in range(68, 84):
+        s.set(76, G + 15, z, YCON)
+    s.fill(75, G + 14, 74, 77, G + 14, 76, RSTEEL_S)
+    for y in range(G + 7, G + 14):
+        s.set(76, y, 75, chain("y"))
+    s.set(76, G + 6, 75, IRON)
+    s.set(76, G + 5, 75, st("cargo_crate"))
+    for (x, z, h) in ((64, 88, 2), (65, 88, 1), (66, 88, 3), (64, 87, 1), (70, 88, 2), (86, 64, 2), (87, 64, 1)):
+        s.fill(x, G + 1, z, x, G + h, z, st("cargo_crate"))
+    s.set(67, G + 1, 88, barrel_state("chests/oinstein_outpost"))
+    s.set(85, G + 1, 64, barrel_state("chests/oinstein_outpost"))
+    # ------------------------------------------------------------ barracks and armory (south-west)
+    bx0, bz0, bx1, bz1 = 8, 62, 30, 74
+    s.fill(bx0, G, bz0, bx1, G + 6, bz1, CON)
+    s.fill(bx0 + 1, G + 1, bz0 + 1, bx1 - 1, G + 5, bz1 - 1, S_AIR)
+    hazard_band(s, bx0, bz0, bx1, bz1, G + 1)
+    for x in range(bx0 + 2, bx1 - 1, 3):
+        s.set(x, G + 3, bz0, TINT)
+        s.set(x, G + 3, bz1, TINT)
+    s.fill(19, G + 1, bz0, 19, G + 3, bz0, S_AIR)
+    for x in range(bx0 + 2, bx1 - 1, 3):
+        if x in (17, 20):
+            continue
+        s.set(x, G + 1, bz1 - 1, st("crew_bunk", facing="south", part="foot"))
+        s.set(x, G + 1, bz1 - 1, V("red_bed", facing="south", occupied=False, part="head"))
+        s.set(x, G + 1, bz1 - 2, V("red_bed", facing="south", occupied=False, part="foot"))
+        s.set(x, G + 1, bz0 + 1, st("supply_cabinet", facing="south"))
+    for x in range(bx0 + 3, bx1, 5):
+        s.set(x, G + 5, (bz0 + bz1) // 2, light_on())
+    poster(s, bx0 + 1, G + 2, (bz0 + bz1) // 2, "oinstein_poster_better_ape", "east")
+    s.set(bx1 - 1, G + 1, (bz0 + bz1) // 2, lectern("west", "oinstein_orders"))
+    s.set(18, G + 3, bz0 - 1, wall_banner("north"))
+    s.set(20, G + 3, bz0 - 1, wall_banner("north"))
+    s.mob(14, G + 1, 68, NOVUS)
+    s.mob(25, G + 1, 68, NOVUS)
+    ax0, az0, ax1, az1 = 8, 78, 20, 88
+    s.fill(ax0, G, az0, ax1, G + 5, az1, CON)
+    s.fill(ax0 + 1, G + 1, az0 + 1, ax1 - 1, G + 4, az1 - 1, S_AIR)
+    hazard_band(s, ax0, az0, ax1, az1, G + 5)
+    s.fill(14, G + 1, az0, 14, G + 3, az0, S_AIR)
+    s.set(14, G + 1, az0, st("airlock_door", facing="north", half="lower", hinge="left", open=False))
+    s.set(14, G + 2, az0, st("airlock_door", facing="north", half="upper", hinge="left", open=False))
+    s.set(10, G + 1, az1 - 1, chest_state("north", "chests/oinstein_armory"))
+    s.set(17, G + 1, az1 - 1, chest_state("north", "chests/oinstein_armory"))
+    for x in range(11, 17):
+        s.set(x, G + 1, az1 - 1, st("cargo_crate"))
+    s.set(13, G + 3, az0 - 1, sign("north", SIGN_RESTRICTED))
+    s.set(14, G + 4, (az0 + az1) // 2, light_on())
+    # specimen pens along the south wall
+    for i, x in enumerate(range(34, 58, 6)):
+        cage(s, x, 84, 5, 5, captives=1 + i % 2)
+    s.mob(46, G + 1, 81, NOVUS)
+    # lamp posts
+    for (x, z) in ((40, 12), (55, 12), (40, 28), (55, 28), (30, 40), (66, 40), (30, 78), (58, 70), (88, 58)):
+        s.fill(x, G + 1, z, x, G + 4, z, V("lightning_rod", facing="up", powered=False, waterlogged=False))
+        s.set(x, G + 5, z, LANTERN_SEA)
+    # forces in the yard
+    for (x, z) in ((47, 12), (40, 34), (56, 34), (70, 45), (24, 48), (80, 60), (46, 76)):
+        s.mob(x, G + 1, z, AUTOMATON)
+    for (x, z) in ((45, 7), (50, 7), (60, 36), (35, 36), (70, 66), (12, 34)):
+        s.mob(x, G + 1, z, NOVUS)
+    for (x, z) in ((47, 37), (78, 40)):
+        s.mob(x, G + 1, z, SAPIENS)
+    for (x, z) in ((47, 24), (20, 40), (75, 50), (30, 58), (86, 88)):
+        s.mob(x, G + 1, z, SENTRY)
+    for (x, z) in ((42, 36), (53, 36), (42, 20), (53, 20)):
+        s.set(x, G + 1, z, standing_banner(8))
+    return s
+
+
+TEMPLATES[f"oinstein/{COMPLEX}"] = build_complex
+
+R_.EN.update(EN)
+R_.RU.update(RU)

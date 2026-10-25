@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=true": {
+      "model": "retrocosmos:block/laser_emitter"
+    },
+    "powered=false": {
+      "model": "retrocosmos:block/laser_emitter_off"
+    }
+  }
+}

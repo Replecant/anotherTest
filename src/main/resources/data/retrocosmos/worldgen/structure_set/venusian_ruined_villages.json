@@ -6,13 +6,19 @@
     }
   ],
   "placement": {
-    "type": "minecraft:random_spread",
+    "type": "retrocosmos:exclusive_spread",
     "spacing": 72,
     "separation": 32,
     "salt": 471103223,
-    "exclusion_zone": {
-      "other_set": "retrocosmos:venusian_pyramids",
-      "chunk_count": 8
-    }
+    "exclusion_zones": [
+      {
+        "other_set": "retrocosmos:venusian_pyramids",
+        "chunk_count": 8
+      },
+      {
+        "other_set": "retrocosmos:oinstein_institute",
+        "chunk_count": 10
+      }
+    ]
   }
 }

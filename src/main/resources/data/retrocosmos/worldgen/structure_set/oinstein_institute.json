@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "retrocosmos:oinstein_complex",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:concentric_rings",
+    "distance": 12,
+    "spread": 1,
+    "count": 1,
+    "salt": 731940118,
+    "preferred_biomes": "#retrocosmos:oinstein_complex_preferred"
+  }
+}

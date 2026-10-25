@@ -8,6 +8,8 @@
     "retrocosmos:service_tower",
     "retrocosmos:fuel_refinery",
     "retrocosmos:air_liquefier",
-    "retrocosmos:mission_control_console"
+    "retrocosmos:mission_control_console",
+    "retrocosmos:oinstein_riveted_steel",
+    "retrocosmos:oinstein_hazard_steel"
   ]
 }

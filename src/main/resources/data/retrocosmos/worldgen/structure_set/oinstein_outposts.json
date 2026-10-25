@@ -1,0 +1,48 @@
+{
+  "structures": [
+    {
+      "structure": "retrocosmos:oinstein_capture_camp",
+      "weight": 3
+    },
+    {
+      "structure": "retrocosmos:oinstein_field_lab",
+      "weight": 3
+    },
+    {
+      "structure": "retrocosmos:oinstein_relay_pylon",
+      "weight": 2
+    },
+    {
+      "structure": "retrocosmos:oinstein_checkpoint",
+      "weight": 2
+    }
+  ],
+  "placement": {
+    "type": "retrocosmos:exclusive_spread",
+    "spacing": 56,
+    "separation": 24,
+    "salt": 731940117,
+    "exclusion_zones": [
+      {
+        "other_set": "retrocosmos:tribal_camps",
+        "chunk_count": 4
+      },
+      {
+        "other_set": "retrocosmos:venusian_pyramids",
+        "chunk_count": 6
+      },
+      {
+        "other_set": "retrocosmos:venusian_ziggurats",
+        "chunk_count": 6
+      },
+      {
+        "other_set": "retrocosmos:venusian_ruined_villages",
+        "chunk_count": 6
+      },
+      {
+        "other_set": "retrocosmos:oinstein_institute",
+        "chunk_count": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "retrocosmos:venus_copper_ore",
+  "result": {
+    "id": "minecraft:copper_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 200
+}

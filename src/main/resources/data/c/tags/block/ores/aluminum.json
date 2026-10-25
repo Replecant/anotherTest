@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "retrocosmos:bauxite_ore",
-    "retrocosmos:deepslate_bauxite_ore"
+    "retrocosmos:deepslate_bauxite_ore",
+    "retrocosmos:venus_bauxite_ore"
   ]
 }

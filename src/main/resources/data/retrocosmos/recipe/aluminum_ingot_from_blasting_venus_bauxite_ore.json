@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": "retrocosmos:venus_bauxite_ore",
+  "result": {
+    "id": "retrocosmos:aluminum_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 100
+}

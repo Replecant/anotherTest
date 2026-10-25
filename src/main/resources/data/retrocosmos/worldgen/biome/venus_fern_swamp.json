@@ -55,7 +55,26 @@
       "retrocosmos:ore_venus_black_rock",
       "retrocosmos:ore_venus_tar",
       "retrocosmos:ore_venus_mud",
-      "retrocosmos:disk_venus_mud"
+      "retrocosmos:disk_venus_mud",
+      "retrocosmos:disk_venus_sand",
+      "retrocosmos:ore_venus_coal_upper",
+      "retrocosmos:ore_venus_coal_lower",
+      "retrocosmos:ore_venus_iron_upper",
+      "retrocosmos:ore_venus_iron_middle",
+      "retrocosmos:ore_venus_iron_small",
+      "retrocosmos:ore_venus_copper",
+      "retrocosmos:ore_venus_gold",
+      "retrocosmos:ore_venus_gold_lower",
+      "retrocosmos:ore_venus_redstone",
+      "retrocosmos:ore_venus_redstone_lower",
+      "retrocosmos:ore_venus_diamond",
+      "retrocosmos:ore_venus_diamond_medium",
+      "retrocosmos:ore_venus_diamond_large",
+      "retrocosmos:ore_venus_diamond_buried",
+      "retrocosmos:ore_venus_bauxite",
+      "retrocosmos:ore_venus_titanium",
+      "retrocosmos:ore_venus_oil_shale",
+      "retrocosmos:ore_venus_cryolite"
     ],
     [],
     [
@@ -86,56 +105,19 @@
         "maxCount": 8,
         "minCount": 8,
         "weight": 10
-      },
-      {
-        "type": "retrocosmos:meganeura",
-        "maxCount": 4,
-        "minCount": 2,
-        "weight": 14
       }
     ],
     "axolotls": [],
     "creature": [
       {
-        "type": "retrocosmos:brontosaurus",
-        "maxCount": 4,
-        "minCount": 2,
-        "weight": 8
-      },
-      {
         "type": "minecraft:frog",
         "maxCount": 5,
         "minCount": 2,
         "weight": 10
-      },
-      {
-        "type": "retrocosmos:pteranodon",
-        "maxCount": 3,
-        "minCount": 1,
-        "weight": 4
-      },
-      {
-        "type": "retrocosmos:compsognathus",
-        "maxCount": 6,
-        "minCount": 3,
-        "weight": 6
       }
     ],
     "misc": [],
-    "monster": [
-      {
-        "type": "retrocosmos:venus_creeper",
-        "maxCount": 1,
-        "minCount": 1,
-        "weight": 10
-      },
-      {
-        "type": "retrocosmos:deinosuchus",
-        "maxCount": 1,
-        "minCount": 1,
-        "weight": 10
-      }
-    ],
+    "monster": [],
     "underground_water_creature": [
       {
         "type": "minecraft:glow_squid",

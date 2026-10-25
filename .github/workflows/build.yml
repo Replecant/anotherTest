@@ -52,6 +52,14 @@ jobs:
           grep "STATION SMOKE" server.log || true
           grep -q "STATION SMOKE OK" server.log || { echo "::error::Freedom Station smoke test failed"; exit 1; }
 
+      - name: Venus worldgen probe (probe-venus only)
+        if: always() && steps.build.outcome == 'success' && github.ref == 'refs/heads/probe-venus'
+        run: |
+          mkdir -p run && echo "eula=true" > run/eula.txt
+          printf 'level-name=venusprobe\nonline-mode=false\nlevel-seed=venus\nspawn-protection=0\nmax-tick-time=-1\n' > run/server.properties
+          timeout 1500 ./gradlew runServer -Pneo_version=${{ steps.neo.outputs.version }} > venus.log 2>&1 || true
+          mkdir -p /tmp/logs && cp venus.log /tmp/logs/ || true
+
       - name: API probe (probe branch only)
         if: always() && startsWith(github.ref, 'refs/heads/probe')
         run: |

@@ -1403,6 +1403,270 @@ def features():
                                                                    "fluids": "minecraft:water"}}, biome_filter()])
 
 
+# =====================================================================================================================
+# Ores & local propellant: everything a stranded crew needs to refuel the Liberty I and fly home
+# =====================================================================================================================
+# name: (dark, mid, light, seed)
+ORE_COLORS = {
+    "venus_coal_ore": ((24, 22, 26), (44, 40, 46), (66, 62, 70), 301),
+    "venus_iron_ore": ((150, 106, 80), (204, 160, 124), (232, 204, 172), 302),
+    "venus_copper_ore": ((118, 62, 40), (190, 108, 70), (96, 180, 150), 303),
+    "venus_gold_ore": ((184, 124, 18), (246, 206, 52), (255, 246, 160), 304),
+    "venus_redstone_ore": ((128, 8, 8), (220, 24, 24), (255, 108, 96), 305),
+    "venus_diamond_ore": ((22, 132, 128), (92, 226, 214), (214, 255, 250), 306),
+    "venus_bauxite_ore": ((120, 56, 34), (176, 88, 52), (214, 132, 84), 307),
+    "venus_titanium_ore": ((96, 108, 140), (150, 164, 196), (206, 216, 240), 308),
+}
+CRYO = [(92, 150, 186), (150, 206, 232), (204, 238, 252), (246, 254, 255)]
+ORE_BLOCKS = list(ORE_COLORS) + ["venus_oil_shale", "venus_cryolite_ore"]
+SAND = [(58, 48, 46), (74, 62, 58), (92, 78, 70), (112, 96, 84)]
+
+
+def tex_venus_ore(dark, mid, light, seed):
+    """Same cluster layout as the Earth ores (gen_resources.ore), set in Venusian stone."""
+    img = tex_stone()
+    rnd = random.Random(seed)
+    for cx, cy in ((3, 3), (10, 2), (5, 9), (12, 10), (8, 13)):
+        pts = [(cx, cy), (cx + 1, cy), (cx, cy + 1), (cx + 1, cy + 1)]
+        if rnd.random() < 0.6:
+            pts.append((cx + 2, cy + 1))
+        if rnd.random() < 0.6:
+            pts.append((cx - 1, cy))
+        for x, y in pts:
+            put(img, x, y, mid)
+        put(img, cx + 1, cy + 1, dark)
+        put(img, cx, cy, light)
+    return img
+
+
+def tex_venus_oil_shale():
+    """Sedimentary strata of dark kerogen shale with an oily violet-green sheen, in mauve stone."""
+    img = tex_stone()
+    rnd = random.Random(311)
+    shale = [(40, 34, 40), (54, 46, 52), (70, 60, 66)]
+    for y in range(16):
+        band = (y // 3) % 2 == 0
+        for x in range(16):
+            if band and rnd.random() < 0.85:
+                put(img, x, y, shale[0] if y % 3 == 1 else shale[1 if rnd.random() < 0.7 else 2])
+    for x, y in ((3, 1), (4, 1), (10, 7), (11, 7), (12, 7), (6, 13), (7, 13), (13, 1), (1, 7)):
+        put(img, x, y, (84, 104, 96) if (x + y) % 2 else (104, 82, 122))
+    return img
+
+
+def crystal(img, x0, y0, h, cols):
+    """A small hexagonal prism pointing up: 2px wide body, a 1px tip."""
+    for i in range(h):
+        put(img, x0, y0 - i, cols[2] if i < h - 1 else cols[3])
+        put(img, x0 + 1, y0 - i, cols[1])
+    put(img, x0, y0 - h, cols[3])
+    put(img, x0 - 1, y0, cols[0])
+    put(img, x0 + 2, y0, cols[0])
+
+
+def tex_venus_cryolite_ore():
+    img = tex_stone()
+    for x0, y0, h in ((3, 6, 3), (10, 4, 3), (6, 13, 4), (12, 12, 2), (1, 12, 2)):
+        crystal(img, x0, y0, h, CRYO)
+    return img
+
+
+def tex_cryolite_crystal():
+    """Item: a cluster of frosty pale-blue prisms with a cold glint."""
+    img = new()
+    outline_c = (54, 92, 124)
+    body = [((7, 14), 10, 2), ((4, 14), 6, 2), ((10, 14), 7, 2), ((2, 15), 3, 1), ((12, 15), 4, 1)]
+    for (x0, y0), h, w in body:
+        for i in range(h):
+            for dx in range(w):
+                c = CRYO[2] if dx == 0 else CRYO[1]
+                if i >= h - 2:
+                    c = CRYO[3] if dx == 0 else CRYO[2]
+                put(img, x0 + dx, y0 - i, c)
+        put(img, x0, y0 - h, CRYO[3])
+    # dark outline like vanilla item sprites
+    src = img.copy()
+    for y in range(16):
+        for x in range(16):
+            if src.getpixel((x, y))[3] == 0 and any(
+                    0 <= x + dx < 16 and 0 <= y + dy < 16 and src.getpixel((x + dx, y + dy))[3]
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                put(img, x, y, outline_c)
+    for x, y in ((7, 6), (8, 7), (4, 10), (10, 9)):
+        put(img, x, y, (255, 255, 255))
+    for x in range(1, 15):
+        if img.getpixel((x, 15))[3]:
+            put(img, x, 15, CRYO[0])
+    return img
+
+
+def tex_venus_sand():
+    img = tonal(321, SAND, [14, 34, 36, 16], octaves=((8, 0.4),), jitter=0.6)
+    rnd = random.Random(322)
+    for _ in range(9):   # ochre and glassy grains in the black volcanic sand
+        put(img, rnd.randrange(16), rnd.randrange(16), OCHRE if rnd.random() < 0.6 else (150, 170, 176))
+    return img
+
+
+def ore_textures():
+    for name, (d, m, l, seed) in ORE_COLORS.items():
+        save(tex_venus_ore(d, m, l, seed), "block", name)
+    save(tex_venus_oil_shale(), "block", "venus_oil_shale")
+    save(tex_venus_cryolite_ore(), "block", "venus_cryolite_ore")
+    save(tex_venus_sand(), "block", "venus_sand")
+    save(tex_cryolite_crystal(), "item", "cryolite_crystal")
+
+
+def ore_models():
+    for name in ORE_BLOCKS + ["venus_sand"]:
+        simple(name)
+    blockstate("venus_redstone_ore", {"variants": {"lit=false": {"model": P("block/venus_redstone_ore")},
+                                                   "lit=true": {"model": P("block/venus_redstone_ore")}}})
+    write_json(os.path.join(ASSETS, "models", "item", "cryolite_crystal.json"),
+               {"parent": "minecraft:item/generated", "textures": {"layer0": f"{MOD}:item/cryolite_crystal"}})
+    item("cryolite_crystal", P("item/cryolite_crystal"))
+
+
+def ore_loot():
+    fortune = {"function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune", "formula": "minecraft:ore_drops"}
+    decay = {"function": "minecraft:explosion_decay"}
+
+    def count_fn(lo, hi):
+        return {"function": "minecraft:set_count", "add": False,
+                "count": {"type": "minecraft:uniform", "min": float(lo), "max": float(hi)}}
+
+    def ore_loot_table(name, drop, functions):
+        loot(name, [pool([{"type": "minecraft:alternatives", "children": [
+            entry(name, [SILK]), entry(drop, functions=functions)]}])])
+
+    ore_loot_table("venus_coal_ore", "minecraft:coal", [fortune, decay])
+    ore_loot_table("venus_iron_ore", "minecraft:raw_iron", [fortune, decay])
+    ore_loot_table("venus_copper_ore", "minecraft:raw_copper", [count_fn(2, 5), fortune, decay])
+    ore_loot_table("venus_gold_ore", "minecraft:raw_gold", [fortune, decay])
+    ore_loot_table("venus_redstone_ore", "minecraft:redstone", [
+        count_fn(4, 5), {"function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
+                         "formula": "minecraft:uniform_bonus_count", "parameters": {"bonusMultiplier": 1}}, decay])
+    ore_loot_table("venus_diamond_ore", "minecraft:diamond", [fortune, decay])
+    ore_loot_table("venus_bauxite_ore", "raw_aluminum", [fortune, decay])
+    ore_loot_table("venus_titanium_ore", "raw_titanium", [fortune, decay])
+    ore_loot_table("venus_cryolite_ore", "cryolite_crystal", [count_fn(1, 2), fortune, decay])
+    loot_self("venus_oil_shale")    # the shale itself feeds the Fuel Refinery, like Earth's
+    loot_self("venus_sand")
+
+
+VANILLA_ORE_TAGS = {"venus_coal_ore": "coal", "venus_iron_ore": "iron", "venus_copper_ore": "copper",
+                    "venus_gold_ore": "gold", "venus_redstone_ore": "redstone", "venus_diamond_ore": "diamond"}
+
+
+def ore_tags():
+    m = lambda *names: [P(n) for n in names]
+    add_to_tag("block/mineable/pickaxe", m(*ORE_BLOCKS))
+    add_to_tag("block/mineable/shovel", m("venus_sand"))
+    add_to_tag("block/needs_stone_tool", m("venus_iron_ore", "venus_copper_ore", "venus_bauxite_ore", "venus_oil_shale",
+                                           "venus_cryolite_ore"))
+    add_to_tag("block/needs_iron_tool", m("venus_gold_ore", "venus_redstone_ore", "venus_diamond_ore",
+                                          "venus_titanium_ore"))
+    for kind in ("block", "item"):
+        for name, metal in VANILLA_ORE_TAGS.items():
+            add_to_tag(f"{kind}/{metal}_ores", m(name))
+            add_to_tag(f"{kind}/ores/{metal}", m(name), namespace="c")
+        add_to_tag(f"{kind}/ores/aluminum", m("venus_bauxite_ore"), namespace="c")
+        add_to_tag(f"{kind}/ores/titanium", m("venus_titanium_ore"), namespace="c")
+        add_to_tag(f"{kind}/ores/cryolite", m("venus_cryolite_ore"), namespace="c")
+        add_to_tag(f"{kind}/ores/oil_shale", m("venus_oil_shale"), namespace="c")
+        add_to_tag(f"{kind}/ores", [f"#c:ores/{x}" for x in list(VANILLA_ORE_TAGS.values())
+                                    + ["aluminum", "titanium", "cryolite", "oil_shale"]], namespace="c")
+        add_to_tag(f"{kind}/sands", m("venus_sand"), namespace="c")
+    add_to_tag("block/sand", m("venus_sand"))
+    add_to_tag("item/smelts_to_glass", m("venus_sand"))
+    add_to_tag("item/gems/cryolite", m("cryolite_crystal"), namespace="c")
+    # local propellant: Venusian oil shale and tar for RP-1, cryolite as the liquefier's coolant
+    add_to_tag("item/refinery_input", m("venus_oil_shale", "venus_tar"), namespace=MOD)
+    add_to_tag("item/liquefier_input", m("cryolite_crystal"), namespace=MOD)
+    # ores sit in stone and in the deep black rock; caves may cut through them
+    tag("block/venus_ore_replaceables", m("venus_stone", "venus_black_rock"), namespace=MOD)
+    add_to_tag("block/venus_carver_replaceables", m(*ORE_BLOCKS, "venus_sand"), namespace=MOD)
+
+
+def ore_recipes():
+    """Smelting / blasting for silk-touched ore blocks (the raw drops already smelt with the vanilla recipes)."""
+    results = {"venus_coal_ore": ("minecraft:coal", 0.1), "venus_iron_ore": ("minecraft:iron_ingot", 0.7),
+               "venus_copper_ore": ("minecraft:copper_ingot", 0.7), "venus_gold_ore": ("minecraft:gold_ingot", 1.0),
+               "venus_redstone_ore": ("minecraft:redstone", 0.7), "venus_diamond_ore": ("minecraft:diamond", 1.0),
+               "venus_bauxite_ore": ("aluminum_ingot", 0.7), "venus_titanium_ore": ("titanium_ingot", 1.0)}
+    for ore_name, (result, xp) in results.items():
+        out = result.split(":")[-1]
+        cooking(f"{out}_from_smelting_{ore_name}", "smelting", ore_name, result, xp, 200)
+        cooking(f"{out}_from_blasting_{ore_name}", "blasting", ore_name, result, xp, 100)
+    cooking("glass_from_smelting_venus_sand", "smelting", "venus_sand", "minecraft:glass", 0.1, 200)
+
+
+# Overworld-like distributions (vanilla sizes / counts / height ranges), a little richer in iron and copper.
+def height(kind, lo, hi):
+    def anchor(v):
+        if isinstance(v, dict):
+            return v
+        return {"absolute": v}
+    return {"type": "minecraft:height_range", "height": {"type": f"minecraft:{kind}", "min_inclusive": anchor(lo),
+                                                         "max_inclusive": anchor(hi)}}
+
+
+ORE_PLACEMENTS = [
+    # name, block, size, discard, frequency (int count or ("rarity", n) or ("uniform", a, b)), height
+    ("ore_venus_coal_upper", "venus_coal_ore", 17, 0.0, 30, ("uniform", 136, {"below_top": 0})),
+    ("ore_venus_coal_lower", "venus_coal_ore", 17, 0.5, 16, ("trapezoid", 0, 192)),
+    ("ore_venus_iron_upper", "venus_iron_ore", 9, 0.0, 90, ("trapezoid", 80, 384)),
+    ("ore_venus_iron_middle", "venus_iron_ore", 9, 0.0, 13, ("trapezoid", -24, 56)),
+    ("ore_venus_iron_small", "venus_iron_ore", 4, 0.0, 13, ("uniform", {"above_bottom": 0}, 72)),
+    ("ore_venus_copper", "venus_copper_ore", 11, 0.0, 16, ("trapezoid", -16, 112)),
+    ("ore_venus_gold", "venus_gold_ore", 9, 0.5, 4, ("trapezoid", -64, 32)),
+    ("ore_venus_gold_lower", "venus_gold_ore", 9, 0.5, ("uniform", 0, 1), ("uniform", -64, -48)),
+    ("ore_venus_redstone", "venus_redstone_ore", 8, 0.0, 4, ("uniform", {"above_bottom": 0}, 15)),
+    ("ore_venus_redstone_lower", "venus_redstone_ore", 8, 0.0, 8,
+     ("trapezoid", {"above_bottom": -32}, {"above_bottom": 32})),
+    ("ore_venus_diamond", "venus_diamond_ore", 4, 0.5, 7, ("trapezoid", {"above_bottom": -80}, {"above_bottom": 80})),
+    ("ore_venus_diamond_medium", "venus_diamond_ore", 8, 0.5, 2, ("uniform", -64, -4)),
+    ("ore_venus_diamond_large", "venus_diamond_ore", 12, 0.7, ("rarity", 9),
+     ("trapezoid", {"above_bottom": -80}, {"above_bottom": 80})),
+    ("ore_venus_diamond_buried", "venus_diamond_ore", 8, 1.0, 4,
+     ("trapezoid", {"above_bottom": -80}, {"above_bottom": 80})),
+    ("ore_venus_bauxite", "venus_bauxite_ore", 9, 0.0, 12, ("trapezoid", -16, 112)),
+    ("ore_venus_titanium", "venus_titanium_ore", 6, 0.4, 6, ("trapezoid", -64, 24)),
+    ("ore_venus_oil_shale", "venus_oil_shale", 14, 0.0, 8, ("uniform", 8, 72)),
+    ("ore_venus_cryolite", "venus_cryolite_ore", 7, 0.0, 5, ("trapezoid", -64, 24)),
+    # volcanic highlands: hydrothermal gold and redstone, cryolite crusts around the deep vents
+    ("ore_venus_gold_volcanic", "venus_gold_ore", 9, 0.0, 7, ("uniform", 32, 160)),
+    ("ore_venus_redstone_volcanic", "venus_redstone_ore", 8, 0.0, 6, ("uniform", 0, 96)),
+    ("ore_venus_cryolite_volcanic", "venus_cryolite_ore", 7, 0.0, 6, ("uniform", -40, 64)),
+]
+VOLCANIC_ORES = ["ore_venus_gold_volcanic", "ore_venus_redstone_volcanic", "ore_venus_cryolite_volcanic"]
+COMMON_ORES = [p[0] for p in ORE_PLACEMENTS if p[0] not in VOLCANIC_ORES]
+
+
+def ore_features():
+    for name, block, size, discard, freq, (kind, lo, hi) in ORE_PLACEMENTS:
+        state = B(block, lit=False) if block == "venus_redstone_ore" else B(block)
+        configured(name, "minecraft:ore", {"discard_chance_on_air_exposure": discard, "size": size, "targets": [
+            {"state": state, "target": {"predicate_type": "minecraft:tag_match",
+                                        "tag": f"{MOD}:venus_ore_replaceables"}}]})
+        if isinstance(freq, int):
+            first = count(freq)
+        elif freq[0] == "rarity":
+            first = rarity(freq[1])
+        else:
+            first = count({"type": "minecraft:uniform", "min_inclusive": freq[1], "max_inclusive": freq[2]})
+        placed(name, name, [first, SQUARE, height(kind, lo, hi), biome_filter()])
+    # beaches and shallows of volcanic sand (glass for vacuum tubes and machine windows)
+    configured("disk_venus_sand", "minecraft:disk", {
+        "half_height": 2, "radius": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 6},
+        "state_provider": {"fallback": provider(B("venus_sand")), "rules": []},
+        "target": {"type": "minecraft:matching_blocks", "blocks": [P("venus_mud"), P("venus_soil"), P("venus_sand")]}})
+    placed("disk_venus_sand", "disk_venus_sand", [
+        count(3), SQUARE, heightmap("OCEAN_FLOOR_WG"),
+        {"type": "minecraft:block_predicate_filter", "predicate": {"type": "minecraft:matching_fluids",
+                                                                   "fluids": "minecraft:water"}}, biome_filter()])
+
+
 def carvers():
     for name, base in (("venus_cave", "cave"), ("venus_cave_extra", "cave_extra_underground"), ("venus_canyon", "canyon")):
         src = CARVERS[base]
@@ -1515,7 +1779,8 @@ FEATURE_ORDER = [
     # local modifications
     "venus_cinder_cone", "venus_spring_vents",
     # ores
-    "ore_venus_soil", "ore_venus_black_rock", "ore_venus_tar", "ore_venus_mud", "disk_venus_mud",
+    "ore_venus_soil", "ore_venus_black_rock", "ore_venus_tar", "ore_venus_mud", "disk_venus_mud", "disk_venus_sand",
+    *COMMON_ORES, *VOLCANIC_ORES,
     # springs
     "venus_spring_water", "venus_spring_lava",
     # vegetation: big things first, then the undergrowth
@@ -1549,7 +1814,9 @@ def biomes():
     moth = lambda w: [spawner(P("spore_moth"), w, 3, 5)] if dinos else []
     ambient = [spawner("minecraft:bat", 10, 8, 8)]
     caves_water = [spawner("minecraft:glow_squid", 10, 4, 6)]
-    common_ores = ["ore_venus_soil", "ore_venus_black_rock", "ore_venus_tar", "ore_venus_mud", "disk_venus_mud"]
+    common_ores = ["ore_venus_soil", "ore_venus_black_rock", "ore_venus_tar", "ore_venus_mud", "disk_venus_mud"] \
+        + COMMON_ORES
+    shore_ores = common_ores + ["disk_venus_sand"]
     cave_life = ["venus_cave_glowcaps", "venus_cave_glowstalks"]
     springs = ["venus_spring_water", "venus_spring_lava"]
     spores = [{"particle": {"type": "minecraft:spore_blossom_air"}, "probability": 0.004}]
@@ -1569,7 +1836,7 @@ def biomes():
           particles=[{"particle": {"type": "minecraft:white_ash"}, "probability": 0.01}],
           sound="minecraft:music.overworld.swamp",
           steps={LAKES: ["venus_tar_pit", "venus_hot_spring_rare", "venus_lava_lake_underground"],
-                 LOCAL: ["venus_spring_vents"], ORES: common_ores, SPRINGS: springs,
+                 LOCAL: ["venus_spring_vents"], ORES: shore_ores, SPRINGS: springs,
                  VEGETAL: ["trees_venus_swamp", "venus_lianas", "patch_venus_tree_fern_swamp", "patch_venus_giant_fern",
                            "patch_venus_horsetail_swamp", "patch_venus_sedge_dense", "patch_venus_glowcap_sparse",
                            "minecraft:seagrass_swamp", "minecraft:patch_waterlily"] + cave_life},
@@ -1589,7 +1856,7 @@ def biomes():
           foliage="#5a7a4a", temperature=1.2, downfall=0.3, sound="minecraft:music.nether.basalt_deltas",
           particles=[{"particle": {"type": "minecraft:white_ash"}, "probability": 0.05}],
           steps={LAKES: ["venus_hot_spring", "venus_lava_lake_underground"], LOCAL: ["venus_cinder_cone", "venus_spring_vents"],
-                 ORES: common_ores, SPRINGS: springs,
+                 ORES: common_ores + VOLCANIC_ORES, SPRINGS: springs,
                  VEGETAL: ["venus_fumarole_field", "trees_venus_highlands", "patch_venus_sedge",
                            "patch_venus_cycad_sparse", "patch_venus_fire_lily"] + cave_life},
           spawners={"creature": trike(10) + anky(10), "monster": rex(3), "ambient": ambient,
@@ -1606,7 +1873,7 @@ def biomes():
                     "underground_water_creature": caves_water})
     biome("venus_steaming_sea", fog="#d2a85e", water="#3a9c8c", water_fog="#1a4a44", grass="#5f9a4a",
           foliage="#3f8a5c", sound="minecraft:music.overworld.jungle",
-          steps={LAKES: ["venus_lava_lake_underground"], ORES: common_ores, SPRINGS: springs,
+          steps={LAKES: ["venus_lava_lake_underground"], ORES: shore_ores, SPRINGS: springs,
                  VEGETAL: ["minecraft:seagrass_warm", "minecraft:kelp_warm"] + cave_life},
           spawners={"water_ambient": [spawner("minecraft:tropical_fish", 25, 8, 8),
                                       spawner("minecraft:pufferfish", 15, 1, 3)],
@@ -1704,7 +1971,7 @@ def surface_rule():
             cond(water_above(), block_rule(moss)),
             block_rule(mud))),
         cond(is_biome("venus_steaming_sea"), seq(
-            cond(y_above(60), cond(water_above(), block_rule(soil))),
+            cond(y_above(58), block_rule(B("venus_sand"))),
             block_rule(mud))),
         cond(steep, block_rule(stone)),
         cond(is_biome("venus_cycad_plains"), cond(noise(0.55, big), block_rule(soil))),
@@ -1883,11 +2150,17 @@ def textures():
 
 def generate():
     textures()
+    ore_textures()
     block_models()
+    ore_models()
     loot_tables()
+    ore_loot()
     tags()
+    ore_tags()
     recipes()
+    ore_recipes()
     features()
+    ore_features()
     carvers()
     dinos = biomes()
     dimension()
@@ -1923,6 +2196,19 @@ NAMES = {
     "venus_glowcap_block": ("Glowcap Cap", "Шляпка светогриба"),
     "venus_glowcap_stem": ("Glowcap Stem", "Ножка светогриба"),
 }
+NAMES.update({
+    "venus_sand": ("Volcanic Sand", "Вулканический песок"),
+    "venus_coal_ore": ("Venusian Coal Ore", "Венерианская угольная руда"),
+    "venus_iron_ore": ("Venusian Iron Ore", "Венерианская железная руда"),
+    "venus_copper_ore": ("Venusian Copper Ore", "Венерианская медная руда"),
+    "venus_gold_ore": ("Venusian Gold Ore", "Венерианская золотая руда"),
+    "venus_redstone_ore": ("Venusian Redstone Ore", "Венерианская редстоуновая руда"),
+    "venus_diamond_ore": ("Venusian Diamond Ore", "Венерианская алмазная руда"),
+    "venus_bauxite_ore": ("Venusian Bauxite Ore", "Венерианская бокситовая руда"),
+    "venus_titanium_ore": ("Venusian Titanium Ore", "Венерианская титановая руда"),
+    "venus_oil_shale": ("Venusian Oil Shale", "Венерианский горючий сланец"),
+    "venus_cryolite_ore": ("Cryolite Ore", "Криолитовая руда"),
+})
 BIOME_NAMES = {
     "venus_jungle": ("Venusian Jungle", "Венерианские джунгли"),
     "venus_fern_swamp": ("Fern Swamp", "Папоротниковое болото"),
@@ -1934,5 +2220,7 @@ BIOME_NAMES = {
 
 EN = {f"block.{MOD}.{k}": v[0] for k, v in NAMES.items()}
 RU = {f"block.{MOD}.{k}": v[1] for k, v in NAMES.items()}
+EN[f"item.{MOD}.cryolite_crystal"] = "Cryolite Crystal"
+RU[f"item.{MOD}.cryolite_crystal"] = "Кристалл криолита"
 EN.update({f"biome.{MOD}.{k}": v[0] for k, v in BIOME_NAMES.items()})
 RU.update({f"biome.{MOD}.{k}": v[1] for k, v in BIOME_NAMES.items()})

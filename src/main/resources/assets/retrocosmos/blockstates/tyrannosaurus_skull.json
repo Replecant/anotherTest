@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/tyrannosaurus_skull"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/tyrannosaurus_skull",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/tyrannosaurus_skull",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/tyrannosaurus_skull",
+      "y": 270
+    }
+  }
+}

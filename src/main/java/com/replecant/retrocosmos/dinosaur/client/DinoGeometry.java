@@ -174,6 +174,169 @@ public final class DinoGeometry {
         return LayerDefinition.create(mesh, 128, 128);
     }
 
+    /** venus_creeper: 11 parts, texture 64x64. */
+    public static LayerDefinition venus_creeper() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(32, 0).addBox(-3.0F, 0.0F, -2.0F, 6.0F, 10.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, 8.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition head = root.addOrReplaceChild("head", CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F),
+                PartPose.offsetAndRotation(0.0F, 8.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition bulb = head.addOrReplaceChild("bulb", CubeListBuilder.create()
+                .texOffs(48, 40).addBox(-0.5F, -2.0F, -0.5F, 1.0F, 2.0F, 1.0F)
+                .texOffs(0, 25).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 4.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, -8.0F, 0.5F, 0.1F, 0.0F, 0.0F));
+        PartDefinition leaf_front = head.addOrReplaceChild("leaf_front", CubeListBuilder.create()
+                .texOffs(16, 25).addBox(-4.0F, 0.0F, -6.0F, 8.0F, 1.0F, 6.0F),
+                PartPose.offsetAndRotation(0.0F, -0.5F, -4.0F, 0.55F, 0.0F, 0.0F));
+        PartDefinition leaf_back = head.addOrReplaceChild("leaf_back", CubeListBuilder.create()
+                .texOffs(0, 33).addBox(-4.0F, 0.0F, 0.0F, 8.0F, 1.0F, 6.0F),
+                PartPose.offsetAndRotation(0.0F, -0.5F, 4.0F, -0.55F, 0.0F, 0.0F));
+        PartDefinition leaf_l = head.addOrReplaceChild("leaf_l", CubeListBuilder.create()
+                .texOffs(0, 16).addBox(0.0F, 0.0F, -4.0F, 6.0F, 1.0F, 8.0F),
+                PartPose.offsetAndRotation(4.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.55F));
+        PartDefinition leg_front_l = root.addOrReplaceChild("leg_front_l", CubeListBuilder.create()
+                .texOffs(28, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
+                .texOffs(0, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
+                PartPose.offsetAndRotation(2.0F, 17.6F, -2.0F, 0.22F, 0.0F, -0.18F));
+        PartDefinition leg_back_l = root.addOrReplaceChild("leg_back_l", CubeListBuilder.create()
+                .texOffs(36, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
+                .texOffs(12, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
+                PartPose.offsetAndRotation(2.0F, 17.6F, 2.0F, -0.22F, 0.0F, -0.18F));
+        PartDefinition leaf_r = head.addOrReplaceChild("leaf_r", CubeListBuilder.create()
+                .texOffs(28, 16).addBox(-6.0F, 0.0F, -4.0F, 6.0F, 1.0F, 8.0F),
+                PartPose.offsetAndRotation(-4.0F, -0.5F, 0.0F, 0.0F, 0.0F, -0.55F));
+        PartDefinition leg_front_r = root.addOrReplaceChild("leg_front_r", CubeListBuilder.create()
+                .texOffs(44, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
+                .texOffs(24, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
+                PartPose.offsetAndRotation(-2.0F, 17.6F, -2.0F, 0.22F, 0.0F, 0.18F));
+        PartDefinition leg_back_r = root.addOrReplaceChild("leg_back_r", CubeListBuilder.create()
+                .texOffs(52, 33).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F)
+                .texOffs(36, 40).addBox(-1.5F, 5.0F, -1.5F, 3.0F, 1.0F, 3.0F),
+                PartPose.offsetAndRotation(-2.0F, 17.6F, 2.0F, -0.22F, 0.0F, 0.18F));
+        return LayerDefinition.create(mesh, 64, 64);
+    }
+
+    /** pteranodon: 12 parts, texture 64x128. */
+    public static LayerDefinition pteranodon() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-2.5F, -2.0F, -5.0F, 5.0F, 5.0F, 11.0F),
+                PartPose.offsetAndRotation(0.0F, 15.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition neck = body.addOrReplaceChild("neck", CubeListBuilder.create()
+                .texOffs(42, 37).addBox(-1.5F, -1.5F, -5.0F, 3.0F, 3.0F, 6.0F),
+                PartPose.offsetAndRotation(0.0F, -0.5F, -5.0F, -0.35F, 0.0F, 0.0F));
+        PartDefinition head = neck.addOrReplaceChild("head", CubeListBuilder.create()
+                .texOffs(0, 46).addBox(-2.0F, -2.5F, -4.0F, 4.0F, 4.0F, 5.0F)
+                .texOffs(32, 0).addBox(-1.0F, -1.0F, -14.0F, 2.0F, 2.0F, 10.0F),
+                PartPose.offsetAndRotation(0.0F, -0.5F, -4.5F, 0.35F, 0.0F, 0.0F));
+        PartDefinition crest = head.addOrReplaceChild("crest", CubeListBuilder.create()
+                .texOffs(0, 16).addBox(-0.5F, -2.0F, -1.0F, 1.0F, 3.0F, 9.0F),
+                PartPose.offsetAndRotation(0.0F, -2.5F, 0.0F, -0.4F, 0.0F, 0.0F));
+        PartDefinition jaw = head.addOrReplaceChild("jaw", CubeListBuilder.create()
+                .texOffs(20, 16).addBox(-1.0F, 0.0F, -9.5F, 2.0F, 1.0F, 9.0F),
+                PartPose.offsetAndRotation(0.0F, 1.0F, -3.5F, 0.0F, 0.0F, 0.0F));
+        PartDefinition tail = body.addOrReplaceChild("tail", CubeListBuilder.create()
+                .texOffs(48, 55).addBox(-0.5F, -0.5F, 0.0F, 1.0F, 1.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, -0.5F, 6.0F, 0.1F, 0.0F, 0.0F));
+        PartDefinition wing_l = body.addOrReplaceChild("wing_l", CubeListBuilder.create()
+                .texOffs(0, 62).addBox(0.0F, -1.0F, -1.0F, 13.0F, 2.0F, 2.0F)
+                .texOffs(0, 28).addBox(0.0F, -0.5F, 1.0F, 13.0F, 1.0F, 8.0F),
+                PartPose.offsetAndRotation(2.5F, -1.0F, -2.5F, 0.0F, 0.0F, 0.0F));
+        PartDefinition wingtip_l = wing_l.addOrReplaceChild("wingtip_l", CubeListBuilder.create()
+                .texOffs(20, 66).addBox(0.0F, -1.0F, -1.0F, 14.0F, 1.0F, 2.0F)
+                .texOffs(18, 46).addBox(0.0F, -0.5F, 1.0F, 14.0F, 1.0F, 6.0F),
+                PartPose.offsetAndRotation(13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition leg_l = body.addOrReplaceChild("leg_l", CubeListBuilder.create()
+                .texOffs(40, 55).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F)
+                .texOffs(0, 66).addBox(-1.0F, 4.5F, -2.0F, 2.0F, 1.0F, 3.0F),
+                PartPose.offsetAndRotation(1.5F, 2.0F, 4.0F, 1.3F, 0.0F, 0.0F));
+        PartDefinition wing_r = body.addOrReplaceChild("wing_r", CubeListBuilder.create()
+                .texOffs(30, 62).addBox(-13.0F, -1.0F, -1.0F, 13.0F, 2.0F, 2.0F)
+                .texOffs(0, 37).addBox(-13.0F, -0.5F, 1.0F, 13.0F, 1.0F, 8.0F),
+                PartPose.offsetAndRotation(-2.5F, -1.0F, -2.5F, 0.0F, 0.0F, 0.0F));
+        PartDefinition wingtip_r = wing_r.addOrReplaceChild("wingtip_r", CubeListBuilder.create()
+                .texOffs(0, 70).addBox(-14.0F, -1.0F, -1.0F, 14.0F, 1.0F, 2.0F)
+                .texOffs(0, 55).addBox(-14.0F, -0.5F, 1.0F, 14.0F, 1.0F, 6.0F),
+                PartPose.offsetAndRotation(-13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        PartDefinition leg_r = body.addOrReplaceChild("leg_r", CubeListBuilder.create()
+                .texOffs(44, 55).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F)
+                .texOffs(10, 66).addBox(-1.0F, 4.5F, -2.0F, 2.0F, 1.0F, 3.0F),
+                PartPose.offsetAndRotation(-1.5F, 2.0F, 4.0F, 1.3F, 0.0F, 0.0F));
+        return LayerDefinition.create(mesh, 64, 128);
+    }
+
+    /** tyrannosaurus: 18 parts, texture 256x256. */
+    public static LayerDefinition tyrannosaurus() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-11.0F, -12.0F, -30.0F, 22.0F, 23.0F, 34.0F),
+                PartPose.offsetAndRotation(0.0F, -18.0F, 4.0F, -0.7F, 0.0F, 0.0F));
+        PartDefinition neck = body.addOrReplaceChild("neck", CubeListBuilder.create()
+                .texOffs(0, 98).addBox(-7.0F, -8.0F, -13.0F, 14.0F, 15.0F, 15.0F),
+                PartPose.offsetAndRotation(0.0F, -5.0F, -29.0F, 0.35F, 0.0F, 0.0F));
+        PartDefinition head = neck.addOrReplaceChild("head", CubeListBuilder.create()
+                .texOffs(156, 57).addBox(-8.0F, -9.0F, -18.0F, 16.0F, 14.0F, 20.0F)
+                .texOffs(44, 128).addBox(-6.0F, -7.0F, -30.0F, 12.0F, 9.0F, 12.0F),
+                PartPose.offsetAndRotation(0.0F, -3.0F, -11.0F, 0.3F, 0.0F, 0.0F));
+        PartDefinition jaw = head.addOrReplaceChild("jaw", CubeListBuilder.create()
+                .texOffs(114, 98).addBox(-5.5F, 0.0F, -23.0F, 11.0F, 5.0F, 24.0F),
+                PartPose.offsetAndRotation(0.0F, 4.0F, -7.0F, 0.06F, 0.0F, 0.0F));
+        PartDefinition tail1 = body.addOrReplaceChild("tail1", CubeListBuilder.create()
+                .texOffs(0, 57).addBox(-9.0F, -9.0F, 0.0F, 18.0F, 17.0F, 24.0F),
+                PartPose.offsetAndRotation(0.0F, -3.0F, 3.0F, 0.38F, 0.0F, 0.0F));
+        PartDefinition tail2 = tail1.addOrReplaceChild("tail2", CubeListBuilder.create()
+                .texOffs(84, 57).addBox(-6.0F, -6.0F, 0.0F, 12.0F, 11.0F, 24.0F),
+                PartPose.offsetAndRotation(0.0F, 0.5F, 23.0F, 0.14F, 0.0F, 0.0F));
+        PartDefinition tail3 = tail2.addOrReplaceChild("tail3", CubeListBuilder.create()
+                .texOffs(184, 98).addBox(-4.0F, -4.0F, 0.0F, 8.0F, 7.0F, 22.0F),
+                PartPose.offsetAndRotation(0.0F, 0.5F, 23.0F, 0.12F, 0.0F, 0.0F));
+        PartDefinition tail4 = tail3.addOrReplaceChild("tail4", CubeListBuilder.create()
+                .texOffs(0, 128).addBox(-2.0F, -2.0F, 0.0F, 4.0F, 4.0F, 18.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 21.0F, 0.08F, 0.0F, 0.0F));
+        PartDefinition arm_l = body.addOrReplaceChild("arm_l", CubeListBuilder.create()
+                .texOffs(184, 128).addBox(-1.0F, -1.0F, -1.5F, 3.0F, 9.0F, 3.0F),
+                PartPose.offsetAndRotation(10.0F, 6.0F, -24.0F, 0.9F, 0.0F, -0.2F));
+        PartDefinition hand_l = arm_l.addOrReplaceChild("hand_l", CubeListBuilder.create()
+                .texOffs(0, 150).addBox(-1.0F, 0.0F, -2.0F, 2.0F, 3.0F, 1.0F),
+                PartPose.offsetAndRotation(0.5F, 8.0F, 0.0F, -0.8F, 0.0F, 0.0F));
+        PartDefinition thigh_l = root.addOrReplaceChild("thigh_l", CubeListBuilder.create()
+                .texOffs(112, 0).addBox(-4.5F, -6.0F, -7.0F, 10.0F, 29.0F, 14.0F),
+                PartPose.offsetAndRotation(10.0F, -18.0F, 4.0F, -0.3F, 0.0F, 0.0F));
+        PartDefinition shin_l = thigh_l.addOrReplaceChild("shin_l", CubeListBuilder.create()
+                .texOffs(58, 98).addBox(-3.5F, -1.0F, -3.5F, 7.0F, 23.0F, 7.0F),
+                PartPose.offsetAndRotation(0.5F, 21.5F, -0.5F, 0.75F, 0.0F, 0.0F));
+        PartDefinition foot_l = shin_l.addOrReplaceChild("foot_l", CubeListBuilder.create()
+                .texOffs(92, 128).addBox(-4.5F, -1.0F, -11.0F, 9.0F, 3.0F, 14.0F)
+                .texOffs(208, 128).addBox(-4.0F, -0.5F, -13.0F, 2.0F, 2.0F, 2.0F)
+                .texOffs(216, 128).addBox(-1.0F, -0.5F, -13.5F, 2.0F, 2.0F, 2.0F)
+                .texOffs(224, 128).addBox(2.0F, -0.5F, -13.0F, 2.0F, 2.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, 21.2F, 0.0F, -0.45F, 0.0F, 0.0F));
+        PartDefinition arm_r = body.addOrReplaceChild("arm_r", CubeListBuilder.create()
+                .texOffs(196, 128).addBox(-2.0F, -1.0F, -1.5F, 3.0F, 9.0F, 3.0F),
+                PartPose.offsetAndRotation(-10.0F, 6.0F, -24.0F, 0.9F, 0.0F, 0.2F));
+        PartDefinition hand_r = arm_r.addOrReplaceChild("hand_r", CubeListBuilder.create()
+                .texOffs(6, 150).addBox(-1.0F, 0.0F, -2.0F, 2.0F, 3.0F, 1.0F),
+                PartPose.offsetAndRotation(-0.5F, 8.0F, 0.0F, -0.8F, 0.0F, 0.0F));
+        PartDefinition thigh_r = root.addOrReplaceChild("thigh_r", CubeListBuilder.create()
+                .texOffs(160, 0).addBox(-5.5F, -6.0F, -7.0F, 10.0F, 29.0F, 14.0F),
+                PartPose.offsetAndRotation(-10.0F, -18.0F, 4.0F, -0.3F, 0.0F, 0.0F));
+        PartDefinition shin_r = thigh_r.addOrReplaceChild("shin_r", CubeListBuilder.create()
+                .texOffs(86, 98).addBox(-3.5F, -1.0F, -3.5F, 7.0F, 23.0F, 7.0F),
+                PartPose.offsetAndRotation(-0.5F, 21.5F, -0.5F, 0.75F, 0.0F, 0.0F));
+        PartDefinition foot_r = shin_r.addOrReplaceChild("foot_r", CubeListBuilder.create()
+                .texOffs(138, 128).addBox(-4.5F, -1.0F, -11.0F, 9.0F, 3.0F, 14.0F)
+                .texOffs(232, 128).addBox(2.0F, -0.5F, -13.0F, 2.0F, 2.0F, 2.0F)
+                .texOffs(240, 128).addBox(-1.0F, -0.5F, -13.5F, 2.0F, 2.0F, 2.0F)
+                .texOffs(248, 128).addBox(-4.0F, -0.5F, -13.0F, 2.0F, 2.0F, 2.0F),
+                PartPose.offsetAndRotation(0.0F, 21.2F, 0.0F, -0.45F, 0.0F, 0.0F));
+        return LayerDefinition.create(mesh, 256, 256);
+    }
+
     // ---- key poses, as rotation offsets added on top of the rest pose ----
 
     public static final Map<String, float[]> RAPTOR_LEAP = Map.ofEntries(
@@ -203,7 +366,38 @@ public final class DinoGeometry {
             Map.entry("frill", new float[]{-0.35F, 0.0F, 0.0F}),
             Map.entry("tail1", new float[]{0.25F, 0.0F, 0.0F}));
 
-    /** Blends a key pose in: every listed part is rotated by amount * its offset. */
+    public static final Map<String, float[]> PTERANODON_PERCH = Map.ofEntries(
+            Map.entry("body", new float[]{-0.45F, 0.0F, 0.0F, 0.0F, 0.2F, 0.0F}),
+            Map.entry("neck", new float[]{0.15F, 0.0F, 0.0F}),
+            Map.entry("head", new float[]{0.25F, 0.0F, 0.0F}),
+            Map.entry("wing_l", new float[]{0.3F, -0.5F, 1.3F}),
+            Map.entry("wing_r", new float[]{0.3F, 0.5F, -1.3F}),
+            Map.entry("wingtip_l", new float[]{0.0F, -3.0F, 0.0F}),
+            Map.entry("wingtip_r", new float[]{0.0F, 3.0F, 0.0F}),
+            Map.entry("leg_l", new float[]{-0.85F, 0.0F, 0.0F}),
+            Map.entry("leg_r", new float[]{-0.85F, 0.0F, 0.0F}),
+            Map.entry("tail", new float[]{0.4F, 0.0F, 0.0F}));
+
+    public static final Map<String, float[]> PTERANODON_DIVE = Map.ofEntries(
+            Map.entry("body", new float[]{0.55F, 0.0F, 0.0F}),
+            Map.entry("neck", new float[]{0.15F, 0.0F, 0.0F}),
+            Map.entry("head", new float[]{0.1F, 0.0F, 0.0F}),
+            Map.entry("wing_l", new float[]{0.0F, -0.7F, 0.25F}),
+            Map.entry("wing_r", new float[]{0.0F, 0.7F, -0.25F}),
+            Map.entry("wingtip_l", new float[]{0.0F, -0.6F, 0.0F}),
+            Map.entry("wingtip_r", new float[]{0.0F, 0.6F, 0.0F}),
+            Map.entry("jaw", new float[]{0.5F, 0.0F, 0.0F}));
+
+    public static final Map<String, float[]> TYRANNOSAURUS_ROAR = Map.ofEntries(
+            Map.entry("body", new float[]{-0.1F, 0.0F, 0.0F}),
+            Map.entry("neck", new float[]{-0.45F, 0.0F, 0.0F}),
+            Map.entry("head", new float[]{-0.3F, 0.0F, 0.0F}),
+            Map.entry("jaw", new float[]{0.85F, 0.0F, 0.0F}),
+            Map.entry("arm_l", new float[]{-0.7F, 0.0F, -0.3F}),
+            Map.entry("arm_r", new float[]{-0.7F, 0.0F, 0.3F}),
+            Map.entry("tail1", new float[]{-0.1F, 0.0F, 0.0F}));
+
+    /** Blends a key pose in: every listed part is rotated (and optionally moved) by amount * its offset. */
     public static void applyPose(Function<String, ModelPart> parts, Map<String, float[]> pose, float amount) {
         if (amount <= 0.0F) {
             return;
@@ -215,6 +409,11 @@ public final class DinoGeometry {
                 part.xRot += r[0] * amount;
                 part.yRot += r[1] * amount;
                 part.zRot += r[2] * amount;
+                if (r.length > 3) {
+                    part.x += r[3] * amount;
+                    part.y += r[4] * amount;
+                    part.z += r[5] * amount;
+                }
             }
         }
     }

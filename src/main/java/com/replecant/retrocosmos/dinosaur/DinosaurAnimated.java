@@ -20,6 +20,36 @@ public interface DinosaurAnimated {
         return false;
     }
 
+    /** Venus Creeper fuse, 0 = calm .. 1 = about to burst. */
+    default float swellAmount(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Pteranodon sitting on its perch with folded wings. */
+    default float perchAmount(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Pteranodon stooping on its prey. */
+    default float diveAmount(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Body pitch in flight (radians, nose down positive). */
+    default float flightPitch(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Tyrannosaurus roar. */
+    default float roarAmount(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Tyrannosaurus tail sweep. */
+    default float sweepAmount(float partialTick) {
+        return 0.0F;
+    }
+
     /** A 0..1 value that eases towards on/off each client tick, interpolated by partial tick. */
     final class Smoothed {
         private float previous;

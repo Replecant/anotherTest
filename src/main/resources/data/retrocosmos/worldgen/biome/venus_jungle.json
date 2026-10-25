@@ -88,6 +88,12 @@
         "maxCount": 2,
         "minCount": 1,
         "weight": 30
+      },
+      {
+        "type": "retrocosmos:pteranodon",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 12
       }
     ],
     "misc": [],
@@ -97,6 +103,18 @@
         "maxCount": 4,
         "minCount": 2,
         "weight": 60
+      },
+      {
+        "type": "retrocosmos:venus_creeper",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 15
+      },
+      {
+        "type": "retrocosmos:tyrannosaurus",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 2
       }
     ],
     "underground_water_creature": [

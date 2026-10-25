@@ -13,7 +13,8 @@ import os
 
 from PIL import Image
 
-from gen_resources import ASSETS, DATA, MOD, generated_item, save, write_json
+from gen_resources import ASSETS, DATA, MOD, generated_item, loot_self, save, shaped, write_json
+from furniture import add_to_tag
 
 JAVA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "java",
                         "com", "replecant", "retrocosmos", "dinosaur", "client")
@@ -196,7 +197,148 @@ def trike_spec():
                         "eye": (240, 150, 30)}}
 
 
-SPECS = [raptor_spec(), bronto_spec(), trike_spec()]
+def creeper_spec():
+    """Venus Creeper: a walking seed-pod on four root-stalks, a creeper face, a sepal collar and a spore bulb."""
+    parts = [
+        P("body", None, (0, 8, 0), (0, 0, 0), [
+            B(-3, 0, -2, 6, 10, 4, "stalk"),
+        ]),
+        P("head", None, (0, 8, 0), (0, 0, 0), [
+            B(-4, -8, -4, 8, 8, 8, "pod", face=True),
+        ]),
+        P("bulb", "head", (0, -8, 0.5), (0.1, 0, 0), [
+            B(-0.5, -2, -0.5, 1, 2, 1, "bulbstem"),
+            B(-2, -6, -2, 4, 4, 4, "bulb"),
+        ]),
+        P("leaf_front", "head", (0, -0.5, -4), (0.55, 0, 0), [
+            B(-4, 0, -6, 8, 1, 6, "leaf", axis="-z"),
+        ]),
+        P("leaf_back", "head", (0, -0.5, 4), (-0.55, 0, 0), [
+            B(-4, 0, 0, 8, 1, 6, "leaf", axis="+z"),
+        ]),
+    ]
+    parts += legs("", [
+        P("leaf_l", "head", (4, -0.5, 0), (0, 0, 0.55), [
+            B(0, 0, -4, 6, 1, 8, "leaf", axis="+x"),
+        ]),
+        P("leg_front_l", None, (2, 17.6, -2), (0.22, 0, -0.18), [
+            B(-1, 0, -1, 2, 5, 2, "stalk"),
+            B(-1.5, 5, -1.5, 3, 1, 3, "root"),
+        ]),
+        P("leg_back_l", None, (2, 17.6, 2), (-0.22, 0, -0.18), [
+            B(-1, 0, -1, 2, 5, 2, "stalk"),
+            B(-1.5, 5, -1.5, 3, 1, 3, "root"),
+        ]),
+    ])
+    return {"name": "venus_creeper", "tex_w": 64, "parts": parts, "glow": True,
+            "palette": {"dorsal": (70, 132, 52), "base": (96, 168, 64), "belly": (150, 196, 92), "noise": 7,
+                        "pod": (132, 196, 84), "pod_dark": (78, 136, 50), "face": (20, 36, 18),
+                        "stalk": (74, 128, 50), "vein": (52, 96, 40), "root": (98, 80, 52),
+                        "leaf": (58, 150, 70), "leaf_dark": (34, 100, 50), "leaf_edge": (214, 196, 60),
+                        "bulb": (226, 250, 120), "bulb_core": (255, 255, 210), "bulb_dark": (150, 200, 60)}}
+
+
+def ptero_spec():
+    """Pteranodon: rust-red leather wings, a long beak and the classic swept-back crest. Rest pose = gliding."""
+    parts = [
+        P("body", None, (0, 15, 0), (0, 0, 0), [
+            B(-2.5, -2, -5, 5, 5, 11, "skin"),
+        ]),
+        P("neck", "body", (0, -0.5, -5), (-0.35, 0, 0), [
+            B(-1.5, -1.5, -5, 3, 3, 6, "skin"),
+        ]),
+        P("head", "neck", (0, -0.5, -4.5), (0.35, 0, 0), [
+            B(-2, -2.5, -4, 4, 4, 5, "skin", eye=(-1.5, -2.5)),
+            B(-1, -1, -14, 2, 2, 10, "beak"),
+        ]),
+        P("crest", "head", (0, -2.5, 0), (-0.4, 0, 0), [
+            B(-0.5, -2, -1, 1, 3, 9, "pcrest"),
+        ]),
+        P("jaw", "head", (0, 1, -3.5), (0, 0, 0), [
+            B(-1, 0, -9.5, 2, 1, 9, "beak", lower=True),
+        ]),
+        P("tail", "body", (0, -0.5, 6), (0.1, 0, 0), [
+            B(-0.5, -0.5, 0, 1, 1, 4, "skin"),
+        ]),
+    ]
+    parts += legs("", [
+        P("wing_l", "body", (2.5, -1, -2.5), (0, 0, 0), [
+            B(0, -1, -1, 13, 2, 2, "bone"),
+            B(0, -0.5, 1, 13, 1, 8, "membrane", part="inner"),
+        ]),
+        P("wingtip_l", "wing_l", (13, 0, 0), (0, 0, 0), [
+            B(0, -1, -1, 14, 1, 2, "bone"),
+            B(0, -0.5, 1, 14, 1, 6, "membrane", part="tip"),
+        ]),
+        P("leg_l", "body", (1.5, 2, 4), (1.3, 0, 0), [
+            B(-0.5, 0, -0.5, 1, 5, 1, "skin"),
+            B(-1, 4.5, -2, 2, 1, 3, "pfoot"),
+        ]),
+    ])
+    return {"name": "pteranodon", "tex_w": 64, "parts": parts,
+            "palette": {"dorsal": (124, 58, 36), "base": (178, 92, 50), "belly": (226, 196, 146),
+                        "blotch": (146, 70, 40), "noise": 6, "eye": (255, 210, 40),
+                        "membrane": (206, 116, 62), "membrane_dark": (150, 70, 40), "vein": (120, 54, 34),
+                        "bone": (190, 104, 58), "beak": (226, 196, 120), "beak_tip": (110, 80, 50),
+                        "crest": (220, 60, 36), "crest_stripe": (250, 200, 70), "foot": (90, 60, 40)}}
+
+
+def trex_spec():
+    """Tyrannosaurus: the 1933 picture-show monster - upright, tail on the ground, a head full of teeth."""
+    parts = [
+        P("body", None, (0, -18, 4), (-0.7, 0, 0), [
+            B(-11, -12, -30, 22, 23, 34, "skin"),
+        ]),
+        P("neck", "body", (0, -5, -29), (0.35, 0, 0), [
+            B(-7, -8, -13, 14, 15, 15, "skin"),
+        ]),
+        P("head", "neck", (0, -3, -11), (0.3, 0, 0), [
+            B(-8, -9, -18, 16, 14, 20, "skin", eye=(-5.5, -13.5), brow=True),
+            B(-6, -7, -30, 12, 9, 12, "snout", teeth="bottom", nostril=True, big_teeth=True),
+        ]),
+        P("jaw", "head", (0, 4, -7), (0.06, 0, 0), [
+            B(-5.5, 0, -23, 11, 5, 24, "jaw", teeth="top", big_teeth=True),
+        ]),
+        P("tail1", "body", (0, -3, 3), (0.38, 0, 0), [
+            B(-9, -9, 0, 18, 17, 24, "skin"),
+        ]),
+        P("tail2", "tail1", (0, 0.5, 23), (0.14, 0, 0), [
+            B(-6, -6, 0, 12, 11, 24, "skin"),
+        ]),
+        P("tail3", "tail2", (0, 0.5, 23), (0.12, 0, 0), [
+            B(-4, -4, 0, 8, 7, 22, "skin"),
+        ]),
+        P("tail4", "tail3", (0, 0, 21), (0.08, 0, 0), [
+            B(-2, -2, 0, 4, 4, 18, "skin"),
+        ]),
+    ]
+    parts += legs("", [
+        P("arm_l", "body", (10, 6, -24), (0.9, 0, -0.2), [
+            B(-1, -1, -1.5, 3, 9, 3, "skin"),
+        ]),
+        P("hand_l", "arm_l", (0.5, 8, 0), (-0.8, 0, 0), [
+            B(-1, 0, -2, 2, 3, 1, "claws"),
+        ]),
+        P("thigh_l", None, (10, -18, 4), (-0.3, 0, 0), [
+            B(-4.5, -6, -7, 10, 29, 14, "skin"),
+        ]),
+        P("shin_l", "thigh_l", (0.5, 21.5, -0.5), (0.75, 0, 0), [
+            B(-3.5, -1, -3.5, 7, 23, 7, "skin"),
+        ]),
+        P("foot_l", "shin_l", (0, 21.2, 0), (-0.45, 0, 0), [
+            B(-4.5, -1, -11, 9, 3, 14, "foot"),
+            B(-4, -0.5, -13, 2, 2, 2, "claw"),
+            B(-1, -0.5, -13.5, 2, 2, 2, "claw"),
+            B(2, -0.5, -13, 2, 2, 2, "claw"),
+        ]),
+    ])
+    return {"name": "tyrannosaurus", "tex_w": 256, "parts": parts,
+            "palette": {"dorsal": (58, 72, 40), "base": (98, 114, 60), "belly": (218, 190, 122),
+                        "stripe": (46, 56, 32), "noise": 4, "eye": (255, 120, 30),
+                        "claw": (232, 220, 186), "claw_tip": (70, 56, 40), "foot": (66, 60, 40)}}
+
+
+SPECS = [raptor_spec(), bronto_spec(), trike_spec(), creeper_spec(), ptero_spec(), trex_spec()]
 
 # Pose offsets (radians, added to the rest rotation). Used by the Java models and the preview renderer.
 POSES = {
@@ -214,6 +356,22 @@ POSES = {
     "triceratops": {
         # charge: head low, horns levelled at the enemy, frill raised like a shield
         "charge": {"head": (0.45, 0, 0), "frill": (-0.35, 0, 0), "tail1": (0.25, 0, 0)},
+    },
+    "pteranodon": {
+        # sitting on the canopy: nose up, wings folded along the flanks, standing on its feet
+        "perch": {"body": (-0.45, 0, 0, 0, 0.2, 0), "neck": (0.15, 0, 0), "head": (0.25, 0, 0),
+                  "wing_l": (0.3, -0.5, 1.3), "wing_r": (0.3, 0.5, -1.3),
+                  "wingtip_l": (0, -3.0, 0), "wingtip_r": (0, 3.0, 0),
+                  "leg_l": (-0.85, 0, 0), "leg_r": (-0.85, 0, 0), "tail": (0.4, 0, 0)},
+        # stooping on prey: wings swept back, beak first
+        "dive": {"body": (0.55, 0, 0), "neck": (0.15, 0, 0), "head": (0.1, 0, 0),
+                 "wing_l": (0, -0.7, 0.25), "wing_r": (0, 0.7, -0.25),
+                 "wingtip_l": (0, -0.6, 0), "wingtip_r": (0, 0.6, 0), "jaw": (0.5, 0, 0)},
+    },
+    "tyrannosaurus": {
+        # the roar: head thrown up, jaws wide, puny arms flailing
+        "roar": {"body": (-0.1, 0, 0), "neck": (-0.45, 0, 0), "head": (-0.3, 0, 0), "jaw": (0.85, 0, 0),
+                 "arm_l": (-0.7, 0, -0.3), "arm_r": (-0.7, 0, 0.3), "tail1": (-0.1, 0, 0)},
     },
 }
 
@@ -260,9 +418,10 @@ def part_matrices(spec, pose=None):
             return out[name]
         p = by_name[name]
         parent = get(p["parent"]) if p["parent"] else [[1 if i == j else 0 for j in range(4)] for i in range(4)]
-        dx, dy, dz = pose.get(name, (0, 0, 0))
-        rx, ry, rz = p["rot"][0] + dx, p["rot"][1] + dy, p["rot"][2] + dz
-        m = mat_mul(parent, translate(*p["pivot"]))
+        off = tuple(pose.get(name, (0, 0, 0))) + (0, 0, 0)
+        rx, ry, rz = p["rot"][0] + off[0], p["rot"][1] + off[1], p["rot"][2] + off[2]
+        px, py, pz = p["pivot"]
+        m = mat_mul(parent, translate(px + off[3], py + off[4], pz + off[5]))
         m = mat_mul(m, mat_mul(rot_z(rz), mat_mul(rot_y(ry), rot_x(rx))))
         out[name] = m
         return m
@@ -406,9 +565,10 @@ def paint(spec, t):
         if mat == "leg" and t.face != "bottom":
             # legs darken towards the feet instead of fading to the belly colour
             c = lerp(pal["base"], mul(pal["dorsal"], 0.95), t.fy * 1.1) if t.face != "top" else pal["dorsal"]
-        if sp == "raptor":
-            # ochre tiger stripes over the back, flanks, neck and tail
-            band = (t.mz * 0.9 + abs(t.mx) * 0.55 + t.my * 0.25)
+        if "stripe" in pal:
+            # tiger stripes over the back, flanks, neck and tail (ochre on the raptor, dark on the T-rex)
+            k = 0.9 if sp == "raptor" else 0.32
+            band = (t.mz * k + abs(t.mx) * 0.55 * k / 0.9 + t.my * 0.25 * k / 0.9)
             if t.fy < 0.62 or t.ny < -0.6:
                 if (math.floor(band) % 4) == 0 and t.ny < 0.5:
                     c = lerp(c, pal["stripe"], 0.9)
@@ -441,11 +601,19 @@ def paint(spec, t):
                 c = (30, 22, 18)
             if feat.get("teeth") == "bottom" and t.face in ("east", "west", "north") and t.ly > t.y1 - 1:
                 c = (244, 240, 222) if (t.i % 2 == 0) else (120, 24, 24)
+                if feat.get("big_teeth"):
+                    c = (244, 240, 222) if (t.i % 3 != 2) else (120, 24, 24)
+            if feat.get("big_teeth") and t.face in ("east", "west", "north") and t.y1 - 2 < t.ly < t.y1 - 1:
+                c = (236, 230, 206) if t.i % 3 == 0 else (150, 30, 30)
             if feat.get("mouth") and t.face in ("east", "west") and abs(t.ly - (t.y0 + t.h * 0.62)) < 0.5:
                 c = mul(c, 0.55)
         if mat == "jaw":
             if feat.get("teeth") == "top" and t.face in ("east", "west", "north") and t.ly < t.y0 + 1:
                 c = (244, 240, 222) if (t.i % 2 == 1) else (120, 24, 24)
+                if feat.get("big_teeth"):
+                    c = (244, 240, 222) if (t.i % 3 != 0) else (120, 24, 24)
+            if feat.get("big_teeth") and t.face in ("east", "west", "north") and t.y0 + 1 < t.ly < t.y0 + 2:
+                c = (236, 230, 206) if t.i % 3 == 1 else (150, 30, 30)
             if t.face == "top":
                 c = (150, 40, 40)  # inside of the mouth
         e = eye_texel(t, feat.get("eye"), pal, big=(sp != "brontosaurus"))
@@ -517,6 +685,13 @@ def paint(spec, t):
             c = mul(c, 1.04)
         c = tuple(v + noise * 0.6 for v in c)
 
+    elif mat == "beak" and sp == "pteranodon":
+        f = 1 - (t.lz - t.z0) / t.d
+        c = lerp(pal["beak"], pal["beak_tip"], max(0.0, f - 0.7) / 0.3)
+        if t.face == "bottom" or (feat.get("lower") and t.face == "top"):
+            c = mul(c, 0.8)
+        c = tuple(v + noise for v in c)
+
     elif mat == "beak":
         # dark horny beak, glossier on top, the upper bill hooking down over the lower one
         f = 1 - (t.lz - t.z0) / t.d  # 1 at the front
@@ -526,6 +701,11 @@ def paint(spec, t):
         if feat.get("hook") and t.face in ("east", "west", "north") and t.ly > t.y1 - 1 and f < 0.6:
             c = (40, 32, 30)
         c = tuple(v + noise for v in c)
+
+    elif mat in EXTRA_PAINTERS:
+        c, a = EXTRA_PAINTERS[mat](spec, t, noise)
+        if c is None:
+            return (0, 0, 0, 0)
 
     elif mat == "frill":
         c = paint_frill(spec, t)
@@ -590,7 +770,154 @@ def paint_frill(spec, t):
     return pal["frill"]
 
 
-def build_texture(spec):
+# ---- materials of the second wave (creeper, pteranodon, T-rex) -------------------------------------------------
+
+CREEPER_FACE = ["........",
+                "........",
+                ".XX..XX.",
+                ".XX..XX.",
+                "...XX...",
+                "..XXXX..",
+                "..XXXX..",
+                "..X..X.."]
+
+
+def _creeper_face(t):
+    """True on the dark texels of the classic creeper face (front of the pod)."""
+    if t.face != "north" or t.w != 8 or t.h != 8:
+        return False
+    return CREEPER_FACE[t.j][t.i] == "X"
+
+
+def p_pod(spec, t, noise):
+    pal = spec["palette"]
+    mott = value_noise(t.mx, t.my, t.mz, 2.2, 31)
+    c = lerp(pal["pod"], pal["pod_dark"], (t.ly - t.y0) / t.h * 0.6 + (0.5 if mott > 0.66 else 0.0))
+    if t.face == "top":
+        c = lerp(pal["pod"], (176, 220, 110), 0.4)
+    if t.face == "bottom":
+        c = pal["pod_dark"]
+    if hash3(t.box_id, t.i, t.j, 7) > 0.88:
+        c = mul(c, 0.8)
+    if t.feat.get("face") and _creeper_face(t):
+        c = pal["face"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_stalk(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["stalk"]
+    along = t.i if t.face in ("north", "south", "east", "west") else t.j
+    if along % 3 == 1:
+        c = pal["vein"]
+    if t.face == "top":
+        c = mul(pal["stalk"], 1.15)
+    return tuple(v + noise for v in c), 255
+
+
+def p_root(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["root"] if t.face != "top" else lerp(pal["root"], pal["stalk"], 0.5)
+    if (t.i + t.j) % 3 == 0:
+        c = mul(c, 0.8)
+    return tuple(v + noise for v in c), 255
+
+
+def p_leaf(spec, t, noise):
+    """A pointed leaf blade on the flat faces of a 1-texel-thin box; everything outside the outline is cut out."""
+    pal = spec["palette"]
+    if t.face not in ("top", "bottom"):
+        return None, 0
+    axis = t.feat["axis"]
+    if axis.endswith("z"):
+        sa, length, cross, half = abs(t.lz), t.d, t.lx - (t.x0 + t.w / 2), t.w / 2
+    else:
+        sa, length, cross, half = abs(t.lx), t.w, t.lz - (t.z0 + t.d / 2), t.d / 2
+    sa /= length
+    width = math.sin(math.pi * min(1.0, sa * 0.92 + 0.08)) ** 0.7 * (1.0 - 0.25 * sa)
+    cr = abs(cross) / half
+    if cr > width + 0.08:
+        return None, 0
+    c = pal["leaf"] if t.face == "top" else lerp(pal["leaf"], pal["belly"], 0.35)
+    if cr < 0.18:
+        c = pal["leaf_dark"]  # midrib
+    elif cr > width - 0.2:
+        c = pal["leaf_edge"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_bulb(spec, t, noise):
+    pal = spec["palette"]
+    cx = (t.i + 0.5) / (t.w if t.face in ("north", "south", "top", "bottom") else t.d) - 0.5
+    cy = (t.j + 0.5) / (t.h if t.face not in ("top", "bottom") else t.d) - 0.5
+    r = math.hypot(cx, cy)
+    c = pal["bulb_core"] if r < 0.2 else pal["bulb"] if r < 0.42 else pal["bulb_dark"]
+    if t.face == "bottom":
+        c = pal["bulb_dark"]
+    return c, 255
+
+
+def p_membrane(spec, t, noise):
+    """Leathery wing membrane: flat faces only, trailing edge scalloped between the wing fingers, pointed tip."""
+    pal = spec["palette"]
+    if t.face not in ("top", "bottom"):
+        return None, 0
+    span = abs(t.lx) / t.w
+    chord = (t.lz - t.z0) / t.d
+    if t.feat["part"] == "tip":
+        limit = (1.0 - span) ** 0.85
+    else:
+        limit = 1.0 - 0.12 * span - 0.1 * abs(math.sin(span * math.pi * 2.0))
+    if chord > limit + 0.04:
+        return None, 0
+    c = pal["membrane"] if t.face == "bottom" else pal["membrane_dark"]
+    if abs(chord - (0.42 + 0.12 * span)) < 0.5 / t.d or abs(chord - 0.15) < 0.5 / t.d:
+        c = pal["vein"]
+    if chord > limit - 1.2 / t.d:
+        c = mul(c, 0.78)
+    return tuple(v + noise for v in c), 255
+
+
+def p_bone(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["bone"] if t.face != "top" else mul(pal["bone"], 0.85)
+    if abs(t.lx) > t.w - 1.5:
+        c = mul(c, 0.75)  # knuckle
+    return tuple(v + noise for v in c), 255
+
+
+def p_pcrest(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["crest"]
+    if t.face in ("east", "west") and int(math.floor((t.lz - t.z0) + (t.ly - t.y0))) % 4 == 0:
+        c = pal["crest_stripe"]
+    if t.face in ("east", "west") and t.ly < t.y0 + 1 and (t.lz - t.z0) > t.d - 3:
+        return None, 0  # tapering top edge at the tip
+    return tuple(v + noise for v in c), 255
+
+
+def p_pfoot(spec, t, noise):
+    c = spec["palette"]["foot"]
+    if t.face == "north":
+        c = (40, 30, 24)
+    return tuple(v + noise for v in c), 255
+
+
+EXTRA_PAINTERS = {"pod": p_pod, "stalk": p_stalk, "bulbstem": p_stalk, "root": p_root, "leaf": p_leaf,
+                  "bulb": p_bulb, "membrane": p_membrane, "bone": p_bone, "pcrest": p_pcrest, "pfoot": p_pfoot}
+
+
+def glow_texel(spec, t):
+    """Emissive overlay (drawn full-bright in game): the creeper's spore bulb and its eyes."""
+    if t.mat == "bulb":
+        c, _ = p_bulb(spec, t, 0)
+        return c + (255,)
+    if t.mat == "pod" and t.feat.get("face") and _creeper_face(t) and t.j in (2, 3):
+        return (150, 255, 110, 255)
+    return None
+
+
+def build_texture(spec, glow=False):
     pack(spec)
     img = Image.new("RGBA", (spec["tex_w"], spec["tex_h"]), (0, 0, 0, 0))
     mats = part_matrices(spec)
@@ -613,7 +940,12 @@ def build_texture(spec):
                                   mx=mx, my=my, mz=mz, nx=n[0], ny=n[1], nz=n[2], fy=fy, edge=edge,
                                   x0=x0, y0=y0, z0=z0, x1=x0 + w, y1=y0 + h, z1=z0 + d, w=w, h=h, d=d,
                                   box_id=box_id)
-                        img.putpixel((u0 + i, v0 + j), paint(spec, t))
+                        if glow:
+                            px = glow_texel(spec, t)
+                            if px:
+                                img.putpixel((u0 + i, v0 + j), px)
+                        else:
+                            img.putpixel((u0 + i, v0 + j), paint(spec, t))
     return img
 
 
@@ -657,7 +989,7 @@ def java_poses():
         for pose, parts in poses.items():
             const = f"{species.upper()}_{pose.upper()}"
             entries = ",\n            ".join(
-                f"Map.entry(\"{k}\", new float[]{{{jf(v[0])}, {jf(v[1])}, {jf(v[2])}}})" for k, v in parts.items())
+                f"Map.entry(\"{k}\", new float[]{{{', '.join(jf(x) for x in v)}}})" for k, v in parts.items())
             out.append(f"    public static final Map<String, float[]> {const} = Map.ofEntries(\n            {entries});")
     return "\n\n".join(out)
 
@@ -689,7 +1021,7 @@ public final class DinoGeometry {{
 
 {java_poses()}
 
-    /** Blends a key pose in: every listed part is rotated by amount * its offset. */
+    /** Blends a key pose in: every listed part is rotated (and optionally moved) by amount * its offset. */
     public static void applyPose(Function<String, ModelPart> parts, Map<String, float[]> pose, float amount) {{
         if (amount <= 0.0F) {{
             return;
@@ -701,6 +1033,11 @@ public final class DinoGeometry {{
                 part.xRot += r[0] * amount;
                 part.yRot += r[1] * amount;
                 part.zRot += r[2] * amount;
+                if (r.length > 3) {{
+                    part.x += r[3] * amount;
+                    part.y += r[4] * amount;
+                    part.z += r[5] * amount;
+                }}
             }}
         }}
     }}
@@ -740,6 +1077,9 @@ EGGS = {
     "raptor": ((86, 150, 60), (222, 156, 44)),
     "brontosaurus": ((124, 130, 90), (204, 200, 156)),
     "triceratops": ((96, 124, 118), (238, 102, 40)),
+    "venus_creeper": ((110, 180, 70), (232, 250, 130)),
+    "pteranodon": ((180, 94, 52), (226, 60, 36)),
+    "tyrannosaurus": ((88, 102, 54), (40, 46, 28)),
 }
 
 EGG_SPOTS = [(5, 3), (9, 4), (4, 7), (8, 8), (11, 7), (6, 11), (10, 11), (7, 5), (12, 10), (4, 10)]
@@ -772,6 +1112,162 @@ def mul_px(c, f):
 
 
 # ----------------------------------------------------------------------------
+# Tyrannosaurus trophies: skull block (block-model elements), fang, fang dagger
+# ----------------------------------------------------------------------------
+
+# block-model space (y up), facing north = the snout points to -z
+SKULL = [
+    ((2, 0, 2), (14, 2, 14), "plinth"),
+    ((5, 2, 1), (11, 4, 12), "jaw"),
+    ((4, 4, 1), (12, 9, 6), "snout"),
+    ((6, 9, 1), (10, 10, 6), "ridge"),
+    ((3, 4, 6), (13, 12, 15), "cranium"),
+    ((3, 12, 6), (5, 13, 9), "horn"),
+    ((11, 12, 6), (13, 13, 9), "horn"),
+]
+SKULL_TEX = 64
+
+
+def skull_faces(frm, to):
+    """(face, cols, rows, texel -> (x, y, z)) following the block-model default UV orientation (FaceBakery)."""
+    (x1, y1, z1), (x2, y2, z2) = frm, to
+    w, h, d = x2 - x1, y2 - y1, z2 - z1
+    yield "north", w, h, lambda i, j: (x2 - i - 0.5, y2 - j - 0.5, z1)
+    yield "south", w, h, lambda i, j: (x1 + i + 0.5, y2 - j - 0.5, z2)
+    yield "east", d, h, lambda i, j: (x2, y2 - j - 0.5, z2 - i - 0.5)
+    yield "west", d, h, lambda i, j: (x1, y2 - j - 0.5, z1 + i + 0.5)
+    yield "up", w, d, lambda i, j: (x1 + i + 0.5, y2, z1 + j + 0.5)
+    yield "down", w, d, lambda i, j: (x1 + i + 0.5, y1, z2 - j - 0.5)
+
+
+def paint_skull(mat, face, x, y, z, i, j):
+    bone = (230, 218, 186)
+    stain = value_noise(x * 2.1, y * 2.1, z * 2.1, 3.0, 77)
+    c = lerp(bone, (176, 152, 110), max(0.0, stain - 0.45) * 1.6)
+    if face == "up":
+        c = mul(c, 1.05)
+    elif face == "down":
+        c = mul(c, 0.75)
+    if hash3(int(x * 4), int(y * 4), int(z * 4), 5) > 0.93:
+        c = mul(c, 0.82)  # pits and cracks
+    if mat == "plinth":
+        c = (96, 60, 38) if int(x + z * 0.3) % 3 else (78, 48, 30)
+        if face == "up":
+            c = (110, 70, 44) if (2.5 < x < 13.5 and 2.5 < z < 13.5) else (70, 42, 26)
+        if face == "north" and 5 < x < 11:
+            c = (226, 182, 76) if y > 1 else (170, 128, 50)  # the brass plate
+        return c
+    if mat == "cranium" and face in ("east", "west"):
+        if 6.0 <= z < 9.5 and 8.0 <= y < 11.0:
+            return (36, 26, 22) if (6.8 < z < 8.8 and 8.6 < y < 10.6) else (120, 100, 76)  # eye socket
+        if 10.5 <= z < 13.5 and 6.5 <= y < 9.0:
+            return (52, 40, 32)  # the great window behind the eye
+    if mat == "snout" and face in ("north", "east", "west") and y < 5.0:
+        return (250, 246, 228) if i % 2 == 0 else (60, 44, 34)  # upper teeth
+    if mat == "jaw" and face in ("north", "east", "west") and y > 3.0:
+        return (244, 238, 216) if i % 2 == 1 else (60, 44, 34)  # lower teeth
+    if mat == "ridge" and face == "up" and z < 2.6 and (6.4 < x < 7.6 or 8.4 < x < 9.6):
+        return (40, 30, 24)  # nostrils
+    if mat == "horn":
+        c = mul(c, 0.92)
+    return c
+
+
+def build_skull():
+    img = Image.new("RGBA", (SKULL_TEX, SKULL_TEX), (0, 0, 0, 0))
+    elements = []
+    x = y = shelf = 0
+    for frm, to, mat in SKULL:
+        faces_json = {}
+        for face, cols, rows, pos in skull_faces(frm, to):
+            if face == "down" and frm[1] == 0:
+                pass
+            if x + cols > SKULL_TEX:
+                x, y, shelf = 0, y + shelf, 0
+            for j in range(rows):
+                for i in range(cols):
+                    px, py, pz = pos(i, j)
+                    c = paint_skull(mat, face, px, py, pz, i, j)
+                    img.putpixel((x + i, y + j), tuple(max(0, min(255, int(v))) for v in c) + (255,))
+            k = 16.0 / SKULL_TEX
+            faces_json[face] = {"uv": [x * k, y * k, (x + cols) * k, (y + rows) * k], "texture": "#skull"}
+            if face == "down" and frm[1] == 0:
+                faces_json[face]["cullface"] = "down"
+            x += cols
+            shelf = max(shelf, rows)
+        elements.append({"from": list(frm), "to": list(to), "faces": faces_json})
+    assert y + shelf <= SKULL_TEX, "skull texture overflow"
+    return img, elements
+
+
+def write_skull():
+    img, elements = build_skull()
+    save(img, "block", "tyrannosaurus_skull")
+    tex = f"{MOD}:block/tyrannosaurus_skull"
+    write_json(os.path.join(ASSETS, "models", "block", "tyrannosaurus_skull.json"),
+               {"parent": "minecraft:block/block", "textures": {"skull": tex, "particle": tex}, "elements": elements})
+    write_json(os.path.join(ASSETS, "blockstates", "tyrannosaurus_skull.json"), {"variants": {
+        f"facing={f}": ({"model": f"{MOD}:block/tyrannosaurus_skull", "y": r} if r else
+                        {"model": f"{MOD}:block/tyrannosaurus_skull"})
+        for f, r in (("north", 0), ("east", 90), ("south", 180), ("west", 270))}})
+    write_json(os.path.join(ASSETS, "items", "tyrannosaurus_skull.json"),
+               {"model": {"type": "minecraft:model", "model": f"{MOD}:block/tyrannosaurus_skull"}})
+    loot_self("tyrannosaurus_skull")
+    add_to_tag("block/mineable/pickaxe", [f"{MOD}:tyrannosaurus_skull"])
+
+
+def fang_icon():
+    """A great curved fang: brown root top-left, ivory enamel curving down to a sharp tip bottom-right."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    pts = {}
+    for k in range(60):
+        t = k / 59
+        cx = 4.0 + t * 8.0 + math.sin(t * math.pi) * 1.8
+        cy = 3.0 + t * 10.5 - math.sin(t * math.pi) * 1.6
+        r = 3.4 * (1 - t) ** 0.75 + 0.35
+        for px in range(16):
+            for py in range(16):
+                if (px + 0.5 - cx) ** 2 + (py + 0.5 - cy) ** 2 <= r * r:
+                    pts[(px, py)] = max(pts.get((px, py), -1.0), t)
+    for (px, py), t in pts.items():
+        edge = any((px + a, py + b) not in pts for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        if t < 0.22:
+            c = (130, 84, 52)
+        else:
+            c = lerp((232, 220, 186), (255, 252, 236), (t - 0.22) * 1.3)
+        if edge:
+            c = (70, 46, 30) if t < 0.22 else (140, 116, 84)
+        img.putpixel((px, py), tuple(int(v) for v in c) + (255,))
+    for p in ((6, 5), (7, 6), (8, 7)):
+        if p in pts:
+            img.putpixel(p, (255, 255, 255, 255))
+    return img
+
+
+def dagger_icon():
+    """The fang lashed to a leather-wrapped grip with a brass pommel, held like a vanilla sword (tip top-right)."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    blade = [(5 + k, 10 - k) for k in range(9)]  # diagonal up to the tip
+    for k, (x, y) in enumerate(blade):
+        w = 2 if k < 6 else 1
+        for dx in range(w):
+            img.putpixel((x + dx, y), (240, 232, 204, 255))
+        img.putpixel((x - 1, y), (150, 128, 96, 255))
+        if k < 6:
+            img.putpixel((x + 2, y), (150, 128, 96, 255) if y < 15 else (0, 0, 0, 0))
+    img.putpixel((14, 1), (255, 252, 240, 255))
+    for (x, y) in ((4, 10), (5, 11), (3, 11), (4, 12), (6, 10), (4, 11)):  # leather binding / guard
+        img.putpixel((x, y), (122, 76, 44, 255))
+    for (x, y) in ((3, 12), (2, 13), (1, 14)):  # grip
+        img.putpixel((x, y), (92, 56, 32, 255))
+        img.putpixel((x + 1, y), (70, 42, 24, 255))
+    img.putpixel((0, 15), (214, 170, 70, 255))  # brass pommel
+    img.putpixel((1, 15), (170, 128, 50, 255))
+    img.putpixel((0, 14), (170, 128, 50, 255))
+    return img
+
+
+# ----------------------------------------------------------------------------
 # Loot
 # ----------------------------------------------------------------------------
 
@@ -784,6 +1280,14 @@ def drop(item, lo, hi, smelt=None, looting=(0, 1)):
     functions.append({"function": "minecraft:enchanted_count_increase", "enchantment": "minecraft:looting",
                       "count": {"type": "minecraft:uniform", "min": looting[0], "max": looting[1]}})
     return {"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": item, "functions": functions}]}
+
+
+def always(item, lo=1, hi=1):
+    """A drop that never fails (no looting bonus)."""
+    entry = {"type": "minecraft:item", "name": item}
+    if (lo, hi) != (1, 1):
+        entry["functions"] = [{"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": lo, "max": hi}}]
+    return {"rolls": 1, "bonus_rolls": 0, "entries": [entry]}
 
 
 def loot(name, pools):
@@ -802,6 +1306,15 @@ EN = {
     "item.retrocosmos.raptor_spawn_egg": "Venus Raptor Spawn Egg",
     "item.retrocosmos.brontosaurus_spawn_egg": "Brontosaurus Spawn Egg",
     "item.retrocosmos.triceratops_spawn_egg": "Triceratops Spawn Egg",
+    "entity.retrocosmos.venus_creeper": "Venus Creeper",
+    "entity.retrocosmos.pteranodon": "Pteranodon",
+    "entity.retrocosmos.tyrannosaurus": "Tyrannosaurus",
+    "item.retrocosmos.venus_creeper_spawn_egg": "Venus Creeper Spawn Egg",
+    "item.retrocosmos.pteranodon_spawn_egg": "Pteranodon Spawn Egg",
+    "item.retrocosmos.tyrannosaurus_spawn_egg": "Tyrannosaurus Spawn Egg",
+    "item.retrocosmos.tyrannosaurus_fang": "Tyrannosaurus Fang",
+    "item.retrocosmos.fang_dagger": "Fang Dagger",
+    "block.retrocosmos.tyrannosaurus_skull": "Tyrannosaurus Skull",
 }
 
 RU = {
@@ -811,13 +1324,31 @@ RU = {
     "item.retrocosmos.raptor_spawn_egg": "Яйцо призыва венерианского раптора",
     "item.retrocosmos.brontosaurus_spawn_egg": "Яйцо призыва бронтозавра",
     "item.retrocosmos.triceratops_spawn_egg": "Яйцо призыва трицератопса",
+    "entity.retrocosmos.venus_creeper": "Венерианский крипер",
+    "entity.retrocosmos.pteranodon": "Птеранодон",
+    "entity.retrocosmos.tyrannosaurus": "Тиранозавр",
+    "item.retrocosmos.venus_creeper_spawn_egg": "Яйцо призыва венерианского крипера",
+    "item.retrocosmos.pteranodon_spawn_egg": "Яйцо призыва птеранодона",
+    "item.retrocosmos.tyrannosaurus_spawn_egg": "Яйцо призыва тиранозавра",
+    "item.retrocosmos.tyrannosaurus_fang": "Клык тиранозавра",
+    "item.retrocosmos.fang_dagger": "Кинжал из клыка",
+    "block.retrocosmos.tyrannosaurus_skull": "Череп тиранозавра",
 }
 
 
 def generate():
     for spec in SPECS:
         save(build_texture(spec), "entity", "dinosaur", spec["name"])
+        if spec.get("glow"):
+            save(build_texture(spec, glow=True), "entity", "dinosaur", spec["name"] + "_glow")
     write_java()
+    write_skull()
+    save(fang_icon(), "item", "tyrannosaurus_fang")
+    generated_item("tyrannosaurus_fang")
+    save(dagger_icon(), "item", "fang_dagger")
+    generated_item("fang_dagger", parent="minecraft:item/handheld")
+    shaped("fang_dagger", ["F", "L", "S"], {"F": "tyrannosaurus_fang", "L": "minecraft:leather", "S": "minecraft:stick"},
+           "fang_dagger", category="equipment")
 
     for name, (shell, spots) in EGGS.items():
         save(egg(shell, spots), "item", f"{name}_spawn_egg")
@@ -829,6 +1360,14 @@ def generate():
                           drop("minecraft:leather", 2, 4, looting=(0, 2))])
     loot("triceratops", [drop("minecraft:leather", 1, 3), drop("minecraft:bone", 0, 2),
                          drop("minecraft:beef", 1, 3, smelt=True)])
+    loot("venus_creeper", [drop("minecraft:gunpowder", 0, 2), drop("minecraft:glow_berries", 0, 1)])
+    loot("pteranodon", [drop("minecraft:leather", 0, 2), drop("minecraft:bone", 0, 2)])
+    # the great reward: the skull and a fang always, plus a mountain of meat
+    loot("tyrannosaurus", [always(f"{MOD}:tyrannosaurus_skull"), always(f"{MOD}:tyrannosaurus_fang"),
+                           drop(f"{MOD}:tyrannosaurus_fang", 0, 1, looting=(0, 1)),
+                           drop("minecraft:beef", 10, 16, smelt=True, looting=(0, 4)),
+                           drop("minecraft:bone", 6, 10, looting=(0, 3)),
+                           drop("minecraft:leather", 3, 6, looting=(0, 2))])
 
 
 if __name__ == "__main__":

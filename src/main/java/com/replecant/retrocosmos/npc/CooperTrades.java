@@ -25,7 +25,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
  */
 public final class CooperTrades {
     /** Saved with every Cooper; a Cooper whose ledger is older gets fresh offers. */
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     private CooperTrades() {}
 
@@ -75,7 +75,8 @@ public final class CooperTrades {
             buys("retrocosmos:bone_spear", 1, 2, 6),
             buys("retrocosmos:raptor_tooth", 4, 1, 16),
             buys("retrocosmos:dino_hide", 3, 1, 16),
-            buys("retrocosmos:venus_amber", 3, 1, 16));
+            buys("retrocosmos:venus_amber", 3, 1, 16),
+            buys("retrocosmos:tyrannosaurus_fang", 1, 24, 4));
 
     /** Expedition supplies for sale. */
     public static final List<Deal> SUPPLIES = List.of(
@@ -92,7 +93,7 @@ public final class CooperTrades {
 
     /** Relics whose first delivery gets its own excited line (chat.retrocosmos.npc.cooper.first.<path>). */
     public static final Set<String> EXCITING = Set.of("venusian_idol", "glyph_tablet", "sun_disk_fragment", "ancient_amulet",
-            "tribal_mask", "bone_spear", "raptor_tooth", "dino_hide", "venus_amber", "shaman_charm");
+            "tribal_mask", "bone_spear", "raptor_tooth", "dino_hide", "venus_amber", "shaman_charm", "tyrannosaurus_fang");
 
     private static Optional<Item> item(String id) {
         Identifier key = Identifier.parse(id);

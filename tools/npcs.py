@@ -1297,6 +1297,9 @@ LINES = {
     "cooper.first.shaman_charm": (
         "A shaman's charm. I don't believe in magic, of course. ...Of course. Put it down gently.",
         "Оберег шамана. В магию я, конечно, не верю. ...Конечно. Положите его аккуратно."),
+    "cooper.first.tyrannosaurus_fang": (
+        "Good heavens - a tyrant lizard's fang! As long as my hand! You... you didn't fight it, did you? Sit down. Have a drink.",
+        "Боже правый - клык ящера-тирана! Длиной с мою ладонь! Вы... вы ведь не дрались с ним? Присядьте. Выпейте чего-нибудь."),
     "cooper.first.generic": ("Now THAT is something I've never seen before. Into the collection!",
                              "Вот ЭТОГО я ещё никогда не видел. В коллекцию!"),
     # ---- guards ----

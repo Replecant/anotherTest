@@ -90,7 +90,14 @@
       }
     ],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "retrocosmos:tyrannosaurus",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 3
+      }
+    ],
     "underground_water_creature": [
       {
         "type": "minecraft:glow_squid",

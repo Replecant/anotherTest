@@ -98,6 +98,13 @@ public class Tribesman extends AbstractVillager {
     private boolean captive;
     private int freedTicks;
     private int pleaCooldown = 100;
+    /** Per player: game time before which no captive anywhere pleads to them again, and the last line they heard. */
+    private static final java.util.Map<UUID, Long> NEXT_PLEA = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<UUID, Integer> LAST_PLEA_LINE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final int PLEA_GAP_MIN = 20 * 45;
+    private static final int PLEA_GAP_MAX = 20 * 60;
+    private static final double PLEA_RANGE = 8.0;
+    static final int PLEA_LINES = 7;
     @Nullable
     private net.minecraft.world.phys.Vec3 freedFrom;
 
@@ -349,6 +356,27 @@ public class Tribesman extends AbstractVillager {
         return player.getPersistentData().getIntOr(FRIEND_KEY, 0) > 0;
     }
 
+    /**
+     * A captive's plea - shared by every captive, so a player hears at most one line every 45-60 seconds, only from
+     * a captive that can actually see them, and never the same line twice in a row.
+     */
+    private void plead(ServerLevel level, Player player) {
+        long now = level.getGameTime();
+        UUID id = player.getUUID();
+        if (now < NEXT_PLEA.getOrDefault(id, 0L) || distanceToSqr(player) > PLEA_RANGE * PLEA_RANGE || !hasLineOfSight(player)) {
+            return;
+        }
+        NEXT_PLEA.put(id, now + PLEA_GAP_MIN + random.nextInt(PLEA_GAP_MAX - PLEA_GAP_MIN + 1));
+        int last = LAST_PLEA_LINE.getOrDefault(id, -1);
+        int line = random.nextInt(PLEA_LINES - 1);
+        if (line >= last && last >= 0) {
+            line++;  // skip the line this player heard last time
+        }
+        LAST_PLEA_LINE.put(id, line);
+        say(player, "chat.retrocosmos.tribe.captive." + line);
+        playSound(SoundEvents.VILLAGER_NO, 0.8F, getVoicePitch() * 0.9F);
+    }
+
     private void captiveStep(ServerLevel level) {
         setTarget(null);
         fireAction = 0;
@@ -364,9 +392,8 @@ public class Tribesman extends AbstractVillager {
                 return;
             }
             if (--pleaCooldown <= 0) {
-                pleaCooldown = 300 + random.nextInt(400);
-                say(near, "chat.retrocosmos.tribe.captive." + random.nextInt(3));
-                playSound(SoundEvents.VILLAGER_NO, 0.8F, getVoicePitch() * 0.9F);
+                pleaCooldown = 60 + random.nextInt(60);
+                plead(level, near);
             }
         }
     }

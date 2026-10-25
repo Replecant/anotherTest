@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "retrocosmos:block/venusian_glyph_stone_1",
+    "end": "retrocosmos:block/venusian_carved_stone"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "pattern": [
+    "SSS",
+    " C ",
+    "CCC"
+  ],
+  "key": {
+    "S": "retrocosmos:venusian_carved_stone_slab",
+    "C": "retrocosmos:venusian_carved_stone"
+  },
+  "result": {
+    "id": "retrocosmos:venusian_altar",
+    "count": 1
+  }
+}

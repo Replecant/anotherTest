@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "retrocosmos:block/venusian_carved_stone",
+    "side": "retrocosmos:block/venusian_carved_stone",
+    "top": "retrocosmos:block/venusian_carved_stone"
+  }
+}

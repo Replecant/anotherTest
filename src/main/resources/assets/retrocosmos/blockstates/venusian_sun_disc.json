@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/venusian_sun_disc"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/venusian_sun_disc",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/venusian_sun_disc",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/venusian_sun_disc",
+      "y": 270
+    }
+  }
+}

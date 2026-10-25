@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "retrocosmos:venusian_ziggurat",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 48,
+    "separation": 16,
+    "salt": 471103222,
+    "exclusion_zone": {
+      "other_set": "retrocosmos:venusian_pyramids",
+      "chunk_count": 6
+    }
+  }
+}

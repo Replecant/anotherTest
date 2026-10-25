@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "S  ",
+    "SS ",
+    "SSS"
+  ],
+  "key": {
+    "S": "retrocosmos:venusian_temple_bricks"
+  },
+  "result": {
+    "id": "retrocosmos:venusian_temple_brick_stairs",
+    "count": 4
+  }
+}

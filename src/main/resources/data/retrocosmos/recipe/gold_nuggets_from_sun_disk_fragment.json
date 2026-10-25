@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:sun_disk_fragment"
+  ],
+  "result": {
+    "id": "minecraft:gold_nugget",
+    "count": 5
+  }
+}

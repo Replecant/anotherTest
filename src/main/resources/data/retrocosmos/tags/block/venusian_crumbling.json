@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "retrocosmos:venusian_temple_bricks",
+    "retrocosmos:venusian_cracked_temple_bricks",
+    "retrocosmos:venusian_mossy_temple_bricks",
+    "retrocosmos:venusian_carved_stone",
+    "retrocosmos:venusian_temple_brick_slab",
+    "retrocosmos:venusian_carved_stone_slab",
+    "retrocosmos:venus_cobblestone"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "retrocosmos:venusian_temple_bricks",
+    "retrocosmos:venus_moss"
+  ],
+  "result": {
+    "id": "retrocosmos:venusian_mossy_temple_bricks",
+    "count": 1
+  }
+}

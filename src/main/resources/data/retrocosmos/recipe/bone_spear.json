@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  T",
+    " F ",
+    "S  "
+  ],
+  "key": {
+    "T": "retrocosmos:raptor_tooth",
+    "F": "retrocosmos:fern_fiber",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "retrocosmos:bone_spear",
+    "count": 1
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/hut",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 6
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/longhouse",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 4
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/courtyard",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 3
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/tower",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/temple",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/rubble",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/workshop",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 3
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/houses/garden",
+        "processors": "retrocosmos:venusian_village_decay",
+        "projection": "rigid"
+      },
+      "weight": 3
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

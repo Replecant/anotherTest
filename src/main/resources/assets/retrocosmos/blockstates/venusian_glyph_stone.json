@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "glyph=0": {
+      "model": "retrocosmos:block/venusian_glyph_stone_0"
+    },
+    "glyph=1": {
+      "model": "retrocosmos:block/venusian_glyph_stone_1"
+    },
+    "glyph=2": {
+      "model": "retrocosmos:block/venusian_glyph_stone_2"
+    },
+    "glyph=3": {
+      "model": "retrocosmos:block/venusian_glyph_stone_3"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "retrocosmos:block/venusian_temple_brick_slab"
+    },
+    "type=double": {
+      "model": "retrocosmos:block/venusian_temple_bricks"
+    },
+    "type=top": {
+      "model": "retrocosmos:block/venusian_temple_brick_slab_top"
+    }
+  }
+}

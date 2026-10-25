@@ -56,6 +56,21 @@
     "retrocosmos:venus_cobblestone",
     "retrocosmos:venus_stone_bricks",
     "retrocosmos:venus_black_rock",
-    "retrocosmos:venus_fumarole"
+    "retrocosmos:venus_fumarole",
+    "retrocosmos:venusian_temple_bricks",
+    "retrocosmos:venusian_cracked_temple_bricks",
+    "retrocosmos:venusian_mossy_temple_bricks",
+    "retrocosmos:venusian_temple_brick_stairs",
+    "retrocosmos:venusian_temple_brick_slab",
+    "retrocosmos:venusian_carved_stone",
+    "retrocosmos:venusian_carved_stone_stairs",
+    "retrocosmos:venusian_carved_stone_slab",
+    "retrocosmos:venusian_glyph_stone",
+    "retrocosmos:venusian_inlaid_stone",
+    "retrocosmos:venusian_pillar",
+    "retrocosmos:venusian_sun_disc",
+    "retrocosmos:venusian_stele",
+    "retrocosmos:venusian_altar",
+    "retrocosmos:venusian_urn"
   ]
 }

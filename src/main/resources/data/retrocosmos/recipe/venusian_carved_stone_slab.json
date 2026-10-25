@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SSS"
+  ],
+  "key": {
+    "S": "retrocosmos:venusian_carved_stone"
+  },
+  "result": {
+    "id": "retrocosmos:venusian_carved_stone_slab",
+    "count": 6
+  }
+}

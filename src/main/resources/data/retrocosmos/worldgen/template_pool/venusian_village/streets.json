@@ -1,0 +1,50 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/streets/long",
+        "processors": "retrocosmos:venusian_street",
+        "projection": "terrain_matching"
+      },
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/streets/short",
+        "processors": "retrocosmos:venusian_street",
+        "projection": "terrain_matching"
+      },
+      "weight": 4
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/streets/crossing",
+        "processors": "retrocosmos:venusian_street",
+        "projection": "terrain_matching"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/streets/turn",
+        "processors": "retrocosmos:venusian_street",
+        "projection": "terrain_matching"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "retrocosmos:venusian_village/streets/tee",
+        "processors": "retrocosmos:venusian_street",
+        "projection": "terrain_matching"
+      },
+      "weight": 2
+    }
+  ],
+  "fallback": "retrocosmos:venusian_village/street_ends"
+}

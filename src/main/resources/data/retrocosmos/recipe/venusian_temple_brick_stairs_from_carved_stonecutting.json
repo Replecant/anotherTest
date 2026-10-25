@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "retrocosmos:venusian_carved_stone",
+  "result": {
+    "id": "retrocosmos:venusian_temple_brick_stairs",
+    "count": 1
+  }
+}

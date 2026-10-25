@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "retrocosmos:block/venusian_carved_stone_slab"
+    },
+    "type=double": {
+      "model": "retrocosmos:block/venusian_carved_stone"
+    },
+    "type=top": {
+      "model": "retrocosmos:block/venusian_carved_stone_slab_top"
+    }
+  }
+}

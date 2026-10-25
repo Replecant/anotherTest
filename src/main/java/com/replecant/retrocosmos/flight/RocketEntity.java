@@ -26,6 +26,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -70,6 +71,8 @@ public class RocketEntity extends Entity {
     private static final EntityDataAccessor<Integer> PAD_Y = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
 
     private BlockPos padBase = BlockPos.ZERO;
+    /** Smooths the server's position updates on the client, like boats and minecarts. */
+    private final InterpolationHandler interpolation = new InterpolationHandler(this, 3);
     private String destination = "";
 
     public RocketEntity(EntityType<? extends RocketEntity> type, Level level) {
@@ -169,6 +172,11 @@ public class RocketEntity extends Entity {
     // ------------------------------------------------------------------ behaviour
 
     @Override
+    public InterpolationHandler getInterpolation() {
+        return interpolation;
+    }
+
+    @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
     }
@@ -220,11 +228,12 @@ public class RocketEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        int ticks = phaseTicks() + 1;
-        entityData.set(PHASE_TICKS, ticks);
         if (!(level() instanceof ServerLevel level)) {
+            interpolation.interpolate();
             return;
         }
+        int ticks = phaseTicks() + 1;
+        entityData.set(PHASE_TICKS, ticks);
         switch (phase()) {
             case PHASE_PAD -> tickPad(level, ticks);
             case PHASE_ASCENT -> tickAscent(level, ticks);

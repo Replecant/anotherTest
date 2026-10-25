@@ -11,6 +11,7 @@ Called from gen_resources.main() via generate().
   gui/flight_hud.png            160x40   launch telemetry panel
   gui/flight_hud_bar.png        148x6    fuel bar fill
   entity/rocket_plume.png       16x64    exhaust flame strip (nozzle at the top)
+  gui/cockpit.png               480x270  first-person capsule interior overlay (porthole glass transparent)
 """
 import math
 import random
@@ -19,7 +20,7 @@ from PIL import Image, ImageDraw
 
 from gen_resources import (AMBER_LAMP, BLACK, CHROME, CHROME_D, CHROME_L, CREAM, CREAM_D, NAVY, NAVY_L, ORANGE,
                            ORANGE_L, RED, RED_D, RED_L, STEEL, STEEL_D, TEAL, TEAL_D, TEAL_L, WHITE, YELLOW, new, px,
-                           rgba, save)
+                           rgba, save, shade)
 
 # extra palette
 SPACE = (10, 14, 38)          # deep navy space
@@ -577,11 +578,194 @@ def rocket_plume():
     return img
 
 
+# ----------------------------------------------------------------------------
+# D. first-person cockpit overlay
+# ----------------------------------------------------------------------------
+
+def dial(d, img, cx, cy, r, needle_deg, face=(236, 232, 220), accent=RED):
+    d.ellipse((cx - r - 1, cy - r - 1, cx + r + 1, cy + r + 1), fill=rgba(CHROME), outline=rgba(BLACK))
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=rgba(face), outline=rgba(STEEL_D))
+    for a in range(-220, 41, 26):
+        ra = math.radians(a)
+        d.line((cx + (r - 3) * math.cos(ra), cy + (r - 3) * math.sin(ra),
+                cx + (r - 1) * math.cos(ra), cy + (r - 1) * math.sin(ra)), fill=rgba(BLACK))
+    # red zone at the end of the scale
+    for a in range(10, 41, 4):
+        ra = math.radians(a)
+        px(img, [(int(round(cx + (r - 2) * math.cos(ra))), int(round(cy + (r - 2) * math.sin(ra))))], accent)
+    ra = math.radians(needle_deg)
+    d.line((cx, cy, cx + (r - 2) * math.cos(ra), cy + (r - 2) * math.sin(ra)), fill=rgba(RED_D))
+    d.ellipse((cx - 1, cy - 1, cx + 1, cy + 1), fill=rgba(BLACK))
+    px(img, [(cx - r + 2, cy - r + 3)], CHROME_L)   # glass glint
+
+
+def toggle(d, x, y, on):
+    d.rectangle((x, y, x + 4, y + 8), fill=rgba(STEEL_D), outline=rgba(BLACK))
+    d.ellipse((x, y + 2, x + 4, y + 6), fill=rgba(CHROME_D))
+    if on:
+        d.rectangle((x + 1, y - 2, x + 3, y + 3), fill=rgba(CHROME), outline=rgba(CHROME_D))
+        d.point((x + 2, y - 2), fill=rgba(CHROME_L))
+    else:
+        d.rectangle((x + 1, y + 5, x + 3, y + 10), fill=rgba(CHROME), outline=rgba(CHROME_D))
+        d.point((x + 2, y + 10), fill=rgba(CHROME_D))
+
+
+def cockpit():
+    """480x270 overlay drawn at 240x135 and scaled x2 (chunky pixels); glass of the porthole is transparent."""
+    W, H = 240, 135
+    img = new(W, H)
+    d = ImageDraw.Draw(img)
+    rnd = random.Random(4)
+    # bulkhead: cream enamel with faint grain
+    d.rectangle((0, 0, W - 1, H - 1), fill=rgba(CREAM))
+    for y in range(H):
+        for x in range(W):
+            if rnd.random() < 0.10:
+                px(img, [(x, y)], (232, 224, 198))
+    # structural ribs: vertical chrome stiffeners at the sides
+    for x in (34, 205):
+        d.rectangle((x, 30, x + 2, 100), fill=rgba(CHROME))
+        d.line((x, 30, x, 100), fill=rgba(CHROME_L))
+        d.line((x + 2, 30, x + 2, 100), fill=rgba(CHROME_D))
+    # horizontal panel seams on the bulkhead
+    for y in (64,):
+        d.line((37, y, 204, y), fill=rgba(CREAM_D))
+        d.line((37, y + 1, 204, y + 1), fill=rgba((248, 242, 224)))
+    # top band (HUD zone, 60 screen px): dark bakelite with a chrome lip and a recessed vent grille
+    d.rectangle((0, 0, W - 1, 29), fill=rgba(BAKELITE))
+    d.line((0, 29, W - 1, 29), fill=rgba(CHROME_L))
+    d.line((0, 30, W - 1, 30), fill=rgba(CHROME_D))
+    d.line((0, 28, W - 1, 28), fill=rgba((28, 24, 24)))
+    for x in range(6, W, 12):
+        px(img, [(x, 3)], BAKELITE_L)
+        px(img, [(x, 25)], BAKELITE_L)
+    for y in range(8, 22, 3):
+        d.line((100, y, 140, y), fill=rgba((28, 24, 24)))
+        d.line((100, y + 1, 140, y + 1), fill=rgba(BAKELITE_L))
+    # padded upholstery: red at left, teal at right, tufted
+    for (x0, x1, base, dark, light) in ((2, 30, RED, RED_D, RED_L), (209, 237, TEAL, TEAL_D, TEAL_L)):
+        d.rounded_rectangle((x0, 34, x1, 96), radius=4, fill=rgba(base), outline=rgba(BLACK))
+        d.rounded_rectangle((x0 + 1, 35, x1 - 1, 95), radius=3, outline=rgba(light))
+        mid = shade(base, -14)
+        # quilted diamonds: soft seams, a dark button with a highlight
+        for (bx, by) in [(x0 + 7 + i * 14, 44 + j * 16) for i in range(2) for j in range(4)]:
+            if bx < x1 - 4:
+                for k in range(1, 7):
+                    px(img, [(x, y) for (x, y) in ((bx - k, by - 7 + k), (bx + k, by - 7 + k), (bx - k, by + 7 - k),
+                                                   (bx + k, by + 7 - k)) if 37 <= y <= 93 and x0 + 2 < x < x1 - 2], mid)
+                px(img, [(bx, by), (bx + 1, by), (bx, by + 1)], dark)
+                px(img, [(bx - 1, by - 1)], light)
+                px(img, [(bx, by - 1), (bx - 1, by)], shade(dark, 30))
+    # rivets on the bulkhead around the porthole
+    for (x, y) in [(42, 36), (42, 62), (42, 96), (197, 36), (197, 62), (197, 96), (70, 34), (170, 34),
+                   (54, 96), (186, 96)]:
+        rivet(img, x, y)
+
+    # porthole: rounded trapezoid (narrower at the top), chrome bezel 5px, transparent glass
+    cx, top, bot = 120.0, 33.0, 102.0
+    cy = (top + bot) / 2
+    b = (bot - top) / 2
+
+    def half_width(y):
+        t = (y - top) / (bot - top)
+        return 62 + 12 * t          # 62 at the top .. 74 at the bottom
+
+    def inside(x, y, shrink):
+        a = half_width(y) - shrink
+        bb = b - shrink
+        if a <= 0 or bb <= 0:
+            return False
+        return (abs(x - cx) / a) ** 3.2 + (abs(y - cy) / bb) ** 3.2 <= 1.0
+
+    for y in range(H):
+        for x in range(W):
+            xc, yc = x + 0.5, y + 0.5
+            if inside(xc, yc, 5):
+                img.putpixel((x, y), (0, 0, 0, 0))
+            elif inside(xc, yc, 4):
+                img.putpixel((x, y), rgba((12, 10, 14)))        # glass seal (dark)
+            elif inside(xc, yc, 3):
+                img.putpixel((x, y), rgba(CHROME_D))
+            elif inside(xc, yc, 1):
+                img.putpixel((x, y), rgba(CHROME))
+            elif inside(xc, yc, 0):
+                img.putpixel((x, y), rgba(CHROME_L if (xc < cx) or (yc < cy) else CHROME_D))
+            elif inside(xc, yc, -1):
+                img.putpixel((x, y), rgba(BLACK))
+    # bezel bolts around the porthole
+    for i in range(16):
+        a = math.radians(i * 22.5 + 11)
+        # find the bezel point along this angle
+        for r in range(90, 0, -1):
+            xx, yy = cx + r * math.cos(a), cy + r * math.sin(a) * 0.62
+            if inside(xx, yy, 1.5):
+                px(img, [(int(xx), int(yy))], CHROME_L)
+                px(img, [(int(xx) + 1, int(yy) + 1)], STEEL_D)
+                break
+    # faint glass glint streak (alpha ~40) in the upper-left of the glass
+    for i in range(22):
+        x, y = 70 + i, 62 - i
+        if inside(x + 0.5, y + 0.5, 7):
+            img.putpixel((x, y), (255, 255, 255, 40))
+            if inside(x + 1.5, y + 0.5, 7):
+                img.putpixel((x + 1, y), (255, 255, 255, 40))
+    for i in range(10):
+        x, y = 92 + i, 50 - i
+        if inside(x + 0.5, y + 0.5, 7):
+            img.putpixel((x, y), (255, 255, 255, 34))
+
+    # dashboard (y=100..134): dark bakelite deck with a chrome rail, cream instrument faces
+    d.rectangle((0, 100, W - 1, H - 1), fill=rgba(BAKELITE))
+    d.rectangle((0, 100, W - 1, 102), fill=rgba(CHROME))
+    d.line((0, 100, W - 1, 100), fill=rgba(CHROME_L))
+    d.line((0, 103, W - 1, 103), fill=rgba(BLACK))
+    for y in range(104, H, 2):
+        d.line((0, y, W - 1, y), fill=rgba((46, 42, 42)))
+    # left instrument cluster: three dials on a cream plate
+    d.rounded_rectangle((6, 106, 92, 132), radius=3, fill=rgba(CREAM), outline=rgba(BLACK))
+    d.line((7, 107, 91, 107), fill=rgba(CHROME_L))
+    dial(d, img, 20, 119, 9, -150)
+    dial(d, img, 49, 119, 9, -60)
+    dial(d, img, 78, 119, 9, -110)
+    # label strips under the dials
+    for x in (14, 43, 72):
+        d.rectangle((x, 129, x + 12, 130), fill=rgba(NAVY))
+    # centre: switch bank + indicator lamps
+    d.rounded_rectangle((98, 106, 150, 132), radius=3, fill=rgba((222, 212, 186)), outline=rgba(BLACK))
+    d.line((99, 107, 149, 107), fill=rgba(CHROME_L))
+    for i, on in enumerate((True, False, True, True, False, True)):
+        toggle(d, 103 + i * 8, 112, on)
+    for i, c in enumerate((RED, AMBER_LAMP, (120, 230, 120), TEAL, AMBER_LAMP, (120, 230, 120))):
+        lamp(d, 103 + i * 8, 125, c, size=3)
+    # right: small green CRT with a phosphor trace, plus a red guarded switch
+    d.rounded_rectangle((156, 105, 200, 133), radius=3, fill=rgba(BAKELITE), outline=rgba(BLACK))
+    d.rounded_rectangle((157, 106, 199, 132), radius=2, outline=rgba(BAKELITE_L))
+    crt_glass(img, d, (159, 108, 197, 130))
+    for x in range(161, 196):
+        y = 119 + int(round(4 * math.sin((x - 161) / 3.2)))
+        px(img, [(x, y)], (92, 255, 138))
+        px(img, [(x, y + 1)], (46, 138, 74))
+    for x in range(161, 196, 4):
+        px(img, [(x, 119)], (30, 90, 50))
+    # red guarded switch and a brass plate
+    d.rectangle((208, 108, 232, 130), fill=rgba(CREAM), outline=rgba(BLACK))
+    d.line((209, 109, 231, 109), fill=rgba(CHROME_L))
+    d.rectangle((214, 113, 226, 123), fill=rgba(RED), outline=rgba(RED_D))
+    d.rectangle((216, 115, 224, 117), fill=rgba(RED_L))
+    d.line((214, 124, 226, 124), fill=rgba(BLACK))
+    d.rectangle((211, 126, 229, 128), fill=rgba(NAVY))
+    # chrome rivets along the deck edge
+    for x in range(4, W, 16):
+        rivet(img, x, 133)
+    return img.resize((W * 2, H * 2), Image.NEAREST)
+
+
 def generate():
     generate_system_map()
     save(flight_hud(), "gui", "flight_hud")
     save(flight_hud_bar(), "gui", "flight_hud_bar")
     save(rocket_plume(), "entity", "rocket_plume")
+    save(cockpit(), "gui", "cockpit")
 
 
 if __name__ == "__main__":

@@ -1326,9 +1326,11 @@ def features():
     configured("venus_tar_pit", "minecraft:lake", {"fluid": provider(B("venus_tar")), "barrier": provider(B("venus_mud"))})
     placed("venus_tar_pit", "venus_tar_pit", [rarity(9), SQUARE, heightmap("WORLD_SURFACE_WG"), biome_filter()])
     placed("venus_tar_pit_rare", "venus_tar_pit", [rarity(40), SQUARE, heightmap("WORLD_SURFACE_WG"), biome_filter()])
-    configured("venus_hot_spring", "minecraft:lake", {
-        "fluid": provider(B("minecraft:water", level=0)),
-        "barrier": provider(B("venus_black_rock", axis="y"))})
+    # hot springs: our own small feature (venus/HotSpringFeature.java). minecraft:lake must not be used for water:
+    # it looks up the biome of its whole 16x16 surface to freeze cold lakes, and the biome sampler's fuzzy zoom
+    # can then read two chunks away from the origin chunk, outside the region a feature may touch ("Requested
+    # chunk unavailable during world generation"). Tar and lava are no water, so their lakes never do that.
+    configured("venus_hot_spring", P("hot_spring"), {})
     placed("venus_hot_spring", "venus_hot_spring", [rarity(5), SQUARE, heightmap("WORLD_SURFACE_WG"), biome_filter()])
     placed("venus_hot_spring_rare", "venus_hot_spring", [rarity(30), SQUARE, heightmap("WORLD_SURFACE_WG"),
                                                          biome_filter()])

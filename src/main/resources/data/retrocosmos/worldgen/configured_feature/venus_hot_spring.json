@@ -1,23 +1,4 @@
 {
-  "type": "minecraft:lake",
-  "config": {
-    "fluid": {
-      "type": "minecraft:simple_state_provider",
-      "state": {
-        "Name": "minecraft:water",
-        "Properties": {
-          "level": "0"
-        }
-      }
-    },
-    "barrier": {
-      "type": "minecraft:simple_state_provider",
-      "state": {
-        "Name": "retrocosmos:venus_black_rock",
-        "Properties": {
-          "axis": "y"
-        }
-      }
-    }
-  }
+  "type": "retrocosmos:hot_spring",
+  "config": {}
 }

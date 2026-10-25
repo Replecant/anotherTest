@@ -149,6 +149,8 @@ public final class ModVenus {
             BLOCK_ENTITIES.register("venus_fumarole", () -> new BlockEntityType<>(FumaroleBlockEntity::new, Set.of(VENUS_FUMAROLE.get())));
     public static final DeferredHolder<Feature<?>, CinderConeFeature> CINDER_CONE =
             FEATURES.register("cinder_cone", () -> new CinderConeFeature(NoneFeatureConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>, HotSpringFeature> HOT_SPRING =
+            FEATURES.register("hot_spring", () -> new HotSpringFeature(NoneFeatureConfiguration.CODEC));
 
     private ModVenus() {}
 

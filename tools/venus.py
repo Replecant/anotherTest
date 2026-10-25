@@ -1799,7 +1799,7 @@ def biomes():
     dinos = dino_spawns_enabled()
     raptor = [spawner(P("raptor"), 60, 2, 4)] if dinos else []
     bronto = lambda w: [spawner(P("brontosaurus"), w, 2, 4)] if dinos else []
-    trike = lambda w: [spawner(P("triceratops"), w, 2, 5)] if dinos else []
+    trike = lambda w: [spawner(P("triceratops"), w, 1, 3)] if dinos else []
     # second wave: spore-creepers in the dark jungle, pteranodons roosting on the canopy and - very rarely,
     # further throttled in ModDinosaurs - the tyrannosaurus
     creeper = lambda w: [spawner(P("venus_creeper"), w, 1, 1)] if dinos else []
@@ -1850,7 +1850,7 @@ def biomes():
                  VEGETAL: ["trees_venus_plains", "patch_venus_cycad", "patch_venus_sedge_dense",
                            "patch_venus_fire_lily_plains", "patch_venus_horsetail", "patch_venus_giant_fern_sparse"]
                  + cave_life},
-          spawners={"creature": bronto(10) + trike(14) + compy(10) + anky(4), "monster": rex(3), "ambient": ambient,
+          spawners={"creature": bronto(10) + trike(5) + compy(10) + anky(4), "monster": rex(3), "ambient": ambient,
                     "underground_water_creature": caves_water})
     biome("venus_volcanic_highlands", fog="#b98a5a", water="#3a8a80", water_fog="#20403c", grass="#7a8a4a",
           foliage="#5a7a4a", temperature=1.2, downfall=0.3, sound="minecraft:music.nether.basalt_deltas",
@@ -1859,7 +1859,7 @@ def biomes():
                  ORES: common_ores + VOLCANIC_ORES, SPRINGS: springs,
                  VEGETAL: ["venus_fumarole_field", "trees_venus_highlands", "patch_venus_sedge",
                            "patch_venus_cycad_sparse", "patch_venus_fire_lily"] + cave_life},
-          spawners={"creature": trike(10) + anky(10), "monster": rex(3), "ambient": ambient,
+          spawners={"creature": trike(4) + anky(10), "monster": rex(3), "ambient": ambient,
                     "underground_water_creature": caves_water})
     biome("venus_glowcap_hollows", fog="#a78a7a", water="#3a8a8a", water_fog="#1c3a44", grass="#4a8a6a",
           foliage="#3a7a6a", temperature=0.8,

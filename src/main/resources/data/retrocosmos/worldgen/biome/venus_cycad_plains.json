@@ -98,9 +98,9 @@
       },
       {
         "type": "retrocosmos:triceratops",
-        "maxCount": 5,
-        "minCount": 2,
-        "weight": 14
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 5
       },
       {
         "type": "retrocosmos:compsognathus",

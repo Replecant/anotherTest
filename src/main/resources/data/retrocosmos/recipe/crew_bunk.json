@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AAA",
+    "CCC",
+    "AAA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "C": "minecraft:cyan_wool"
+  },
+  "result": {
+    "id": "retrocosmos:crew_bunk",
+    "count": 1
+  }
+}

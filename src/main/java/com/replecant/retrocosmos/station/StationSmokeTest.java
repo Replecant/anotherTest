@@ -70,8 +70,10 @@ public final class StationSmokeTest {
             }
         }
         boolean arrivalOk = layout.isPressurized(layout.arrival().getX() + 0.5, layout.arrival().getY() + 1.5, layout.arrival().getZ() + 0.5);
-        boolean ok = pad >= LaunchSite.PAD_SIZE && tower >= 6 && blocked == 0 && arrivalOk;
-        RetroCosmos.LOGGER.info("STATION SMOKE {}: origin={} pad={}/9 tower={} blockedAbovePad={} arrivalPressurized={} compartments={}",
-                ok ? "OK" : "FAIL", layout.origin(), pad, tower, blocked, arrivalOk, layout.pressurized().size());
+        var problems = FreedomStation.audit(level, layout);
+        problems.stream().limit(200).forEach(problem -> RetroCosmos.LOGGER.warn("STATION AUDIT {}", problem));
+        boolean ok = pad >= LaunchSite.PAD_SIZE && tower >= 6 && blocked == 0 && arrivalOk && problems.isEmpty();
+        RetroCosmos.LOGGER.info("STATION SMOKE {}: origin={} pad={}/9 tower={} blockedAbovePad={} arrivalPressurized={} compartments={} auditProblems={}",
+                ok ? "OK" : "FAIL", layout.origin(), pad, tower, blocked, arrivalOk, layout.pressurized().size(), problems.size());
     }
 }

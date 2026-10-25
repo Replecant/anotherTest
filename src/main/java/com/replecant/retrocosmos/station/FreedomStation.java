@@ -36,9 +36,13 @@ public final class FreedomStation {
     private static final Identifier ANCHORS = Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "station/freedom_station.json");
     /** Height of the structure's lowest layer. */
     private static final int BASE_Y = 96;
+    /** Bump when the station design changes: older stations are cleared and rebuilt on the next flight there. */
+    public static final int VERSION = 1;
+    /** Region wiped before a rebuild (covers every station version so far). */
+    private static final int CLEAR_RADIUS = 72, CLEAR_MIN_Y = BASE_Y - 16, CLEAR_MAX_Y = BASE_Y + 64;
 
     /** Station layout in world coordinates. */
-    public record Layout(BlockPos origin, BlockPos padCenter, BlockPos arrival, List<AABB> pressurized) {
+    public record Layout(BlockPos origin, BlockPos size, BlockPos padCenter, BlockPos arrival, List<AABB> pressurized) {
         /** Where the rocket's engine block stands: on top of the center pad block. */
         public BlockPos padBase() {
             return padCenter.above();
@@ -88,7 +92,7 @@ public final class FreedomStation {
                         boxes.add(new AABB(origin.getX() + a.get(0).getAsInt(), origin.getY() + a.get(1).getAsInt(), origin.getZ() + a.get(2).getAsInt(),
                                 origin.getX() + a.get(3).getAsInt() + 1, origin.getY() + a.get(4).getAsInt() + 1, origin.getZ() + a.get(5).getAsInt() + 1));
                     }
-                    layout = new Layout(origin, origin.offset(pos(json.getAsJsonArray("pad_center"))),
+                    layout = new Layout(origin, size, origin.offset(pos(json.getAsJsonArray("pad_center"))),
                             origin.offset(pos(json.getAsJsonArray("arrival"))), List.copyOf(boxes));
                 }
             } catch (Exception e) {
@@ -111,15 +115,20 @@ public final class FreedomStation {
             return null;
         }
         StationData data = level.getDataStorage().computeIfAbsent(StationData.TYPE);
-        if (data.placed()) {
+        if (data.placed() && data.version() >= VERSION) {
             return layout;
+        }
+        if (data.placed()) {
+            RetroCosmos.LOGGER.info("Retro Cosmos: replacing Freedom Station v{} with v{}", data.version(), VERSION);
+            clearOldStation(level);
         }
         StructureTemplate template = level.getStructureManager().get(STRUCTURE).orElse(null);
         if (template == null) {
             RetroCosmos.LOGGER.error("Retro Cosmos: missing structure {}", STRUCTURE);
             return null;
         }
-        template.placeInWorld(level, layout.origin(), layout.origin(), new StructurePlaceSettings(), level.getRandom(), Block.UPDATE_CLIENTS);
+        template.placeInWorld(level, layout.origin(), layout.origin(), new StructurePlaceSettings(), level.getRandom(),
+                Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         // the template stores plain pad blocks; give the 3x3 its edge/corner/center look
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
@@ -130,9 +139,60 @@ public final class FreedomStation {
                 }
             }
         }
-        data.markPlaced();
+        data.markPlaced(VERSION);
         RetroCosmos.LOGGER.info("Retro Cosmos: Freedom Station built at {}", layout.origin());
         return layout;
+    }
+
+    private static void clearOldStation(ServerLevel level) {
+        BlockState air = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        for (int x = -CLEAR_RADIUS; x <= CLEAR_RADIUS; x++) {
+            for (int z = -CLEAR_RADIUS; z <= CLEAR_RADIUS; z++) {
+                for (int y = CLEAR_MIN_Y; y <= CLEAR_MAX_Y; y++) {
+                    p.set(x, y, z);
+                    if (!level.getBlockState(p).isAir()) {
+                        level.removeBlockEntity(p);
+                        level.setBlock(p, air, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_SUPPRESS_DROPS);
+                    }
+                }
+            }
+        }
+        AABB box = new AABB(-CLEAR_RADIUS, CLEAR_MIN_Y, -CLEAR_RADIUS, CLEAR_RADIUS + 1, CLEAR_MAX_Y + 1, CLEAR_RADIUS + 1);
+        level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, box, e -> !(e instanceof net.minecraft.world.entity.player.Player))
+                .forEach(net.minecraft.world.entity.Entity::discard);
+    }
+
+    /**
+     * Checks a built station the way the game will later: every block must be able to stay where it is
+     * (supports present) and must already have the shape its neighbours imply (panes, stairs, walls...).
+     * Returns human-readable problems with structure-local coordinates; empty when everything is fine.
+     */
+    public static List<String> audit(ServerLevel level, Layout layout) {
+        List<String> problems = new ArrayList<>();
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        BlockPos o = layout.origin();
+        for (int x = 0; x < layout.size().getX(); x++) {
+            for (int y = 0; y < layout.size().getY(); y++) {
+                for (int z = 0; z < layout.size().getZ(); z++) {
+                    p.set(o.getX() + x, o.getY() + y, o.getZ() + z);
+                    BlockState state = level.getBlockState(p);
+                    if (state.isAir()) {
+                        continue;
+                    }
+                    String where = x + " " + y + " " + z;
+                    if (!state.canSurvive(level, p)) {
+                        problems.add("unsupported " + state + " at " + where);
+                        continue;
+                    }
+                    BlockState shaped = Block.updateFromNeighbourShapes(state, level, p);
+                    if (shaped != state) {
+                        problems.add("shape " + state + " -> " + shaped + " at " + where);
+                    }
+                }
+            }
+        }
+        return problems;
     }
 
     /** Whether a position counts as vacuum: anywhere in orbit outside the station's pressurised compartments. */

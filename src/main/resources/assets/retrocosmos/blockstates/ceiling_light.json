@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "retrocosmos:block/ceiling_light"
+    },
+    "lit=true": {
+      "model": "retrocosmos:block/ceiling_light_on"
+    }
+  }
+}

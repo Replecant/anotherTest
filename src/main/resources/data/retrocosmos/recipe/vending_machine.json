@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "RGR",
+    "RVR",
+    "RIR"
+  ],
+  "key": {
+    "R": "minecraft:red_concrete",
+    "G": "minecraft:glass_pane",
+    "V": "retrocosmos:vacuum_tube",
+    "I": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "retrocosmos:vending_machine",
+    "count": 1
+  }
+}

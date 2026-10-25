@@ -1,0 +1,70 @@
+{
+  "textures": {
+    "brass": "retrocosmos:block/brass",
+    "chart": "retrocosmos:block/star_chart",
+    "chart_on": "retrocosmos:block/star_chart_on",
+    "particle": "retrocosmos:block/brass"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        1,
+        1,
+        15
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#chart"
+        },
+        "east": {
+          "uv": [
+            0,
+            1,
+            1,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            15,
+            1,
+            16,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            1,
+            15,
+            15,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            1,
+            0,
+            15,
+            1
+          ],
+          "texture": "#brass"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " N ",
+    "NGN",
+    " A "
+  ],
+  "key": {
+    "N": "minecraft:gold_nugget",
+    "G": "minecraft:glowstone",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:wall_sconce",
+    "count": 2
+  }
+}

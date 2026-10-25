@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/oxygen_tank_rack"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/oxygen_tank_rack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/oxygen_tank_rack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/oxygen_tank_rack",
+      "y": 270
+    }
+  }
+}

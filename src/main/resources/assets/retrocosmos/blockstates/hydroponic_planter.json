@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "retrocosmos:block/hydroponic_planter"
+    },
+    "lit=true": {
+      "model": "retrocosmos:block/hydroponic_planter_on"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AGA",
+    "GGG",
+    "AGA"
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "G": "minecraft:glass"
+  },
+  "result": {
+    "id": "retrocosmos:hull_window",
+    "count": 4
+  }
+}

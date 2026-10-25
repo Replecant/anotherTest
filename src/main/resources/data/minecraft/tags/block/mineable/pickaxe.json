@@ -25,6 +25,23 @@
     "retrocosmos:checkered_tile",
     "retrocosmos:turquoise_panel",
     "retrocosmos:cream_panel",
-    "retrocosmos:chrome_trim"
+    "retrocosmos:chrome_trim",
+    "retrocosmos:control_panel",
+    "retrocosmos:radar_scope",
+    "retrocosmos:computer_bank",
+    "retrocosmos:captain_chair",
+    "retrocosmos:hydroponic_planter",
+    "retrocosmos:oxygen_tank_rack",
+    "retrocosmos:vending_machine",
+    "retrocosmos:star_chart",
+    "retrocosmos:ceiling_light",
+    "retrocosmos:wall_sconce",
+    "retrocosmos:telescope",
+    "retrocosmos:space_globe",
+    "retrocosmos:reactor_core",
+    "retrocosmos:floor_grate",
+    "retrocosmos:hull_panel",
+    "retrocosmos:hull_panel_striped",
+    "retrocosmos:hull_window"
   ]
 }

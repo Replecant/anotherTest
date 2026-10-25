@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "retrocosmos:block/hull_panel",
+    "side": "retrocosmos:block/hull_panel_striped"
+  }
+}

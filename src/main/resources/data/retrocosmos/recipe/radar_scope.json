@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " G ",
+    "VRV",
+    "TTT"
+  ],
+  "key": {
+    "G": "minecraft:glass_pane",
+    "V": "retrocosmos:vacuum_tube",
+    "R": "minecraft:compass",
+    "T": "retrocosmos:titanium_plate"
+  },
+  "result": {
+    "id": "retrocosmos:radar_scope",
+    "count": 1
+  }
+}

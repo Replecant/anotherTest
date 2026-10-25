@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "LLL",
+    "SDS",
+    "AAA"
+  ],
+  "key": {
+    "L": "minecraft:glowstone_dust",
+    "S": "#minecraft:saplings",
+    "D": "minecraft:dirt",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:hydroponic_planter",
+    "count": 2
+  }
+}

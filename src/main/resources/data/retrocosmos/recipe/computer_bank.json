@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "TVT",
+    "RGR",
+    "TVT"
+  ],
+  "key": {
+    "T": "retrocosmos:titanium_plate",
+    "V": "retrocosmos:vacuum_tube",
+    "R": "minecraft:redstone",
+    "G": "retrocosmos:guidance_computer"
+  },
+  "result": {
+    "id": "retrocosmos:computer_bank",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "B B",
+    " B ",
+    "B B"
+  ],
+  "key": {
+    "B": "minecraft:iron_bars"
+  },
+  "result": {
+    "id": "retrocosmos:floor_grate",
+    "count": 4
+  }
+}

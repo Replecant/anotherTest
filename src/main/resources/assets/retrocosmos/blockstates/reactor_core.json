@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "retrocosmos:block/reactor_core"
+    },
+    "lit=true": {
+      "model": "retrocosmos:block/reactor_core_on"
+    }
+  }
+}

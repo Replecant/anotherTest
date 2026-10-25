@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " B ",
+    " A ",
+    "AAA"
+  ],
+  "key": {
+    "B": "minecraft:lapis_block",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:space_globe",
+    "count": 1
+  }
+}

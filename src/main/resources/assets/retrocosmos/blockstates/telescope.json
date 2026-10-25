@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/telescope"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/telescope",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/telescope",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/telescope",
+      "y": 270
+    }
+  }
+}

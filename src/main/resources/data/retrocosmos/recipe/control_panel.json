@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "VRV",
+    "TGT"
+  ],
+  "key": {
+    "V": "retrocosmos:vacuum_tube",
+    "R": "minecraft:redstone",
+    "T": "retrocosmos:titanium_plate",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "retrocosmos:control_panel",
+    "count": 1
+  }
+}

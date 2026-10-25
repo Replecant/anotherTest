@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PLP",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "L": "minecraft:glowstone_dust"
+  },
+  "result": {
+    "id": "retrocosmos:star_chart",
+    "count": 1
+  }
+}

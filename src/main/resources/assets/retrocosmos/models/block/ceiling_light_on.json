@@ -1,0 +1,131 @@
+{
+  "textures": {
+    "panel": "retrocosmos:block/light_panel",
+    "panel_on": "retrocosmos:block/light_panel_on",
+    "chrome": "retrocosmos:block/stool_chrome",
+    "ctop": "retrocosmos:block/chrome_top",
+    "particle": "retrocosmos:block/stool_chrome"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        2,
+        15,
+        2
+      ],
+      "to": [
+        14,
+        16,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            0,
+            14,
+            1
+          ],
+          "texture": "#chrome"
+        },
+        "south": {
+          "uv": [
+            2,
+            0,
+            14,
+            1
+          ],
+          "texture": "#chrome"
+        },
+        "east": {
+          "uv": [
+            2,
+            0,
+            14,
+            1
+          ],
+          "texture": "#chrome"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            14,
+            1
+          ],
+          "texture": "#chrome"
+        },
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#ctop"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        14,
+        3
+      ],
+      "to": [
+        13,
+        15,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            1,
+            13,
+            2
+          ],
+          "texture": "#panel_on"
+        },
+        "south": {
+          "uv": [
+            3,
+            1,
+            13,
+            2
+          ],
+          "texture": "#panel_on"
+        },
+        "east": {
+          "uv": [
+            3,
+            1,
+            13,
+            2
+          ],
+          "texture": "#panel_on"
+        },
+        "west": {
+          "uv": [
+            3,
+            1,
+            13,
+            2
+          ],
+          "texture": "#panel_on"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#panel_on"
+        }
+      },
+      "shade": false
+    }
+  ]
+}

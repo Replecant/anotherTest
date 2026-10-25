@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "AAA",
+    " G "
+  ],
+  "key": {
+    "A": "retrocosmos:aluminum_plate",
+    "G": "minecraft:glowstone"
+  },
+  "result": {
+    "id": "retrocosmos:ceiling_light",
+    "count": 4
+  }
+}

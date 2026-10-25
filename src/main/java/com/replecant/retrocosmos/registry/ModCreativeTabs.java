@@ -42,5 +42,12 @@ public final class ModCreativeTabs {
             .displayItems((params, output) -> ModFurniture.items().forEach(item -> output.accept(item.get())))
             .build());
 
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> STATION = TABS.register("station", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.retrocosmos.station"))
+            .icon(() -> new ItemStack(ModFurniture.CONTROL_PANEL.get()))
+            .withTabsBefore(HOME.getKey())
+            .displayItems((params, output) -> ModFurniture.stationItems().forEach(item -> output.accept(item.get())))
+            .build());
+
     private ModCreativeTabs() {}
 }

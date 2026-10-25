@@ -1,0 +1,141 @@
+{
+  "textures": {
+    "side": "retrocosmos:block/computer_side",
+    "front": "retrocosmos:block/computer_front",
+    "front_on": "retrocosmos:block/computer_front_on",
+    "cream": "retrocosmos:block/st_cream",
+    "teal": "retrocosmos:block/st_teal",
+    "particle": "retrocosmos:block/computer_side"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        2
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#front_on"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            0,
+            2,
+            16,
+            16
+          ],
+          "texture": "#cream"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            14
+          ],
+          "texture": "#teal"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        2,
+        3,
+        1
+      ],
+      "to": [
+        14,
+        4,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            12,
+            14,
+            13
+          ],
+          "texture": "#teal"
+        },
+        "east": {
+          "uv": [
+            14,
+            12,
+            15,
+            13
+          ],
+          "texture": "#teal"
+        },
+        "west": {
+          "uv": [
+            1,
+            12,
+            2,
+            13
+          ],
+          "texture": "#teal"
+        },
+        "up": {
+          "uv": [
+            2,
+            1,
+            14,
+            2
+          ],
+          "texture": "#teal"
+        },
+        "down": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#teal"
+        }
+      }
+    }
+  ]
+}

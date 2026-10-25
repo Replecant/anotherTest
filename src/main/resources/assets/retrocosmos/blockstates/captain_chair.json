@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "retrocosmos:block/captain_chair"
+    },
+    "facing=east": {
+      "model": "retrocosmos:block/captain_chair",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "retrocosmos:block/captain_chair",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "retrocosmos:block/captain_chair",
+      "y": 270
+    }
+  }
+}

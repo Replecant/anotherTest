@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "H",
+    "R"
+  ],
+  "key": {
+    "H": "retrocosmos:hull_panel",
+    "R": "minecraft:red_dye"
+  },
+  "result": {
+    "id": "retrocosmos:hull_panel_striped",
+    "count": 1
+  }
+}

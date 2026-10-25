@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "OOO",
+    "A A"
+  ],
+  "key": {
+    "O": "retrocosmos:liquid_oxygen_canister",
+    "A": "retrocosmos:aluminum_plate"
+  },
+  "result": {
+    "id": "retrocosmos:oxygen_tank_rack",
+    "count": 1
+  }
+}

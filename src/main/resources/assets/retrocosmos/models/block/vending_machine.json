@@ -1,0 +1,141 @@
+{
+  "textures": {
+    "side": "retrocosmos:block/vending_side",
+    "front": "retrocosmos:block/vending_front",
+    "front_on": "retrocosmos:block/vending_front_on",
+    "red": "retrocosmos:block/st_red",
+    "chrome": "retrocosmos:block/stool_chrome",
+    "ctop": "retrocosmos:block/chrome_top",
+    "particle": "retrocosmos:block/vending_side"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        2
+      ],
+      "to": [
+        15,
+        16,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            0,
+            15,
+            16
+          ],
+          "texture": "#front"
+        },
+        "south": {
+          "uv": [
+            1,
+            0,
+            15,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            1,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            15,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            1,
+            2,
+            15,
+            15
+          ],
+          "texture": "#red"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            14
+          ],
+          "texture": "#red"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        2,
+        1.5
+      ],
+      "to": [
+        12,
+        3,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            13,
+            12,
+            14
+          ],
+          "texture": "#chrome"
+        },
+        "east": {
+          "uv": [
+            14,
+            13,
+            14.5,
+            14
+          ],
+          "texture": "#chrome"
+        },
+        "west": {
+          "uv": [
+            1.5,
+            13,
+            2,
+            14
+          ],
+          "texture": "#chrome"
+        },
+        "up": {
+          "uv": [
+            4,
+            1.5,
+            12,
+            2
+          ],
+          "texture": "#chrome"
+        },
+        "down": {
+          "uv": [
+            4,
+            14,
+            12,
+            14.5
+          ],
+          "texture": "#chrome"
+        }
+      }
+    }
+  ]
+}

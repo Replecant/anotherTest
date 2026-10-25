@@ -389,6 +389,7 @@ MOD_SCHEMAS = {
     WORKBENCH: {"facing": HORIZ}, STOVE: {"facing": HORIZ, "lit": BOOL}, SINK: {"facing": HORIZ},
     TAPE: {"facing": HORIZ}, STATION_DOOR: _DOOR, AIRLOCK_DOOR: _DOOR,
     VENDING: {"facing": HORIZ, "lit": BOOL, "half": _HALF},
+    CREW_BUNK: {"facing": HORIZ, "part": ("foot", "head")},
 }
 for _p in POSTERS:
     MOD_SCHEMAS[_p] = {"facing": HORIZ, "half": _HALF}
@@ -547,6 +548,15 @@ class Room(Region):
         f = self.wdir(toward)
         ok = self.put(u, v, 0, bed_id(color), {"facing": f, "part": "foot", "occupied": "false"})
         ok &= self.put(hu, hv, 0, bed_id(color), {"facing": f, "part": "head", "occupied": "false"})
+        return ok
+
+    def bunk(self, u, v, toward_head):
+        """Two-block crew bunk: foot at (u, v), head one step `toward_head` (against a wall).  The block's
+        facing is the direction the foot end faces, i.e. away from the head."""
+        hu, hv = self.step(u, v, toward_head)
+        f = self.wdir(LOCAL_OPP[toward_head])
+        ok = self.put(u, v, 0, CREW_BUNK, {"facing": f, "part": "foot"})
+        ok &= self.put(hu, hv, 0, CREW_BUNK, {"facing": f, "part": "head"})
         return ok
 
     def tall(self, u, v, h, name, facing, lit=None, nbt=None):
@@ -1390,10 +1400,10 @@ class Furnisher:
         r.desk(4, 7)
         r.wall(4, 7, 1, CONTROL_PANEL, "back", lit=False)
         r.chest(5, 7, 0, "front", [("minecraft:paper", 16), ("minecraft:honey_bottle", 6), ("minecraft:milk_bucket", 1)])
-        r.fput(7, 4, 0, CREW_BUNK, "front")         # examination couch under the surgery lamp
-        r.light(7, 4, CHANDELIER)
-        r.desk(6, 4, RADAR_SCOPE, facing="right", lit=False)
-        r.stool(6, 3)
+        r.bunk(7, 6, "back")                        # examination couch, head at the hull, under the surgery lamp
+        r.light(7, 6, CHANDELIER)
+        r.desk(6, 6, RADAR_SCOPE, facing="right", lit=False)
+        r.stool(6, 5)
         for v in (2, 3, 4, 5):                      # medicine cabinets on the left wall
             r.chest(0, v, 0, "right", [("minecraft:glass_bottle", 4)])
             r.chest(0, v, 1, "right", [("minecraft:paper", 4)])
@@ -1408,11 +1418,10 @@ class Furnisher:
 
     # ------------------------------------------------------------- DECK D
     def cabin(self, r, n):
-        c1, c2 = (("red", "white") if n % 2 else ("white", "red"))
         rug = ("red", "light_blue", "cyan")[n % 3]
         r.window([1, 3], [1], "back", PORTHOLE)
-        r.bed(1, 7, "left", c1)            # two berths along the hull, heads to the side walls
-        r.bed(3, 7, "right", c2)
+        r.bunk(1, 7, "left")               # two full-length berths along the hull, heads against the side walls,
+        r.bunk(3, 7, "right")              # a porthole above each berth
         r.wall(2, 7, 1, CLOCK, "back")      # clock between the berths
         r.desk(0, 4, LAMP, facing="right", mat=SPRUCE_SLAB, lit=n % 2 == 1)
         r.stool(1, 4)
@@ -1905,6 +1914,18 @@ class Checker:
                         self.fail(f"door at {c} has no upper half")
                 elif st.get(below) != name:
                     self.fail(f"upper door at {c} without lower half")
+            if name == CREW_BUNK:
+                dx, dz = DIRS[props["facing"]]
+                sgn = -1 if props["part"] == "foot" else 1      # head lies behind the foot (against facing)
+                other = (c[0] + sgn * dx, c[1], c[2] + sgn * dz)
+                if st.get(other) != name or st.props(other).get("part") == props["part"] \
+                        or st.props(other).get("facing") != props["facing"]:
+                    self.fail(f"crew bunk half at {c} is not paired")
+                if st.get(below) not in FULL_CUBES:
+                    self.fail(f"crew bunk at {c} stands on {st.get(below)}")
+                if props["part"] == "head" and not any(
+                        st.get((c[0] + ex, c[1], c[2] + ez)) in WALL_BLOCKS for ex, ez in DIRS.values()):
+                    self.fail(f"crew bunk head at {c} is not against a wall")
             if name in BEDS and name != CREW_BUNK:
                 if st.get(below) not in FULL_CUBES:
                     self.fail(f"bed at {c} stands on {st.get(below)}")
@@ -2147,9 +2168,11 @@ class Checker:
             near = [(x + dx, y - k, z + dz) for dx, dz in DIRS.values() for k in range(3)]
             if name in BEDS or name in SEATS_FACING or name == STOOL:
                 near.append(st.above(c))
-            if name in BEDS and name != CREW_BUNK:
+            if name in BEDS:
                 dx, dz = DIRS[st.props(c)["facing"]]
                 sgn = 1 if st.props(c)["part"] == "foot" else -1
+                if name == CREW_BUNK:
+                    sgn = -sgn
                 o = (x + sgn * dx, y, z + sgn * dz)
                 near += [(o[0] + ex, y, o[2] + ez) for ex, ez in DIRS.values()]
             if not any(n in seen for n in near):

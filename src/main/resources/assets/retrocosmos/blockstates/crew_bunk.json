@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=north": {
-      "model": "retrocosmos:block/crew_bunk"
+    "facing=north,part=foot": {
+      "model": "retrocosmos:block/crew_bunk_foot"
     },
-    "facing=east": {
-      "model": "retrocosmos:block/crew_bunk",
+    "facing=north,part=head": {
+      "model": "retrocosmos:block/crew_bunk_head"
+    },
+    "facing=east,part=foot": {
+      "model": "retrocosmos:block/crew_bunk_foot",
       "y": 90
     },
-    "facing=south": {
-      "model": "retrocosmos:block/crew_bunk",
+    "facing=east,part=head": {
+      "model": "retrocosmos:block/crew_bunk_head",
+      "y": 90
+    },
+    "facing=south,part=foot": {
+      "model": "retrocosmos:block/crew_bunk_foot",
       "y": 180
     },
-    "facing=west": {
-      "model": "retrocosmos:block/crew_bunk",
+    "facing=south,part=head": {
+      "model": "retrocosmos:block/crew_bunk_head",
+      "y": 180
+    },
+    "facing=west,part=foot": {
+      "model": "retrocosmos:block/crew_bunk_foot",
+      "y": 270
+    },
+    "facing=west,part=head": {
+      "model": "retrocosmos:block/crew_bunk_head",
       "y": 270
     }
   }

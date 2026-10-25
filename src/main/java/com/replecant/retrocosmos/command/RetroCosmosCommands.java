@@ -31,7 +31,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * /retrocosmos oxygen on|off [player]      - airless-environment simulation (test toggle, permission level 2)
  * /retrocosmos oxygen set &lt;seconds&gt; [player] - set the worn suit's oxygen
  * /retrocosmos hud on|off                  - suit telemetry HUD
- * /retrocosmos tp station|homestead [player] - teleport to Freedom Station / to the player's home pad (level 2)
+ * /retrocosmos tp station|earth [player] - teleport to Freedom Station / to the player's home pad (level 2)
  * /retrocosmos station rebuild             - wipe and rebuild Freedom Station from the current design (level 2)
  * </pre>
  */
@@ -61,7 +61,7 @@ public final class RetroCosmosCommands {
 
         LiteralArgumentBuilder<CommandSourceStack> tp = Commands.literal("tp")
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
-        for (String target : new String[] {RocketEntity.FREEDOM_STATION, "station", RocketEntity.HOMESTEAD, "home"}) {
+        for (String target : new String[] {RocketEntity.FREEDOM_STATION, "station", RocketEntity.EARTH, "home"}) {
             tp.then(Commands.literal(target)
                     .executes(ctx -> teleport(ctx, ctx.getSource().getPlayerOrException(), target))
                     .then(Commands.argument("player", EntityArgument.player())

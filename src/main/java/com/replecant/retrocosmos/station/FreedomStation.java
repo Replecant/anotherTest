@@ -25,7 +25,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.phys.AABB;
 
 /**
- * Freedom Station («Свобода»): an uncrewed Atomic Age station in orbit of Homestead, living in its own
+ * Freedom Station («Свобода»): an uncrewed Atomic Age station in orbit of Earth, living in its own
  * "orbit" dimension. It is built from a structure template the first time a rocket heads there.
  * Anchors (docking pad, arrival spot, pressurised compartments) come from data/retrocosmos/station/freedom_station.json.
  */
@@ -37,7 +37,7 @@ public final class FreedomStation {
     /** Height of the structure's lowest layer. */
     private static final int BASE_Y = 96;
     /** Bump when the station design changes: older stations are cleared and rebuilt on the next flight there. */
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
     /** Region wiped before a rebuild (covers every station version so far). */
     private static final int CLEAR_RADIUS = 72, CLEAR_MIN_Y = BASE_Y - 16, CLEAR_MAX_Y = BASE_Y + 64;
 

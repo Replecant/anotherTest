@@ -20,7 +20,7 @@ public final class ModAttachments {
                     .copyOnDeath()
                     .build());
 
-    /** Where the player last launched from on Homestead. */
+    /** Where the player last launched from on Earth. */
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<HomePad>> HOME_PAD = ATTACHMENTS.register("home_pad",
             () -> AttachmentType.builder(() -> HomePad.UNKNOWN)
                     .serialize(HomePad.CODEC.fieldOf("home_pad"))

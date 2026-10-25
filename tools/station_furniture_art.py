@@ -235,15 +235,65 @@ def chair_arm_top():
     return img
 
 
-def bunk_top():
-    """Mattress top (block space): teal with a white sheet fold near the pillow end."""
+def bunk_frame(drawer=False):
+    """Bed frame side (block space, frame spans y 2..5 = rows 11..13): enamel with a chrome rail;
+    the foot block's sides carry a little storage drawer."""
+    img = flat(ENAMEL)
+    R(img, 0, 11, 15, 11, CHROME)
+    R(img, 0, 13, 15, 13, ENAMEL_D)
+    if drawer:
+        R(img, 4, 12, 11, 13, ENAMEL_L)
+        R(img, 3, 12, 3, 13, ENAMEL_SEAM)
+        R(img, 12, 12, 12, 13, ENAMEL_SEAM)
+        R(img, 7, 12, 8, 12, CHROME_D)
+    return img
+
+
+def bunk_blanket_top(foot):
+    """Blanket top (block space): teal with quilting seams and piped edges; two cream stripes at the foot."""
     img = flat(TEAL)
-    R(img, 0, 15, 15, 15, TEAL_D)
-    for x in range(16):
-        if x % 8 == 7:
-            R(img, x, 0, x, 15, TEAL_D)
-    R(img, 1, 9, 14, 10, ENAMEL)
-    R(img, 1, 11, 14, 11, ENAMEL_D)
+    R(img, 0, 0, 0, 15, TEAL_L)
+    R(img, 15, 0, 15, 15, TEAL_D)
+    for x in (4, 11):
+        for z in range(0, 16, 2):
+            px(img, [(x, z)], TEAL_D)
+    if foot:
+        R(img, 0, 0, 15, 0, TEAL_D)
+        for z in (3, 5):
+            R(img, 1, z, 14, z, CREAM)
+    return img
+
+
+def bunk_blanket_side():
+    """Blanket drape (y 5..9 = rows 7..10): teal with a darker hem and a light fold at the top edge."""
+    img = flat(TEAL)
+    R(img, 0, 7, 15, 7, TEAL_L)
+    R(img, 0, 10, 15, 10, TEAL_D)
+    return img
+
+
+def bunk_sheet():
+    img = flat(ENAMEL)
+    R(img, 0, 0, 15, 0, ENAMEL_L)
+    R(img, 0, 10, 15, 10, ENAMEL_D)
+    return img
+
+
+def bunk_pillow():
+    """Pillow (top and sides): white with a piped seam and a soft dimple."""
+    img = flat(ENAMEL_L)
+    R(img, 0, 0, 15, 15, ENAMEL_L)
+    for i in range(16):
+        px(img, [(i, 0), (i, 15), (0, i), (15, i)], ENAMEL_D)
+    R(img, 6, 9, 9, 10, ENAMEL)
+    return img
+
+
+def bunk_headboard():
+    img = flat(ENAMEL)
+    R(img, 0, 15, 15, 15, ENAMEL_SEAM)
+    R(img, 0, 5, 15, 5, RED)
+    R(img, 0, 6, 15, 6, RED_D)
     return img
 
 
@@ -301,7 +351,7 @@ def gauge():
 
 
 def star_chart(lit, frame=0):
-    """Block space (x 1..15, y 1..15): dark chart with the amber Vesper star and planet orbits."""
+    """Block space (x 1..15, y 1..15): dark chart with the amber Sun and planet orbits."""
     img = flat(BRASS)
     bg = (24, 30, 56) if lit else (16, 18, 34)
     R(img, 2, 2, 13, 13, bg)
@@ -368,7 +418,7 @@ def lens():
 
 
 def globe_map():
-    """32x32 sheet; the drum wraps texels 0..23 (uv 0..12) of rows 13..18 (uv 6.5..9.5): Homestead's
+    """32x32 sheet; the drum wraps texels 0..23 (uv 0..12) of rows 13..18 (uv 6.5..9.5): Earth-like
     teal oceans and tan continents, polar ice at the band edges."""
     img = new(32, 32)
     R(img, 0, 0, 31, 31, OCEAN)
@@ -496,7 +546,14 @@ def generate_textures():
     tex_anim("computer_front_on", [computer_front(True, f) for f in range(6)], 3)
     tex("computer_side", computer_side())
     tex("chair_arm_top", chair_arm_top())
-    tex("bunk_top", bunk_top())
+    tex("bunk_frame", bunk_frame())
+    tex("bunk_frame_drawer", bunk_frame(drawer=True))
+    tex("bunk_blanket_top", bunk_blanket_top(False))
+    tex("bunk_blanket_top_foot", bunk_blanket_top(True))
+    tex("bunk_blanket_side", bunk_blanket_side())
+    tex("bunk_sheet", bunk_sheet())
+    tex("bunk_pillow", bunk_pillow())
+    tex("bunk_headboard", bunk_headboard())
     tex("hydro_top", hydro_top())
     tex("hydro_crop", hydro_crop())
     tex("grow_lamp", grow_lamp(False))
@@ -599,22 +656,74 @@ def captain_chair():
     return m.write("captain_chair")
 
 
+BUNK_TEX = {"frame": "bunk_frame", "drawer": "bunk_frame_drawer", "btop": "bunk_blanket_top",
+            "btop_foot": "bunk_blanket_top_foot", "bside": "bunk_blanket_side", "sheet": "bunk_sheet",
+            "pillow": "bunk_pillow", "board": "bunk_headboard", "pad": "red_tufted", "lamp": "sconce_bulb_on",
+            "enamel": "st_enamel", **CHROME_T}
+
+BED_DISPLAY = {   # the item model is centred on the pivot (foot z -8..8, head z 8..24)
+    "gui": {"rotation": [30, 160, 0], "translation": [0, 1, 0], "scale": [0.5, 0.5, 0.5]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25, 0.25, 0.25]},
+    "head": {"rotation": [0, 180, 0], "translation": [0, 10, 0], "scale": [0.8, 0.8, 0.8]},
+    "fixed": {"rotation": [0, 180, 0], "translation": [0, 1, 0], "scale": [0.5, 0.5, 0.5]},
+    "thirdperson_righthand": {"rotation": [30, 160, 0], "translation": [0, 3, 0], "scale": [0.23, 0.23, 0.23]},
+    "thirdperson_lefthand": {"rotation": [30, 160, 0], "translation": [0, 3, 0], "scale": [0.23, 0.23, 0.23]},
+    "firstperson_righthand": {"rotation": [30, 160, 0], "translation": [0, 3, 0], "scale": [0.3, 0.3, 0.3]},
+    "firstperson_lefthand": {"rotation": [30, 160, 0], "translation": [0, 3, 0], "scale": [0.3, 0.3, 0.3]},
+}
+
+
+def bunk_parts(m, part, dz=0):
+    """Crew berth, authored for facing=north: the foot block at the north end, the head block behind it
+    (z+1). Mattress / blanket top at y=9 like a vanilla bed."""
+    def b(frm, to, *a, **k):
+        return m.box((frm[0], frm[1], frm[2] + dz), (to[0], to[1], to[2] + dz), *a, **k)
+    if part == "foot":
+        for x in (1, 13):
+            b((x, 0, 1), (x + 2, 2, 3), "chrome", faces=SIDES + ("down",))
+        b((1, 2, 1), (15, 5, 16), "frame", faces=("north", "east", "west", "down"),
+          face_tex={"east": "drawer", "west": "drawer", "down": "enamel"})
+        b((1.5, 3, 0.5), (14.5, 4, 1), "chrome", faces=("north", "east", "west", "up", "down"))   # foot rail
+        b((0, 5, 0), (16, 9, 16), "bside", faces=("north", "east", "west", "up", "down"),
+          face_tex={"up": "btop_foot", "down": "sheet"})
+    else:
+        b((1, 2, 0), (15, 5, 13), "frame", faces=("east", "west", "down"), face_tex={"down": "enamel"})
+        b((0, 0, 13), (16, 13, 16), "board", faces=("north", "south", "east", "west", "down"))
+        b((0, 13, 13), (16, 14, 16), "chrome", faces=("north", "south", "east", "west", "up"),
+          face_tex={"up": "ctop"})
+        # blanket, turned-down sheet and the sheet under the pillow
+        b((0, 5, 0), (16, 9, 6), "bside", faces=("east", "west", "up", "down"), face_tex={"up": "btop", "down": "sheet"})
+        b((0, 5, 6), (16, 9, 13), "sheet", faces=("east", "west", "up", "down"))
+        b((0, 9, 4), (16, 9.5, 7), "sheet", faces=("north", "south", "east", "west", "up"))
+        b((2, 9, 8), (14, 11, 12), "pillow", faces=("north", "east", "west", "up"))
+        # padded headboard panel and a chrome reading lamp over the pillow
+        b((1, 9, 12), (15, 13, 13), "pad", faces=("north", "east", "west", "up"))
+        b((12, 14, 14), (13, 15, 15), "chrome", faces=SIDES)
+        b((12, 15, 11), (13, 16, 15), "chrome", faces=("north", "south", "east", "west", "up", "down"))
+        b((11, 14, 10), (14, 15, 12.5), "chrome", faces=("north", "south", "east", "west", "up", "down"),
+          face_tex={"down": "lamp"})
+
+
 def crew_bunk():
-    m = Model({"shell": "st_enamel", "stop": "st_enamel_top", "teal": "teal_tufted", "mat": "bunk_top",
-               "cream": "st_cream", "lamp": "sconce_bulb_on", **CHROME_T}, "st_enamel")
-    sh = {"up": "stop", "down": "stop"}
-    m.box((0, 0, 0), (16, 3, 16), "shell", face_tex=sh)
-    m.box((1, 3, 0), (15, 5, 15), "teal", faces=("north", "east", "west", "up"), face_tex={"up": "mat"})
-    m.box((3, 5, 11), (13, 6.5, 14.5), "cream", faces=("north", "south", "east", "west", "up"))
-    # capsule head shell: back wall, side walls, hood
-    m.box((0, 3, 15), (16, 9, 16), "shell", faces=("north", "south", "east", "west", "up"), face_tex=sh)
-    m.box((0, 3, 9), (1, 9, 15), "shell", faces=("north", "east", "west", "up"), face_tex=sh)
-    m.box((15, 3, 9), (16, 9, 15), "shell", faces=("north", "east", "west", "up"), face_tex=sh)
-    m.box((1, 8, 10), (15, 9, 15), "shell", faces=("north", "up", "down"), face_tex=sh)
-    # reading lamp on a chrome stalk
-    m.box((12.5, 6.5, 14.5), (13.5, 7.5, 15), "chrome", faces=("north", "east", "west", "up", "down"))
-    m.box((12, 6, 13.5), (14, 7, 14.5), "lamp")
-    return m.write("crew_bunk")
+    for part in ("foot", "head"):
+        m = Model(BUNK_TEX, "bunk_blanket_side")
+        bunk_parts(m, part)
+        m.write(f"crew_bunk_{part}")
+    m = Model(BUNK_TEX, "bunk_blanket_side", display=BED_DISPLAY)
+    bunk_parts(m, "foot", dz=-8)
+    bunk_parts(m, "head", dz=8)
+    write_item_model("crew_bunk", m)
+
+
+def state_bed(name):
+    variants = {}
+    for facing, rot in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        for part in ("foot", "head"):
+            v = {"model": T(f"{name}_{part}")}
+            if rot:
+                v["y"] = rot
+            variants[f"facing={facing},part={part}"] = v
+    write_json(os.path.join(STATES_DIR, name + ".json"), {"variants": variants})
 
 
 def hydroponic_planter(lit):
@@ -934,31 +1043,52 @@ def poster_liftoff():
 
 
 def poster_vesper():
+    """'VISIT MARS' travel poster (id kept from the old Vesper poster): the red planet over a desert
+    horizon with a landed rocket."""
     img = new(16, 32)
-    bands(img, [(0, 9, SPACE), (10, 19, SPACE_L), (20, 31, (52, 36, 84))])
-    for (x, y) in ((2, 11), (13, 10), (12, 17), (3, 18), (6, 9), (10, 20), (14, 14), (1, 15)):
+    bands(img, [(0, 12, SPACE), (13, 16, (58, 40, 82)), (17, 19, (150, 82, 72)), (20, 31, (206, 104, 62))])
+    for (x, y) in ((2, 9), (13, 15), (6, 16), (14, 9), (1, 14)):
         px(img, [(x, y)], (176, 184, 214))
-    # the amber star with a soft halo and four spikes
-    disc(img, 8, 14, 5.2, (92, 58, 40))
-    disc(img, 8, 14, 4.2, AMBER_D)
-    disc(img, 8, 14, 3.4, AMBER)
-    disc(img, 7.4, 13.4, 2.0, AMBER_L)
-    for d in range(5, 8):
-        px(img, [(7, 14 - d - 1), (7, 14 + d), (7 - d - 1, 14), (7 + d + 1, 14)], AMBER if d < 7 else AMBER_D)
-    # planets: a ringed teal world and a small red one
-    disc(img, 13, 20, 1.6, TEAL)
-    px(img, [(12, 19)], TEAL_L)
-    px(img, [(10, 20), (11, 20), (14, 20), (15, 20)], CREAM_D)
-    disc(img, 2.5, 9.5, 1.2, (196, 96, 64))
-    px(img, [(2, 9)], (236, 150, 110))
-    # cream title band
+    pat(img, 6, 8, [
+        "..iirr..",
+        ".rRRrrr.",
+        "rRRrdrrr",
+        "rRrrrrdr",
+        "rrdrrrrr",
+        "rrrrrrrd",
+        ".rrrdrd.",
+        "..rddr..",
+    ], {"r": (196, 84, 54), "R": (230, 136, 94), "d": (138, 52, 40), "i": CREAM_L})
+    px(img, [(3, 11), (4, 11)], (170, 160, 150))     # Phobos
+    # desert horizon: mesas, dunes with ripples
+    pat(img, 8, 17, [
+        "..kkk...",
+        ".kkkkk.k",
+        "kkkkkkkk",
+    ], {"k": (120, 48, 36)})
+    R(img, 0, 20, 15, 20, (226, 132, 80))
+    for (x, y) in ((2, 21), (3, 21), (9, 22), (10, 22), (12, 21), (5, 23), (6, 23), (13, 23)):
+        px(img, [(x, y)], (170, 78, 48))
+    # a rocket standing on the sand
+    pat(img, 2, 13, [
+        ".r.",
+        ".w.",
+        "lwd",
+        "ltd",
+        "lwd",
+        "lwd",
+        "rwr",
+        "r.r",
+    ], {"r": RED, "w": WHITE, "l": WHITE_L, "d": WHITE_D, "t": TEAL_D})
+    px(img, [(3, 21)], (120, 60, 40))                 # its shadow
     R(img, 0, 0, 15, 7, CREAM)
     R(img, 0, 7, 15, 7, CREAM_D)
+    R(img, 0, 24, 15, 31, CREAM)
+    R(img, 0, 24, 15, 24, CREAM_D)
     poster_frame(img)
     R(img, 1, 1, 14, 6, CREAM)
     text(img, None, 1, "VISIT", RED)
-    text(img, None, 20, "VES", AMBER_L, shadow=(120, 60, 30))
-    text(img, None, 26, "PER", AMBER_L)
+    text(img, None, 25, "MARS", RED)
     return img
 
 
@@ -1025,25 +1155,28 @@ def poster_suit_check():
 
 
 def poster_homestead():
+    """'HOME SWEET HOME' (id kept): planet Earth hanging in space between the lines."""
     img = new(16, 32)
-    bands(img, [(0, 14, (120, 186, 200)), (15, 18, (150, 204, 210)), (19, 31, (176, 214, 206))])
-    # the planet rising behind the title: teal oceans, tan continents, polar ice, a cloud streak
-    pat(img, 4, 12, [
-        "..oooo..",
-        ".ooLLoo.",
-        "oLLLooLo",
-        "oLDooLLo",
-        "ooooLLDo",
-        "occcccoo",
-        ".ooLooo.",
-        "..oiio..",
-    ], {"o": OCEAN, "L": LAND, "D": LAND_D, "c": (214, 232, 236), "i": ICE})
-    px(img, [(4, 15), (5, 13)], (110, 184, 196))
+    bands(img, [(0, 31, SPACE)])
+    for (x, y) in ((2, 9), (13, 8), (1, 17), (14, 18), (12, 12), (3, 13)):
+        px(img, [(x, y)], (176, 184, 214))
+    pat(img, 3, 8, [
+        "...iiii...",
+        "..ooGGoo..",
+        ".oGGGGocc.",
+        "ooGGToocco",
+        "oooGoooooo",
+        "occcooooGo",
+        "oooooooGGo",
+        ".ooooooGT.",
+        "..oooccc..",
+        "...iiii...",
+    ], {"o": (52, 112, 196), "G": (84, 156, 72), "T": (196, 170, 110), "c": (226, 232, 238), "i": (214, 226, 236)})
+    px(img, [(4, 10), (5, 9)], (110, 160, 226))       # sunlit limb
     poster_frame(img)
-    R(img, 0, 1, 15, 12, CREAM)
-    R(img, 0, 12, 15, 12, CREAM_D)
+    R(img, 0, 1, 15, 6, CREAM)
+    R(img, 0, 6, 15, 6, CREAM_D)
     text(img, None, 1, "HOME", RED)
-    text(img, None, 7, "STEAD", NAVY, condensed=True)
     R(img, 0, 20, 15, 30, LEAF_D)
     R(img, 0, 20, 15, 20, LEAF)
     text(img, None, 21, "SWEET", CREAM_L, condensed=True)
@@ -2030,7 +2163,7 @@ def generate():
     state_facing("radar_scope", lit=True)
     state_facing("computer_bank", lit=True)
     state_facing("captain_chair")
-    state_facing("crew_bunk")
+    state_bed("crew_bunk")
     state_lit("hydroponic_planter")
     state_facing("oxygen_tank_rack")
     state_facing("star_chart", lit=True)
@@ -2045,7 +2178,7 @@ def generate():
             state_simple(b)
 
     for name, model in (("radar_scope", "radar_scope_on"), ("computer_bank", "computer_bank_on"), ("captain_chair", None),
-                        ("crew_bunk", None), ("hydroponic_planter", "hydroponic_planter_on"), ("oxygen_tank_rack", None),
+                        ("hydroponic_planter", "hydroponic_planter_on"), ("oxygen_tank_rack", None),
                         ("ceiling_light", "ceiling_light_on"),
                         ("telescope", None), ("space_globe", None), ("floor_grate", None), ("hull_panel", None),
                         ("hull_panel_striped", None), ("hull_window", None), ("reactor_core", "reactor_core_on")):

@@ -56,7 +56,7 @@ public class RocketEntity extends Entity {
     /** Leaving orbit for another destination: the crew is moved to the target dimension on the next tick. */
     public static final int PHASE_TRANSFER = 5;
 
-    public static final String HOMESTEAD = "homestead";
+    public static final String EARTH = "earth";
     public static final String FREEDOM_STATION = "freedom_station";
 
     public static final int PAD_COUNTDOWN = 10 * 20;
@@ -307,12 +307,12 @@ public class RocketEntity extends Entity {
         if (FreedomStation.isStation(level())) {
             return FREEDOM_STATION;
         }
-        return level().dimension() == Level.OVERWORLD ? HOMESTEAD : "";
+        return level().dimension() == Level.OVERWORLD ? EARTH : "";
     }
 
     /** Called when the crew picks a destination on the system map. */
     public void travelTo(String target) {
-        if (phase() != PHASE_ORBIT || !(target.equals(HOMESTEAD) || target.equals(FREEDOM_STATION))) {
+        if (phase() != PHASE_ORBIT || !(target.equals(EARTH) || target.equals(FREEDOM_STATION))) {
             return;
         }
         if (target.equals(currentBody())) {

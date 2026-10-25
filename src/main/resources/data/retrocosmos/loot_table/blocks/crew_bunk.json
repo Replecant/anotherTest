@@ -12,6 +12,13 @@
       ],
       "conditions": [
         {
+          "condition": "minecraft:block_state_property",
+          "block": "retrocosmos:crew_bunk",
+          "properties": {
+            "part": "foot"
+          }
+        },
+        {
           "condition": "minecraft:survives_explosion"
         }
       ]

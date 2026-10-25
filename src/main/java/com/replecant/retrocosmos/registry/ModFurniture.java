@@ -98,7 +98,7 @@ public final class ModFurniture {
             spec(Shapes.or(Block.box(2, 0, 2, 14, 9, 14), Block.box(2, 9, 11, 14, 16, 14)), true, false, false, 0, 8, null),
             metal(MapColor.COLOR_RED));
     public static final DeferredBlock<FurnitureBlock> CREW_BUNK = furniture("crew_bunk",
-            spec(Block.box(0, 0, 0, 16, 9, 16), true, false, false, 0, 7, null), soft(MapColor.SNOW));
+            spec(Block.box(0, 0, 0, 16, 9, 16), true, false, false, 0, 7, null).asTwoLong(), soft(MapColor.SNOW));
     public static final DeferredBlock<FurnitureBlock> HYDROPONIC_PLANTER = furniture("hydroponic_planter",
             spec(Block.box(0, 0, 0, 16, 14, 16), false, false, true, 10, -1, null), metal(MapColor.PLANT).sound(SoundType.GRASS));
     public static final DeferredBlock<FurnitureBlock> OXYGEN_TANK_RACK = furniture("oxygen_tank_rack",

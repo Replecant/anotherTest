@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -43,6 +44,7 @@ public class FurnitureBlock extends Block {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+    public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
 
     private static final ThreadLocal<FurnitureSpec> CONSTRUCTING = new ThreadLocal<>();
 
@@ -77,6 +79,9 @@ public class FurnitureBlock extends Block {
         if (spec.tall()) {
             state = state.setValue(HALF, DoubleBlockHalf.LOWER);
         }
+        if (spec.twoLong()) {
+            state = state.setValue(PART, BedPart.FOOT);
+        }
         registerDefaultState(state);
     }
 
@@ -102,6 +107,15 @@ public class FurnitureBlock extends Block {
         if (s.tall()) {
             builder.add(HALF);
         }
+        if (s.twoLong()) {
+            builder.add(PART);
+        }
+    }
+
+    /** For two-long pieces: where the other part is (the head lies away from the front). */
+    private static BlockPos partnerOfLong(BlockState state, BlockPos pos) {
+        Direction toHead = state.getValue(FACING).getOpposite();
+        return state.getValue(PART) == BedPart.FOOT ? pos.relative(toHead) : pos.relative(toHead.getOpposite());
     }
 
     /** The lower half of a tall block (or the block itself). */
@@ -124,6 +138,9 @@ public class FurnitureBlock extends Block {
             return null;
         }
         BlockState state = placementState(context);
+        if (state != null && spec.twoLong() && !context.getLevel().getBlockState(partnerOfLong(state, pos)).canBeReplaced(context)) {
+            return null;
+        }
         if (state != null && spec.tall() && spec.wall()
                 && !canSurvive(state.setValue(HALF, DoubleBlockHalf.UPPER), context.getLevel(), pos.above())) {
             return null;
@@ -161,6 +178,9 @@ public class FurnitureBlock extends Block {
         if (spec.tall()) {
             level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), Block.UPDATE_ALL);
         }
+        if (spec.twoLong()) {
+            level.setBlock(partnerOfLong(state, pos), state.setValue(PART, BedPart.HEAD), Block.UPDATE_ALL);
+        }
     }
 
     @Override
@@ -172,6 +192,10 @@ public class FurnitureBlock extends Block {
             if (towardPartner && !(neighborState.is(this) && neighborState.getValue(HALF) != half)) {
                 return Blocks.AIR.defaultBlockState();
             }
+        }
+        if (spec.twoLong() && neighborPos.equals(partnerOfLong(state, pos))
+                && !(neighborState.is(this) && neighborState.getValue(PART) != state.getValue(PART))) {
+            return Blocks.AIR.defaultBlockState();
         }
         if (spec.wall() && spec.facing() && direction == state.getValue(FACING).getOpposite() && !canSurvive(state, level, pos)) {
             return Blocks.AIR.defaultBlockState();
@@ -190,6 +214,17 @@ public class FurnitureBlock extends Block {
                     Block.dropResources(lower, level, below, level.getBlockEntity(below), player, player.getMainHandItem());
                 }
                 level.setBlock(below, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
+            }
+        }
+        // two-long pieces: the foot carries the drop
+        if (!level.isClientSide() && spec.twoLong() && state.getValue(PART) == BedPart.HEAD) {
+            BlockPos foot = partnerOfLong(state, pos);
+            BlockState footState = level.getBlockState(foot);
+            if (footState.is(this) && footState.getValue(PART) == BedPart.FOOT) {
+                if (!player.isCreative()) {
+                    Block.dropResources(footState, level, foot, null, player, player.getMainHandItem());
+                }
+                level.setBlock(foot, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
             }
         }
         return super.playerWillDestroy(level, pos, state, player);

@@ -26,9 +26,23 @@ BLOCKS = ["control_panel", "radar_scope", "computer_bank", "captain_chair", "cre
           "space_globe", "reactor_core", "floor_grate", "hull_panel", "hull_panel_striped", "hull_window"]
 
 
+def loot_foot(name):
+    """Two-block-long pieces drop once, from their foot part."""
+    write_json(os.path.join(DATA, "loot_table", "blocks", name + ".json"), {
+        "type": "minecraft:block",
+        "pools": [{"rolls": 1, "bonus_rolls": 0,
+                   "entries": [{"type": "minecraft:item", "name": f"{MOD}:{name}"}],
+                   "conditions": [
+                       {"condition": "minecraft:block_state_property", "block": f"{MOD}:{name}", "properties": {"part": "foot"}},
+                       {"condition": "minecraft:survives_explosion"}]}],
+        "random_sequence": f"{MOD}:blocks/{name}"})
+
+
 def generate():
     for b in BLOCKS + NEW:
-        if b in TALL:
+        if b == "crew_bunk":
+            loot_foot(b)
+        elif b in TALL:
             loot_lower_half(b)
         else:
             loot_self(b)
@@ -88,11 +102,11 @@ EN = {
     "block.retrocosmos.hydroponic_planter": "Hydroponic Planter",
     "block.retrocosmos.oxygen_tank_rack": "Oxygen Tank Rack",
     "block.retrocosmos.vending_machine": "Space Pop Vending Machine",
-    "block.retrocosmos.star_chart": "Vesper Star Chart",
+    "block.retrocosmos.star_chart": "Star Chart",
     "block.retrocosmos.ceiling_light": "Ceiling Light",
     "block.retrocosmos.wall_sconce": "Atomic Wall Sconce",
     "block.retrocosmos.telescope": "Telescope",
-    "block.retrocosmos.space_globe": "Homestead Globe",
+    "block.retrocosmos.space_globe": "Earth Globe",
     "block.retrocosmos.reactor_core": "Reactor Core",
     "block.retrocosmos.floor_grate": "Deck Grating",
     "block.retrocosmos.hull_panel": "Hull Plating",
@@ -108,7 +122,7 @@ EN = {
     "block.retrocosmos.station_door": "Station Door",
     "block.retrocosmos.airlock_door": "Airlock Door",
     "block.retrocosmos.poster_liftoff": "Poster \"Liftoff!\"",
-    "block.retrocosmos.poster_vesper": "Poster \"Visit Vesper\"",
+    "block.retrocosmos.poster_vesper": "Poster \"Visit Mars\"",
     "block.retrocosmos.poster_space_pop": "Poster \"Drink Space Pop\"",
     "block.retrocosmos.poster_suit_check": "Poster \"Check Your Suit\"",
     "block.retrocosmos.poster_homestead": "Poster \"Home Sweet Home\"",
@@ -124,11 +138,11 @@ RU = {
     "block.retrocosmos.hydroponic_planter": "Гидропонная грядка",
     "block.retrocosmos.oxygen_tank_rack": "Стойка кислородных баллонов",
     "block.retrocosmos.vending_machine": "Автомат «Space Pop»",
-    "block.retrocosmos.star_chart": "Звёздная карта Веспер",
+    "block.retrocosmos.star_chart": "Звёздная карта",
     "block.retrocosmos.ceiling_light": "Потолочный светильник",
     "block.retrocosmos.wall_sconce": "Атомное бра",
     "block.retrocosmos.telescope": "Телескоп",
-    "block.retrocosmos.space_globe": "Глобус Хоумстеда",
+    "block.retrocosmos.space_globe": "Глобус Земли",
     "block.retrocosmos.reactor_core": "Активная зона реактора",
     "block.retrocosmos.floor_grate": "Решётчатый настил",
     "block.retrocosmos.hull_panel": "Обшивка корпуса",
@@ -144,7 +158,7 @@ RU = {
     "block.retrocosmos.station_door": "Дверь станции",
     "block.retrocosmos.airlock_door": "Шлюзовая дверь",
     "block.retrocosmos.poster_liftoff": "Плакат «Старт!»",
-    "block.retrocosmos.poster_vesper": "Плакат «Посетите Веспер»",
+    "block.retrocosmos.poster_vesper": "Плакат «Посетите Марс»",
     "block.retrocosmos.poster_space_pop": "Плакат «Пейте Space Pop»",
     "block.retrocosmos.poster_suit_check": "Плакат «Проверь скафандр»",
     "block.retrocosmos.poster_homestead": "Плакат «Дом, милый дом»",

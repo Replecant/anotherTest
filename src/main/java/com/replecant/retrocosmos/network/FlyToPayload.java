@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-/** Sent by the system map when the crew picks a destination (Homestead or Freedom Station). */
+/** Sent by the system map when the crew picks a destination (Earth or Freedom Station). */
 public record FlyToPayload(String destination) implements CustomPacketPayload {
     public static final Type<FlyToPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "fly_to"));
     public static final StreamCodec<ByteBuf, FlyToPayload> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(FlyToPayload::new, FlyToPayload::destination);

@@ -225,141 +225,6 @@ def planet(size, base, dark, light, outline_c=(14, 10, 24), bands=None, spots=No
     return img
 
 
-def vesper():
-    """The star Vesper: amber-orange disc with a cream core and an atomic-age starburst of rays."""
-    img = new(32, 32)
-    d = ImageDraw.Draw(img)
-    cx = cy = 15.5
-    for rr, a in ((14, 30), (11, 56), (9, 90)):
-        d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=(255, 150, 40, a))
-    # starburst: 4 long cardinal rays, 4 long diagonals slightly shorter, 8 short rays between
-    for i in range(16):
-        a = math.radians(i * 22.5)
-        if i % 4 == 0:
-            ln, col = 15.5, (255, 214, 120)
-        elif i % 2 == 0:
-            ln, col = 13.5, ORANGE_L
-        else:
-            ln, col = 9.5, ORANGE
-        d.line((cx + 5 * math.cos(a), cy + 5 * math.sin(a), cx + ln * math.cos(a), cy + ln * math.sin(a)),
-               fill=rgba(col))
-    # ray tips get a bright dot (sparkle)
-    for i in range(0, 16, 4):
-        a = math.radians(i * 22.5)
-        px(img, [(int(round(cx + 15 * math.cos(a))), int(round(cy + 15 * math.sin(a))))], (255, 250, 220))
-    d.ellipse((cx - 7, cy - 7, cx + 7, cy + 7), fill=rgba((40, 16, 8)))
-    d.ellipse((cx - 6, cy - 6, cx + 6, cy + 6), fill=rgba((236, 120, 36)))
-    d.ellipse((cx - 5, cy - 5, cx + 5, cy + 5), fill=rgba(ORANGE))
-    d.ellipse((cx - 3.5, cy - 3.5, cx + 3.5, cy + 3.5), fill=rgba((255, 214, 120)))
-    d.ellipse((cx - 2, cy - 2, cx + 2, cy + 2), fill=rgba((255, 246, 214)))
-    px(img, [(13, 13), (18, 19), (19, 12), (12, 18)], (255, 236, 170))
-    return img
-
-
-def cinder():
-    """Scorched molten world: black crust with glowing lava cracks."""
-    img = planet(10, (46, 36, 38), (24, 18, 22), (92, 78, 80), outline_c=(10, 6, 10))
-    LAVA, LAVA_L = (236, 96, 30), (255, 190, 80)
-    px(img, [(2, 4), (3, 4), (4, 5), (5, 5), (6, 6), (4, 2), (5, 3), (7, 3), (3, 7), (6, 8), (7, 7)], LAVA)
-    px(img, [(4, 4), (5, 4), (6, 3)], LAVA_L)
-    return img
-
-
-def mirage():
-    """Pink-gold desert world wrapped in hazy bands."""
-    img = planet(12, (238, 190, 150), (150, 96, 76), (255, 230, 208),
-                 bands=((-0.55, (232, 164, 150), 1), (-0.1, (246, 206, 140), 2), (0.35, (226, 150, 136), 1),
-                        (0.7, (240, 196, 150), 1)))
-    px(img, [(4, 3), (8, 7)], (255, 236, 220))
-    return img
-
-
-def homestead():
-    """The home world: blue oceans, green continents, a white cloud swirl. Deliberately not an Earth map."""
-    img = planet(14, (58, 128, 206), (24, 56, 118), (160, 208, 248),
-                 spots=((-0.4, 0.05, 0.36, (98, 176, 92)), (0.45, -0.45, 0.26, (98, 176, 92)),
-                        (0.2, 0.55, 0.22, (98, 176, 92))))
-    px(img, [(3, 6), (4, 5), (8, 3), (9, 10)], (134, 206, 118))     # bright land edges
-    # cloud swirl (comma shape) across the upper-right
-    px(img, [(7, 5), (8, 5), (9, 6), (10, 7), (9, 8), (6, 6)], (246, 248, 252))
-    px(img, [(8, 6), (9, 7)], (232, 240, 250))
-    return img
-
-
-def lantern():
-    """Homestead's little moon: pale cream with a faint glow."""
-    img = new(6, 6)
-    O, B, D, L = (24, 18, 30), (238, 226, 190), (196, 180, 140), (255, 250, 230)
-    rows = ["..OO..", ".OLBO.", "OLBBBO", "OBBDDO", ".ODDO.", "..OO.."]
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
-            if ch != ".":
-                img.putpixel((x, y), rgba({"O": O, "B": B, "D": D, "L": L}[ch]))
-    for (x, y) in ((1, 0), (0, 1), (4, 0), (5, 1), (1, 5), (0, 4), (4, 5), (5, 4)):
-        img.putpixel((x, y), (255, 226, 150, 150))
-    return img
-
-
-def verdigris():
-    """Teal-copper oxidized jungle world: patina green with copper-orange spots."""
-    img = planet(14, (74, 160, 138), (30, 80, 72), (160, 226, 200),
-                 spots=((-0.35, -0.2, 0.26, (196, 112, 58)), (0.4, 0.3, 0.3, (196, 112, 58)),
-                        (0.1, -0.65, 0.16, (56, 128, 100)), (-0.5, 0.5, 0.18, (56, 128, 100))))
-    px(img, [(4, 5), (9, 9)], (236, 160, 90))
-    px(img, [(5, 4), (10, 8)], (120, 72, 36))
-    return img
-
-
-def goliath():
-    """Banded gas giant (cream / rust / brown) with a big storm eye."""
-    img = planet(26, (232, 206, 160), (120, 84, 52), (252, 240, 210),
-                 bands=((-0.75, (206, 150, 98), 2), (-0.45, (170, 108, 66), 2), (-0.15, (222, 178, 118), 1),
-                        (0.15, (192, 128, 80), 3), (0.45, (150, 96, 58), 2), (0.72, (214, 166, 110), 2)))
-    d = ImageDraw.Draw(img)
-    # storm eye on the lower-left (lit side): rust oval with a cream ring and a dark core
-    d.ellipse((5, 14, 12, 18), fill=rgba((214, 96, 54)), outline=rgba((120, 52, 30)))
-    d.ellipse((7, 15, 10, 17), fill=rgba((244, 180, 120)))
-    px(img, [(8, 16)], (130, 56, 30))
-    return img
-
-
-def halo():
-    """Ice giant (pale cyan) with a bright tilted ring; the front half of the ring passes over the planet."""
-    img = planet(18, (150, 214, 230), (60, 110, 150), (224, 246, 252), w=28,
-                 bands=((-0.3, (128, 196, 220), 1), (0.3, (120, 186, 214), 2)))
-    px(img, [(12, 4), (16, 13)], (240, 252, 255))
-    back = img.copy()
-    ring = new(28, 18)
-    rd = ImageDraw.Draw(ring)
-    # tilted ellipse 26x10 - rotate a flat ring by ~-12 degrees
-    ang = math.radians(-14)
-    ca, sa = math.cos(ang), math.sin(ang)
-    for y in range(18):
-        for x in range(28):
-            u, v = x - 13.5, y - 8.5
-            rx, ry = u * ca + v * sa, -u * sa + v * ca
-            e = math.hypot(rx / 13.0, ry / 3.6)
-            if 0.74 <= e <= 1.0:
-                if e > 0.96 or e < 0.78:
-                    c = (20, 24, 48)
-                elif e > 0.86:
-                    c = (236, 250, 255)
-                else:
-                    c = (160, 210, 236)
-                ring.putpixel((x, y), rgba(c))
-    for y in range(18):
-        for x in range(28):
-            p = ring.getpixel((x, y))
-            if p[3] == 0:
-                continue
-            u, v = x - 13.5, y - 8.5
-            ry = -u * sa + v * ca
-            if ry < 0 and back.getpixel((x, y))[3]:
-                continue  # behind the planet
-            img.putpixel((x, y), p)
-    return img
-
-
 def belt_rock():
     """3x3 pebble: lit top-left, dark bottom-right rim (no room for a full outline at this size)."""
     img = new(3, 3)
@@ -467,11 +332,107 @@ def button():
     return img
 
 
+
+
+# --- Solar System bodies (restored) ---
+
+def solar_sun():
+    img = new(32, 32)
+    d = ImageDraw.Draw(img)
+    cx = cy = 15.5
+    # glow halo
+    for rr, a in ((13, 36), (11, 60), (9, 96)):
+        d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=(255, 170, 40, a))
+    # rays: 8 long, 8 short, retro-illustration style
+    for i in range(16):
+        a = math.radians(i * 22.5)
+        ln = 15 if i % 2 == 0 else 11
+        col = ORANGE if i % 2 == 0 else ORANGE_L
+        d.line((cx + 7 * math.cos(a), cy + 7 * math.sin(a), cx + ln * math.cos(a), cy + ln * math.sin(a)),
+               fill=rgba(col))
+    d.ellipse((cx - 8, cy - 8, cx + 8, cy + 8), fill=rgba((18, 10, 10)))
+    d.ellipse((cx - 7, cy - 7, cx + 7, cy + 7), fill=rgba(ORANGE))
+    d.ellipse((cx - 6, cy - 6, cx + 6, cy + 6), fill=rgba(YELLOW))
+    d.ellipse((cx - 4, cy - 4, cx + 4, cy + 4), fill=rgba((252, 232, 120)))
+    d.ellipse((cx - 5, cy - 5, cx - 2, cy - 2), fill=rgba((255, 250, 200)))
+    px(img, [(12, 19), (13, 20), (19, 12), (20, 13)], ORANGE)
+    # a wink of a 1950s "face": two eye dots and a smile
+    px(img, [(13, 14), (18, 14)], (120, 60, 20))
+    px(img, [(13, 18), (14, 19), (15, 19), (16, 19), (17, 19), (18, 18)], (120, 60, 20))
+    return img
+
+
+def solar_saturn():
+    img = planet(16, (226, 196, 128), (122, 96, 58), (250, 236, 190), w=28,
+                 bands=((-0.35, (206, 170, 104), 1), (0.25, (204, 162, 92), 2)))
+    d = ImageDraw.Draw(img)
+    back = img.copy()
+    # ring: ellipse 26x8 centred, tilted look via two colours; the front half is drawn over the planet
+    ring = new(28, 16)
+    rd = ImageDraw.Draw(ring)
+    rd.ellipse((1, 4, 26, 11), outline=rgba((14, 10, 24)))
+    rd.ellipse((2, 5, 25, 10), fill=rgba((214, 180, 120)), outline=rgba((236, 214, 160)))
+    rd.ellipse((4, 6, 23, 9), fill=(0, 0, 0, 0), outline=rgba((160, 120, 70)))
+    rd.ellipse((6, 7, 21, 8), fill=(0, 0, 0, 0))
+    rd.ellipse((5, 6, 22, 9), fill=(0, 0, 0, 0))
+    # paste: back half behind, front half in front
+    for y in range(16):
+        for x in range(28):
+            p = ring.getpixel((x, y))
+            if p[3] == 0:
+                continue
+            if y <= 7 and back.getpixel((x, y))[3]:
+                continue  # behind the planet
+            img.putpixel((x, y), p)
+    d.point((14, 7), fill=rgba((14, 10, 24)))
+    return img
+
+
+def solar_earth():
+    img = planet(14, (62, 132, 210), (26, 60, 120), (170, 214, 250),
+                 spots=((-0.15, -0.3, 0.32, (92, 170, 92)), (0.3, 0.35, 0.28, (92, 170, 92)),
+                        (0.5, -0.2, 0.18, (240, 244, 250))))
+    px(img, [(7, 4), (8, 5), (4, 9)], (120, 200, 120))
+    return img
+
+
+def solar_moon():
+    img = new(6, 6)
+    O, B, D, L = (14, 10, 24), (206, 206, 196), (150, 150, 142), (244, 244, 238)
+    rows = ["..OO..", ".OLBO.", "OLBBDO", "OBBDDO", ".OBDO.", "..OO.."]
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                img.putpixel((x, y), rgba({"O": O, "B": B, "D": D, "L": L}[ch]))
+    px(img, [(2, 3)], D)
+    return img
+
+
+def generate_solar_bodies():
+    save(solar_sun(), "gui", "system_map", "sun")
+    save(planet(10, (190, 180, 166), (104, 96, 88), (240, 234, 224),
+                spots=((0.3, -0.3, 0.2, (140, 128, 118)), (-0.4, 0.3, 0.16, (140, 128, 118)))),
+         "gui", "system_map", "mercury")
+    save(planet(12, (236, 196, 110), (150, 110, 46), (252, 238, 190),
+                bands=((-0.3, (226, 176, 92), 1), (0.4, (222, 170, 86), 1))),
+         "gui", "system_map", "venus")
+    save(solar_earth(), "gui", "system_map", "earth")
+    save(solar_moon(), "gui", "system_map", "moon")
+    save(planet(12, (214, 92, 56), (120, 44, 26), (248, 170, 130),
+                spots=((0.0, -0.75, 0.3, (242, 236, 226)), (0.25, 0.2, 0.24, (160, 62, 40)))),
+         "gui", "system_map", "mars")
+    save(planet(24, (226, 186, 140), (124, 92, 60), (250, 232, 200),
+                bands=((-0.55, (196, 140, 96), 2), (-0.15, (206, 150, 102), 2), (0.3, (190, 130, 90), 3),
+                       (0.7, (200, 150, 110), 1)),
+                spots=((0.35, 0.3, 0.16, (214, 90, 60)),)),
+         "gui", "system_map", "jupiter")
+    save(solar_saturn(), "gui", "system_map", "saturn")
+
+
 def generate_system_map():
     save(map_frame(), "gui", "system_map", "frame")
-    for name, fn in (("vesper", vesper), ("cinder", cinder), ("mirage", mirage), ("homestead", homestead),
-                     ("lantern", lantern), ("verdigris", verdigris), ("goliath", goliath), ("halo", halo),
-                     ("belt_rock", belt_rock), ("freedom_station", freedom_station)):
+    generate_solar_bodies()
+    for name, fn in (("belt_rock", belt_rock), ("freedom_station", freedom_station)):
         save(fn(), "gui", "system_map", name)
     save(selection(), "gui", "system_map", "selection")
     save(lock(), "gui", "system_map", "lock")

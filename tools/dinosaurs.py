@@ -33,6 +33,24 @@ def P(name, parent, pivot, rot, boxes):
     return {"name": name, "parent": parent, "pivot": pivot, "rot": rot, "boxes": boxes}
 
 
+def scaled(spec, k):
+    """Grows a whole creature by k about the ground (y = 24), keeping the texel density: box sizes are rounded to
+    whole texels (thin 1-texel plates and membranes stay 1 thick), pivots and offsets scale exactly."""
+    def size1(v):
+        return 1 if v == 1 else max(1, round(v * k))
+    for p in spec["parts"]:
+        x, y, z = p["pivot"]
+        p["pivot"] = (x * k, 24 + (y - 24) * k, z * k) if p["parent"] is None else (x * k, y * k, z * k)
+        for b in p["boxes"]:
+            size = tuple(size1(v) for v in b["size"])
+            b["pos"] = tuple(round(o * k + (v * k - n) / 2.0, 3) for o, v, n in zip(b["pos"], b["size"], size))
+            b["size"] = size
+            if b["feat"].get("eye"):
+                b["feat"]["eye"] = tuple(v * k for v in b["feat"]["eye"])
+    spec["scale"] = k
+    return spec
+
+
 def mirrored(part, name, parent=None):
     """The same part on the other side of the body (x mirrored)."""
     px, py, pz = part["pivot"]
@@ -275,12 +293,13 @@ def ptero_spec():
             B(-1, 4.5, -2, 2, 1, 3, "pfoot"),
         ]),
     ])
-    return {"name": "pteranodon", "tex_w": 64, "parts": parts,
+    # a real pulp pterosaur: ~5.5 blocks across the wings
+    return scaled({"name": "pteranodon", "tex_w": 128, "parts": parts,
             "palette": {"dorsal": (124, 58, 36), "base": (178, 92, 50), "belly": (226, 196, 146),
                         "blotch": (146, 70, 40), "noise": 6, "eye": (255, 210, 40),
                         "membrane": (206, 116, 62), "membrane_dark": (150, 70, 40), "vein": (120, 54, 34),
                         "bone": (190, 104, 58), "beak": (226, 196, 120), "beak_tip": (110, 80, 50),
-                        "crest": (220, 60, 36), "crest_stripe": (250, 200, 70), "foot": (90, 60, 40)}}
+                        "crest": (220, 60, 36), "crest_stripe": (250, 200, 70), "foot": (90, 60, 40)}}, 1.5)
 
 
 def trex_spec():
@@ -505,11 +524,12 @@ def ankylo_spec():
             B(-3, 0, -3, 6, 7, 6, "leg", nails=True),
         ]),
     ])
-    return {"name": "ankylosaurus", "tex_w": 128, "parts": parts,
+    # a proper tank: ~4 blocks nose to club, ~1.8 tall
+    return scaled({"name": "ankylosaurus", "tex_w": 128, "parts": parts,
             "palette": {"dorsal": (66, 64, 62), "base": (96, 92, 86), "belly": (156, 144, 120),
                         "blotch": (80, 78, 74), "noise": 5, "eye": (230, 160, 40), "nail": (222, 206, 160),
                         "plate": (192, 142, 62), "plate_light": (222, 176, 92), "plate_dark": (110, 74, 34),
-                        "spike": (236, 220, 170), "spike_base": (150, 110, 56), "beak": (60, 54, 48)}}
+                        "spike": (236, 220, 170), "spike_base": (150, 110, 56), "beak": (60, 54, 48)}}, 1.5)
 
 
 def croc_spec():
@@ -577,7 +597,7 @@ POSES = {
     "pteranodon": {
         # sitting on the canopy: nose up, wings folded along the flanks, standing on its feet
         "perch": {"body": (-0.45, 0, 0, 0, 0.2, 0), "neck": (0.15, 0, 0), "head": (0.25, 0, 0),
-                  "wing_l": (0.3, -0.5, 1.3), "wing_r": (0.3, 0.5, -1.3),
+                  "wing_l": (0.3, -0.5, 0.9), "wing_r": (0.3, 0.5, -0.9),
                   "wingtip_l": (0, -3.0, 0), "wingtip_r": (0, 3.0, 0),
                   "leg_l": (-0.85, 0, 0), "leg_r": (-0.85, 0, 0), "tail": (0.4, 0, 0)},
         # stooping on prey: wings swept back, beak first
@@ -603,6 +623,14 @@ POSES = {
                  "arm_l": (-0.7, 0, -0.3), "arm_r": (-0.7, 0, 0.3), "tail1": (-0.1, 0, 0)},
     },
 }
+
+# grown creatures: their pose translations grow with them
+for _spec in SPECS:
+    if _spec.get("scale"):
+        for _pose in POSES.get(_spec["name"], {}).values():
+            for _part, _off in _pose.items():
+                if len(_off) == 6:
+                    _pose[_part] = tuple(_off[:3]) + tuple(v * _spec["scale"] for v in _off[3:])
 
 
 # ----------------------------------------------------------------------------

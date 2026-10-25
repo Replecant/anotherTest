@@ -215,54 +215,54 @@ public final class DinoGeometry {
         return LayerDefinition.create(mesh, 64, 64);
     }
 
-    /** pteranodon: 12 parts, texture 64x128. */
+    /** pteranodon: 12 parts, texture 128x128. */
     public static LayerDefinition pteranodon() {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-2.5F, -2.0F, -5.0F, 5.0F, 5.0F, 11.0F),
-                PartPose.offsetAndRotation(0.0F, 15.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(0, 0).addBox(-4.0F, -3.25F, -7.25F, 8.0F, 8.0F, 16.0F),
+                PartPose.offsetAndRotation(0.0F, 10.5F, 0.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition neck = body.addOrReplaceChild("neck", CubeListBuilder.create()
-                .texOffs(42, 37).addBox(-1.5F, -1.5F, -5.0F, 3.0F, 3.0F, 6.0F),
-                PartPose.offsetAndRotation(0.0F, -0.5F, -5.0F, -0.35F, 0.0F, 0.0F));
+                .texOffs(64, 39).addBox(-2.0F, -2.0F, -7.5F, 4.0F, 4.0F, 9.0F),
+                PartPose.offsetAndRotation(0.0F, -0.75F, -7.5F, -0.35F, 0.0F, 0.0F));
         PartDefinition head = neck.addOrReplaceChild("head", CubeListBuilder.create()
-                .texOffs(0, 46).addBox(-2.0F, -2.5F, -4.0F, 4.0F, 4.0F, 5.0F)
-                .texOffs(32, 0).addBox(-1.0F, -1.0F, -14.0F, 2.0F, 2.0F, 10.0F),
-                PartPose.offsetAndRotation(0.0F, -0.5F, -4.5F, 0.35F, 0.0F, 0.0F));
+                .texOffs(34, 24).addBox(-3.0F, -3.75F, -6.25F, 6.0F, 6.0F, 8.0F)
+                .texOffs(48, 0).addBox(-1.5F, -1.5F, -21.0F, 3.0F, 3.0F, 15.0F),
+                PartPose.offsetAndRotation(0.0F, -0.75F, -6.75F, 0.35F, 0.0F, 0.0F));
         PartDefinition crest = head.addOrReplaceChild("crest", CubeListBuilder.create()
-                .texOffs(0, 16).addBox(-0.5F, -2.0F, -1.0F, 1.0F, 3.0F, 9.0F),
-                PartPose.offsetAndRotation(0.0F, -2.5F, 0.0F, -0.4F, 0.0F, 0.0F));
+                .texOffs(84, 0).addBox(-0.5F, -2.75F, -1.75F, 1.0F, 4.0F, 14.0F),
+                PartPose.offsetAndRotation(0.0F, -3.75F, 0.0F, -0.4F, 0.0F, 0.0F));
         PartDefinition jaw = head.addOrReplaceChild("jaw", CubeListBuilder.create()
-                .texOffs(20, 16).addBox(-1.0F, 0.0F, -9.5F, 2.0F, 1.0F, 9.0F),
-                PartPose.offsetAndRotation(0.0F, 1.0F, -3.5F, 0.0F, 0.0F, 0.0F));
+                .texOffs(0, 24).addBox(-1.5F, 0.25F, -14.5F, 3.0F, 1.0F, 14.0F),
+                PartPose.offsetAndRotation(0.0F, 1.5F, -5.25F, 0.0F, 0.0F, 0.0F));
         PartDefinition tail = body.addOrReplaceChild("tail", CubeListBuilder.create()
-                .texOffs(48, 55).addBox(-0.5F, -0.5F, 0.0F, 1.0F, 1.0F, 4.0F),
-                PartPose.offsetAndRotation(0.0F, -0.5F, 6.0F, 0.1F, 0.0F, 0.0F));
+                .texOffs(0, 62).addBox(-0.5F, -0.5F, 0.0F, 1.0F, 1.0F, 6.0F),
+                PartPose.offsetAndRotation(0.0F, -0.75F, 9.0F, 0.1F, 0.0F, 0.0F));
         PartDefinition wing_l = body.addOrReplaceChild("wing_l", CubeListBuilder.create()
-                .texOffs(0, 62).addBox(0.0F, -1.0F, -1.0F, 13.0F, 2.0F, 2.0F)
-                .texOffs(0, 28).addBox(0.0F, -0.5F, 1.0F, 13.0F, 1.0F, 8.0F),
-                PartPose.offsetAndRotation(2.5F, -1.0F, -2.5F, 0.0F, 0.0F, 0.0F));
+                .texOffs(14, 62).addBox(-0.25F, -1.5F, -1.5F, 20.0F, 3.0F, 3.0F)
+                .texOffs(62, 24).addBox(-0.25F, -0.5F, 1.5F, 20.0F, 1.0F, 12.0F),
+                PartPose.offsetAndRotation(3.75F, -1.5F, -3.75F, 0.0F, 0.0F, 0.0F));
         PartDefinition wingtip_l = wing_l.addOrReplaceChild("wingtip_l", CubeListBuilder.create()
-                .texOffs(20, 66).addBox(0.0F, -1.0F, -1.0F, 14.0F, 1.0F, 2.0F)
-                .texOffs(18, 46).addBox(0.0F, -0.5F, 1.0F, 14.0F, 1.0F, 6.0F),
-                PartPose.offsetAndRotation(13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(14, 69).addBox(0.0F, -1.25F, -1.5F, 21.0F, 1.0F, 3.0F)
+                .texOffs(0, 52).addBox(0.0F, -0.5F, 1.5F, 21.0F, 1.0F, 9.0F),
+                PartPose.offsetAndRotation(19.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leg_l = body.addOrReplaceChild("leg_l", CubeListBuilder.create()
-                .texOffs(40, 55).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F)
-                .texOffs(0, 66).addBox(-1.0F, 4.5F, -2.0F, 2.0F, 1.0F, 3.0F),
-                PartPose.offsetAndRotation(1.5F, 2.0F, 4.0F, 1.3F, 0.0F, 0.0F));
+                .texOffs(120, 52).addBox(-0.5F, -0.25F, -0.5F, 1.0F, 8.0F, 1.0F)
+                .texOffs(106, 62).addBox(-1.5F, 7.0F, -2.75F, 3.0F, 1.0F, 4.0F),
+                PartPose.offsetAndRotation(2.25F, 3.0F, 6.0F, 1.3F, 0.0F, 0.0F));
         PartDefinition wing_r = body.addOrReplaceChild("wing_r", CubeListBuilder.create()
-                .texOffs(30, 62).addBox(-13.0F, -1.0F, -1.0F, 13.0F, 2.0F, 2.0F)
-                .texOffs(0, 37).addBox(-13.0F, -0.5F, 1.0F, 13.0F, 1.0F, 8.0F),
-                PartPose.offsetAndRotation(-2.5F, -1.0F, -2.5F, 0.0F, 0.0F, 0.0F));
+                .texOffs(60, 62).addBox(-19.75F, -1.5F, -1.5F, 20.0F, 3.0F, 3.0F)
+                .texOffs(0, 39).addBox(-19.75F, -0.5F, 1.5F, 20.0F, 1.0F, 12.0F),
+                PartPose.offsetAndRotation(-3.75F, -1.5F, -3.75F, 0.0F, 0.0F, 0.0F));
         PartDefinition wingtip_r = wing_r.addOrReplaceChild("wingtip_r", CubeListBuilder.create()
-                .texOffs(0, 70).addBox(-14.0F, -1.0F, -1.0F, 14.0F, 1.0F, 2.0F)
-                .texOffs(0, 55).addBox(-14.0F, -0.5F, 1.0F, 14.0F, 1.0F, 6.0F),
-                PartPose.offsetAndRotation(-13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(62, 69).addBox(-21.0F, -1.25F, -1.5F, 21.0F, 1.0F, 3.0F)
+                .texOffs(60, 52).addBox(-21.0F, -0.5F, 1.5F, 21.0F, 1.0F, 9.0F),
+                PartPose.offsetAndRotation(-19.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leg_r = body.addOrReplaceChild("leg_r", CubeListBuilder.create()
-                .texOffs(44, 55).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F)
-                .texOffs(10, 66).addBox(-1.0F, 4.5F, -2.0F, 2.0F, 1.0F, 3.0F),
-                PartPose.offsetAndRotation(-1.5F, 2.0F, 4.0F, 1.3F, 0.0F, 0.0F));
-        return LayerDefinition.create(mesh, 64, 128);
+                .texOffs(124, 52).addBox(-0.5F, -0.25F, -0.5F, 1.0F, 8.0F, 1.0F)
+                .texOffs(0, 69).addBox(-1.5F, 7.0F, -2.75F, 3.0F, 1.0F, 4.0F),
+                PartPose.offsetAndRotation(-2.25F, 3.0F, 6.0F, 1.3F, 0.0F, 0.0F));
+        return LayerDefinition.create(mesh, 128, 128);
     }
 
     /** tyrannosaurus: 18 parts, texture 256x256. */
@@ -470,53 +470,53 @@ public final class DinoGeometry {
         return LayerDefinition.create(mesh, 64, 16);
     }
 
-    /** ankylosaurus: 11 parts, texture 128x128. */
+    /** ankylosaurus: 11 parts, texture 128x256. */
     public static LayerDefinition ankylosaurus() {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-8.0F, -6.0F, -9.0F, 16.0F, 10.0F, 18.0F)
-                .texOffs(0, 28).addBox(-9.0F, -8.0F, -9.5F, 18.0F, 2.0F, 19.0F),
-                PartPose.offsetAndRotation(0.0F, 13.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(0, 0).addBox(-12.0F, -9.0F, -13.5F, 24.0F, 15.0F, 27.0F)
+                .texOffs(0, 42).addBox(-13.5F, -12.0F, -14.0F, 27.0F, 3.0F, 28.0F),
+                PartPose.offsetAndRotation(0.0F, 7.5F, 0.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create()
-                .texOffs(74, 28).addBox(-4.0F, -3.0F, -7.0F, 8.0F, 6.0F, 7.0F)
-                .texOffs(74, 62).addBox(-3.0F, -1.0F, -9.0F, 6.0F, 4.0F, 2.0F)
-                .texOffs(36, 72).addBox(4.0F, -3.0F, -4.0F, 2.0F, 2.0F, 2.0F)
-                .texOffs(44, 72).addBox(-6.0F, -3.0F, -4.0F, 2.0F, 2.0F, 2.0F),
-                PartPose.offsetAndRotation(0.0F, -1.0F, -9.0F, 0.2F, 0.0F, 0.0F));
+                .texOffs(0, 73).addBox(-6.0F, -4.5F, -10.25F, 12.0F, 9.0F, 10.0F)
+                .texOffs(0, 127).addBox(-4.5F, -1.5F, -13.5F, 9.0F, 6.0F, 3.0F)
+                .texOffs(18, 136).addBox(6.0F, -4.5F, -6.0F, 3.0F, 3.0F, 3.0F)
+                .texOffs(30, 136).addBox(-9.0F, -4.5F, -6.0F, 3.0F, 3.0F, 3.0F),
+                PartPose.offsetAndRotation(0.0F, -1.5F, -13.5F, 0.2F, 0.0F, 0.0F));
         PartDefinition tail1 = body.addOrReplaceChild("tail1", CubeListBuilder.create()
-                .texOffs(0, 49).addBox(-4.0F, -3.0F, 0.0F, 8.0F, 6.0F, 7.0F)
-                .texOffs(44, 62).addBox(-4.5F, -4.0F, 0.0F, 9.0F, 1.0F, 6.0F),
-                PartPose.offsetAndRotation(0.0F, -2.0F, 9.0F, 0.1F, 0.0F, 0.0F));
+                .texOffs(44, 73).addBox(-6.0F, -4.5F, 0.25F, 12.0F, 9.0F, 10.0F)
+                .texOffs(66, 111).addBox(-7.0F, -5.75F, 0.0F, 14.0F, 1.0F, 9.0F),
+                PartPose.offsetAndRotation(0.0F, -3.0F, 13.5F, 0.1F, 0.0F, 0.0F));
         PartDefinition tail2 = tail1.addOrReplaceChild("tail2", CubeListBuilder.create()
-                .texOffs(24, 62).addBox(-2.0F, -2.0F, 0.0F, 4.0F, 4.0F, 6.0F),
-                PartPose.offsetAndRotation(0.0F, 0.0F, 6.5F, 0.05F, 0.0F, 0.0F));
+                .texOffs(36, 111).addBox(-3.0F, -3.0F, 0.0F, 6.0F, 6.0F, 9.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 9.75F, 0.05F, 0.0F, 0.0F));
         PartDefinition club = tail2.addOrReplaceChild("club", CubeListBuilder.create()
-                .texOffs(0, 62).addBox(-3.5F, -2.5F, 0.0F, 7.0F, 5.0F, 5.0F),
-                PartPose.offsetAndRotation(0.0F, 0.0F, 5.5F, 0.0F, 0.0F, 0.0F));
+                .texOffs(0, 111).addBox(-5.0F, -4.0F, -0.25F, 10.0F, 8.0F, 8.0F),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 8.25F, 0.0F, 0.0F, 0.0F));
         PartDefinition spikes_l = body.addOrReplaceChild("spikes_l", CubeListBuilder.create()
-                .texOffs(90, 62).addBox(0.0F, -1.0F, -7.0F, 4.0F, 2.0F, 2.0F)
-                .texOffs(102, 62).addBox(0.0F, -1.0F, -1.0F, 4.0F, 2.0F, 2.0F)
-                .texOffs(114, 62).addBox(0.0F, -1.0F, 5.0F, 4.0F, 2.0F, 2.0F),
-                PartPose.offsetAndRotation(8.0F, -4.0F, 0.0F, 0.0F, 0.0F, -0.45F));
+                .texOffs(24, 127).addBox(0.0F, -1.5F, -10.5F, 6.0F, 3.0F, 3.0F)
+                .texOffs(42, 127).addBox(0.0F, -1.5F, -1.5F, 6.0F, 3.0F, 3.0F)
+                .texOffs(60, 127).addBox(0.0F, -1.5F, 7.5F, 6.0F, 3.0F, 3.0F),
+                PartPose.offsetAndRotation(12.0F, -6.0F, 0.0F, 0.0F, 0.0F, -0.45F));
         PartDefinition leg_front_l = root.addOrReplaceChild("leg_front_l", CubeListBuilder.create()
-                .texOffs(78, 49).addBox(-2.5F, 0.0F, -2.5F, 5.0F, 7.0F, 5.0F),
-                PartPose.offsetAndRotation(5.5F, 17.0F, -6.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(36, 92).addBox(-4.0F, 0.25F, -4.0F, 8.0F, 10.0F, 8.0F),
+                PartPose.offsetAndRotation(8.25F, 13.5F, -9.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leg_back_l = root.addOrReplaceChild("leg_back_l", CubeListBuilder.create()
-                .texOffs(30, 49).addBox(-3.0F, 0.0F, -3.0F, 6.0F, 7.0F, 6.0F),
-                PartPose.offsetAndRotation(5.5F, 17.0F, 6.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(88, 73).addBox(-4.5F, 0.25F, -4.5F, 9.0F, 10.0F, 9.0F),
+                PartPose.offsetAndRotation(8.25F, 13.5F, 9.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition spikes_r = body.addOrReplaceChild("spikes_r", CubeListBuilder.create()
-                .texOffs(0, 72).addBox(-4.0F, -1.0F, -7.0F, 4.0F, 2.0F, 2.0F)
-                .texOffs(12, 72).addBox(-4.0F, -1.0F, -1.0F, 4.0F, 2.0F, 2.0F)
-                .texOffs(24, 72).addBox(-4.0F, -1.0F, 5.0F, 4.0F, 2.0F, 2.0F),
-                PartPose.offsetAndRotation(-8.0F, -4.0F, 0.0F, 0.0F, 0.0F, 0.45F));
+                .texOffs(78, 127).addBox(-6.0F, -1.5F, -10.5F, 6.0F, 3.0F, 3.0F)
+                .texOffs(96, 127).addBox(-6.0F, -1.5F, -1.5F, 6.0F, 3.0F, 3.0F)
+                .texOffs(0, 136).addBox(-6.0F, -1.5F, 7.5F, 6.0F, 3.0F, 3.0F),
+                PartPose.offsetAndRotation(-12.0F, -6.0F, 0.0F, 0.0F, 0.0F, 0.45F));
         PartDefinition leg_front_r = root.addOrReplaceChild("leg_front_r", CubeListBuilder.create()
-                .texOffs(98, 49).addBox(-2.5F, 0.0F, -2.5F, 5.0F, 7.0F, 5.0F),
-                PartPose.offsetAndRotation(-5.5F, 17.0F, -6.0F, 0.0F, 0.0F, 0.0F));
+                .texOffs(68, 92).addBox(-4.0F, 0.25F, -4.0F, 8.0F, 10.0F, 8.0F),
+                PartPose.offsetAndRotation(-8.25F, 13.5F, -9.0F, 0.0F, 0.0F, 0.0F));
         PartDefinition leg_back_r = root.addOrReplaceChild("leg_back_r", CubeListBuilder.create()
-                .texOffs(54, 49).addBox(-3.0F, 0.0F, -3.0F, 6.0F, 7.0F, 6.0F),
-                PartPose.offsetAndRotation(-5.5F, 17.0F, 6.0F, 0.0F, 0.0F, 0.0F));
-        return LayerDefinition.create(mesh, 128, 128);
+                .texOffs(0, 92).addBox(-4.5F, 0.25F, -4.5F, 9.0F, 10.0F, 9.0F),
+                PartPose.offsetAndRotation(-8.25F, 13.5F, 9.0F, 0.0F, 0.0F, 0.0F));
+        return LayerDefinition.create(mesh, 128, 256);
     }
 
     /** deinosuchus: 10 parts, texture 128x128. */
@@ -699,11 +699,11 @@ public final class DinoGeometry {
             Map.entry("tail1", new float[]{0.25F, 0.0F, 0.0F}));
 
     public static final Map<String, float[]> PTERANODON_PERCH = Map.ofEntries(
-            Map.entry("body", new float[]{-0.45F, 0.0F, 0.0F, 0.0F, 0.2F, 0.0F}),
+            Map.entry("body", new float[]{-0.45F, 0.0F, 0.0F, 0.0F, 0.3F, 0.0F}),
             Map.entry("neck", new float[]{0.15F, 0.0F, 0.0F}),
             Map.entry("head", new float[]{0.25F, 0.0F, 0.0F}),
-            Map.entry("wing_l", new float[]{0.3F, -0.5F, 1.3F}),
-            Map.entry("wing_r", new float[]{0.3F, 0.5F, -1.3F}),
+            Map.entry("wing_l", new float[]{0.3F, -0.5F, 0.9F}),
+            Map.entry("wing_r", new float[]{0.3F, 0.5F, -0.9F}),
             Map.entry("wingtip_l", new float[]{0.0F, -3.0F, 0.0F}),
             Map.entry("wingtip_r", new float[]{0.0F, 3.0F, 0.0F}),
             Map.entry("leg_l", new float[]{-0.85F, 0.0F, 0.0F}),
@@ -728,7 +728,7 @@ public final class DinoGeometry {
             Map.entry("head", new float[]{0.55F, 0.0F, 0.0F}));
 
     public static final Map<String, float[]> ANKYLOSAURUS_GRAZE = Map.ofEntries(
-            Map.entry("head", new float[]{0.55F, 0.0F, 0.0F, 0.0F, 1.5F, 0.0F}));
+            Map.entry("head", new float[]{0.55F, 0.0F, 0.0F, 0.0F, 2.25F, 0.0F}));
 
     public static final Map<String, float[]> DEINOSUCHUS_LUNGE = Map.ofEntries(
             Map.entry("head", new float[]{-0.3F, 0.0F, 0.0F}),

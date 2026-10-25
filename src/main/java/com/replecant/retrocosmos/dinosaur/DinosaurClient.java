@@ -112,11 +112,11 @@ public final class DinosaurClient {
         event.registerEntityRenderer(ModDinosaurs.COMPSOGNATHUS.get(),
                 context -> new DinosaurRenderer<>(context, new CompsognathusModel(context.bakeLayer(COMPSOGNATHUS)), 0.3F, "compsognathus", 0.6));
         event.registerEntityRenderer(ModDinosaurs.ANKYLOSAURUS.get(),
-                context -> new DinosaurRenderer<>(context, new AnkylosaurusModel(context.bakeLayer(ANKYLOSAURUS)), 1.0F, "ankylosaurus", 1.2));
+                context -> new DinosaurRenderer<>(context, new AnkylosaurusModel(context.bakeLayer(ANKYLOSAURUS)), 1.4F, "ankylosaurus", 2.2));
         event.registerEntityRenderer(ModDinosaurs.DEINOSUCHUS.get(),
                 context -> new DinosaurRenderer<>(context, new DeinosuchusModel(context.bakeLayer(DEINOSUCHUS)), 0.9F, "deinosuchus", 2.0));
         event.registerEntityRenderer(ModDinosaurs.PTERANODON.get(),
-                context -> new DinosaurRenderer<>(context, new PteranodonModel(context.bakeLayer(PTERANODON)), 0.6F, "pteranodon", 1.6));
+                context -> new DinosaurRenderer<>(context, new PteranodonModel(context.bakeLayer(PTERANODON)), 0.9F, "pteranodon", 2.6));
         event.registerEntityRenderer(ModDinosaurs.TYRANNOSAURUS.get(),
                 context -> new DinosaurRenderer<>(context, new TyrannosaurusModel(context.bakeLayer(TYRANNOSAURUS)), 2.2F, "tyrannosaurus", 4.5));
     }

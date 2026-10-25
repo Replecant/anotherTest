@@ -17,6 +17,8 @@ final class PteranodonGoals {
     /** Climb above the target, then dive beak-first; after a few hits (or a long chase) it gives up and goes home. */
     static final class Stoop extends Goal {
         private static final int MAX_HITS = 3;
+        /** The long beak reaches this far past the body (blocks). */
+        private static final double BEAK_REACH = 0.7;
         private final Pteranodon ptero;
         private boolean diving;
         private int ticks;
@@ -70,10 +72,10 @@ final class PteranodonGoals {
             if (diving) {
                 ptero.getMoveControl().setWantedPosition(target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 1.7);
                 ptero.getLookControl().setLookAt(target, 30.0F, 30.0F);
-                if (ptero.getBoundingBox().inflate(0.35).intersects(target.getBoundingBox())) {
+                if (ptero.getBoundingBox().inflate(BEAK_REACH).intersects(target.getBoundingBox())) {
                     if (ptero.level() instanceof net.minecraft.server.level.ServerLevel level && ptero.doHurtTarget(level, target)) {
                         hits++;
-                        Vec3 push = target.position().subtract(ptero.position()).multiply(1.0, 0.0, 1.0).normalize().scale(0.6);
+                        Vec3 push = target.position().subtract(ptero.position()).multiply(1.0, 0.0, 1.0).normalize().scale(0.8);
                         target.push(push.x, 0.25, push.z);
                         target.hurtMarked = true;
                     }
@@ -84,10 +86,10 @@ final class PteranodonGoals {
             } else {
                 // circle up above and a little away from the target
                 double a = (total * 0.05) % (Math.PI * 2);
-                double x = target.getX() + Math.cos(a) * 6.0;
-                double z = target.getZ() + Math.sin(a) * 6.0;
-                ptero.getMoveControl().setWantedPosition(x, target.getY() + 7.0, z, 1.0);
-                if (ticks > 30 && ptero.getY() > target.getY() + 4.0 || ticks > 90) {
+                double x = target.getX() + Math.cos(a) * 8.0;
+                double z = target.getZ() + Math.sin(a) * 8.0;
+                ptero.getMoveControl().setWantedPosition(x, target.getY() + 9.0, z, 1.0);
+                if (ticks > 30 && ptero.getY() > target.getY() + 5.0 || ticks > 100) {
                     diving = true;
                     ticks = 0;
                     ptero.setDiving(true);
@@ -136,7 +138,7 @@ final class PteranodonGoals {
         @Override
         public boolean canContinueToUse() {
             return perch != null && !ptero.isPerched() && ptero.getTarget() == null && ticks < 500
-                    && ptero.level().getBlockState(perch.above()).isAir();
+                    && ptero.hasRoom(perch);
         }
 
         @Override
@@ -161,8 +163,8 @@ final class PteranodonGoals {
             double dx = cx - ptero.getX();
             double dz = cz - ptero.getZ();
             double horiz = Math.sqrt(dx * dx + dz * dz);
-            if (horiz > 2.5) {
-                ptero.getMoveControl().setWantedPosition(cx, top + 4.0, cz, 0.8);
+            if (horiz > 3.5) {
+                ptero.getMoveControl().setWantedPosition(cx, top + 5.0, cz, 0.8);
             } else {
                 ptero.getMoveControl().setWantedPosition(cx, top + 0.1, cz, 0.35);
                 if (horiz < 0.7 && ptero.getY() - top < 1.0) {
@@ -220,7 +222,7 @@ final class PteranodonGoals {
             double x = a.getX() + 0.5 + Math.cos(angle) * radius;
             double z = a.getZ() + 0.5 + Math.sin(angle) * radius;
             int canopy = ptero.level().getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(x), Mth.floor(z));
-            double y = Math.max(canopy + 4.0, a.getY() + height);
+            double y = Math.max(canopy + 5.0, a.getY() + height);
             double dx = x - ptero.getX();
             double dz = z - ptero.getZ();
             if (dx * dx + dz * dz < 9.0) {

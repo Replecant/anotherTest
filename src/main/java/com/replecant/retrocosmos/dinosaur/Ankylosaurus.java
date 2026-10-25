@@ -32,17 +32,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * Ankylosaurus: a walking boulder of the volcanic highlands. Slow, placid, grazing - and armoured like a tank. Hit
- * it and it swings round to bring the great tail club to bear: ten points of damage and a knock that sends you
- * flying. It doesn't chase; it just keeps swinging while you stay within reach.
+ * it and it swings round to bring the great tail club to bear, cocks it with a grunt - your cue to step back - and sweeps it
+ * across: ten points of damage and a knock that sends you flying, but only where the club actually is. It doesn't
+ * chase; it just keeps swinging while you stay within reach.
  */
 public class Ankylosaurus extends Animal implements DinosaurAnimated, GrazeGoal.Grazer {
     private static final EntityDataAccessor<Boolean> GRAZING = SynchedEntityData.defineId(Ankylosaurus.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> SWING = SynchedEntityData.defineId(Ankylosaurus.class, EntityDataSerializers.INT);
-    static final int SWING_TICKS = 14;
+    /** The swing: the club cocks to one side (a visible warning), sweeps across, and settles. */
+    public static final int WINDUP_TICKS = 10;
+    public static final int STRIKE_TICKS = 6;
+    public static final int SWING_TICKS = WINDUP_TICKS + STRIKE_TICKS + 6;
 
     private final Smoothed graze = new Smoothed(0.06F);
     private int swingClient;
@@ -120,7 +125,23 @@ public class Ankylosaurus extends Animal implements DinosaurAnimated, GrazeGoal.
         return graze.get(partialTick);
     }
 
-    /** 0 -> 1 over the swing, then back to 0. */
+    /** Sideways swing of the tail, -1..1, at this tick of the swing: cock to -1, sweep to +1, settle back to 0. */
+    public static float sweepAt(float tick) {
+        if (tick <= 0.0F || tick >= SWING_TICKS) {
+            return 0.0F;
+        }
+        if (tick < WINDUP_TICKS) {
+            float f = tick / WINDUP_TICKS;
+            return -f * f * (3.0F - 2.0F * f);
+        }
+        if (tick < WINDUP_TICKS + STRIKE_TICKS) {
+            return -Mth.cos((tick - WINDUP_TICKS) / STRIKE_TICKS * Mth.PI);
+        }
+        float f = (tick - WINDUP_TICKS - STRIKE_TICKS) / (SWING_TICKS - WINDUP_TICKS - STRIKE_TICKS);
+        return 1.0F - f * f * (3.0F - 2.0F * f);
+    }
+
+    /** 0 -> 1 over the swing (0 when not swinging). */
     @Override
     public float swingAmount(float partialTick) {
         float left = Mth.lerp(partialTick, swingClientO, swingClient);
@@ -183,13 +204,44 @@ public class Ankylosaurus extends Animal implements DinosaurAnimated, GrazeGoal.
         return (isBaby() ? 1.2F : 0.8F) + (random.nextFloat() - random.nextFloat()) * 0.06F;
     }
 
-    /** Turn the tail toward whoever is pestering it, then swing the club. */
+    /**
+     * The club's position in the middle of a sweep, as (sideways, behind) in blocks from the body centre. It follows
+     * the model's tail chain (tail1 -> tail2 -> club) with the same per-joint swing the model uses, so the strike
+     * lands where the club is drawn.
+     */
+    static double[] clubOffset(float sweep) {
+        double a0 = sweep * BODY_BRACE;
+        double a1 = a0 + sweep * TAIL1_SWING;
+        double a2 = a1 + sweep * TAIL2_SWING;
+        double a3 = a2 + sweep * CLUB_SWING;
+        double side = TAIL1_PIVOT * Math.sin(a0) + TAIL2_LEN * Math.sin(a1) + CLUB_PIVOT * Math.sin(a2) + CLUB_CENTRE * Math.sin(a3);
+        double back = TAIL1_PIVOT * Math.cos(a0) + TAIL2_LEN * Math.cos(a1) + CLUB_PIVOT * Math.cos(a2) + CLUB_CENTRE * Math.cos(a3);
+        return new double[] {side / 16.0, back / 16.0};
+    }
+
+    // the tail chain of the model (texels, grown x1.5 in tools/dinosaurs.py) and the per-joint strike swing
+    private static final double TAIL1_PIVOT = 13.5;
+    private static final double TAIL2_LEN = 9.75;
+    private static final double CLUB_PIVOT = 8.25;
+    private static final double CLUB_CENTRE = 3.75;
+    public static final float TAIL1_SWING = 0.55F;
+    public static final float TAIL2_SWING = 0.5F;
+    public static final float CLUB_SWING = 0.35F;
+    /** The body twists the other way, bracing against the swing (the whole tail turns with it). */
+    public static final float BODY_BRACE = -0.12F;
+    /** Height of the club above the feet (blocks). */
+    private static final double CLUB_HEIGHT = 1.35;
+
+    /** Turn the tail toward whoever is pestering it, cock the club (a fair warning), then sweep it across. */
     static final class TailStrikeGoal extends Goal {
-        private static final double REACH = 4.5;
+        /** The club hits what is within this distance (blocks) of it, nothing further. */
+        static final double CLUB_REACH = 1.0;
         private static final int COOLDOWN = 40;
         private final Ankylosaurus anky;
+        private final double restReach = clubOffset(0.0F)[1];
         private int ticks;
         private int cooldown;
+        private boolean landed;
 
         TailStrikeGoal(Ankylosaurus anky) {
             this.anky = anky;
@@ -199,7 +251,7 @@ public class Ankylosaurus extends Animal implements DinosaurAnimated, GrazeGoal.
         @Override
         public boolean canUse() {
             LivingEntity t = anky.getTarget();
-            return !anky.isBaby() && t != null && t.isAlive() && anky.distanceToSqr(t) < 8.0 * 8.0;
+            return !anky.isBaby() && t != null && t.isAlive() && anky.distanceToSqr(t) < 10.0 * 10.0;
         }
 
         @Override
@@ -225,34 +277,66 @@ public class Ankylosaurus extends Animal implements DinosaurAnimated, GrazeGoal.
             double dx = target.getX() - anky.getX();
             double dz = target.getZ() - anky.getZ();
             double dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist > REACH + 1.0) {
+            float away = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) + 90.0F;
+            if (ticks > 0) {
+                ticks++;
+                if (ticks < WINDUP_TICKS) {
+                    turn(away, 4.0F);  // still tracking a little while it cocks the club; once it swings, it's committed
+                } else if (ticks <= WINDUP_TICKS + STRIKE_TICKS && !landed && clubTouches(target, ticks)) {
+                    landed = true;
+                    strike(target);
+                }
+                if (ticks >= SWING_TICKS) {
+                    ticks = 0;
+                    cooldown = COOLDOWN;
+                }
+                return;
+            }
+            if (dist > restReach + 1.2) {
                 anky.getNavigation().moveTo(target, 0.9);  // shuffle closer, but it's no chaser
                 return;
             }
             anky.getNavigation().stop();
             // turn the backside (and the club) toward the target
-            float away = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) + 90.0F;
-            anky.setYRot(Mth.approachDegrees(anky.getYRot(), away, 12.0F));
-            anky.yBodyRot = anky.getYRot();
-            anky.yHeadRot = anky.getYRot();
-            if (ticks > 0) {
-                ticks++;
-                if (ticks == Ankylosaurus.SWING_TICKS / 2) {
-                    strike(target);
-                }
-                if (ticks >= Ankylosaurus.SWING_TICKS) {
-                    ticks = 0;
-                    cooldown = COOLDOWN;
-                }
-            } else if (cooldown <= 0 && Math.abs(Mth.wrapDegrees(anky.getYRot() - away)) < 35.0F) {
+            turn(away, 12.0F);
+            if (cooldown <= 0 && Math.abs(Mth.wrapDegrees(anky.getYRot() - away)) < 35.0F) {
                 ticks = 1;
+                landed = false;
                 anky.startSwing();
-                anky.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.2F, 0.6F);
+                anky.playSound(SoundEvents.HOGLIN_ANGRY, 1.2F, 0.55F);
             }
         }
 
+        private void turn(float yaw, float speed) {
+            anky.setYRot(Mth.approachDegrees(anky.getYRot(), yaw, speed));
+            anky.yBodyRot = anky.getYRot();
+            anky.yHeadRot = anky.getYRot();
+        }
+
+        /** Where the club is this tick of the swing, in the world. */
+        Vec3 clubPos(int tick) {
+            double[] o = clubOffset(sweepAt(tick));
+            float yaw = anky.getYRot() * Mth.DEG_TO_RAD;
+            double fx = -Mth.sin(yaw);
+            double fz = Mth.cos(yaw);
+            // behind = -forward; the model's +x (where a positive sweep swings the tail) is (cos yaw, sin yaw) in the world
+            return new Vec3(anky.getX() - fx * o[1] + fz * o[0], anky.getY() + CLUB_HEIGHT, anky.getZ() - fz * o[1] - fx * o[0]);
+        }
+
+        boolean clubTouches(LivingEntity target, int tick) {
+            if (tick == WINDUP_TICKS) {
+                anky.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.2F, 0.6F);
+            }
+            Vec3 c = clubPos(tick);
+            AABB box = target.getBoundingBox();
+            double ex = Math.max(Math.max(box.minX - c.x, 0.0), c.x - box.maxX);
+            double ey = Math.max(Math.max(box.minY - c.y, 0.0), c.y - box.maxY);
+            double ez = Math.max(Math.max(box.minZ - c.z, 0.0), c.z - box.maxZ);
+            return ex * ex + ey * ey + ez * ez <= CLUB_REACH * CLUB_REACH;
+        }
+
         private void strike(LivingEntity target) {
-            if (!(anky.level() instanceof ServerLevel level) || anky.distanceTo(target) > REACH + target.getBbWidth()) {
+            if (!(anky.level() instanceof ServerLevel level)) {
                 return;
             }
             if (target.hurtServer(level, level.damageSources().mobAttack(anky), (float) anky.getAttributeValue(Attributes.ATTACK_DAMAGE))) {

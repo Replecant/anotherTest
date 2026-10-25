@@ -83,8 +83,8 @@ public final class ModDinosaurs {
     /** Pteranodon: roosts on the tops of the giant trees and circles over the jungle. */
     public static final DeferredHolder<EntityType<?>, EntityType<Pteranodon>> PTERANODON = ModEntities.ENTITIES.register("pteranodon",
             id -> EntityType.Builder.of(Pteranodon::new, MobCategory.CREATURE)
-                    .sized(1.2F, 0.9F)
-                    .eyeHeight(0.6F)
+                    .sized(1.6F, 1.1F)
+                    .eyeHeight(0.8F)
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
@@ -129,8 +129,8 @@ public final class ModDinosaurs {
     /** Ankylosaurus: the armoured tank of the highlands. */
     public static final DeferredHolder<EntityType<?>, EntityType<Ankylosaurus>> ANKYLOSAURUS = ModEntities.ENTITIES.register("ankylosaurus",
             id -> EntityType.Builder.of(Ankylosaurus::new, MobCategory.CREATURE)
-                    .sized(1.5F, 1.3F)
-                    .eyeHeight(0.9F)
+                    .sized(2.2F, 1.8F)
+                    .eyeHeight(1.2F)
                     .clientTrackingRange(10)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 

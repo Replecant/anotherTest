@@ -165,7 +165,26 @@ public class Pteranodon extends PathfinderMob implements DinosaurAnimated {
         return depth;
     }
 
-    /** Looks for a high treetop to sit on: leaves or logs with open air above, well above the floor. */
+    /**
+     * Room to land and fold the wings: nothing solid in the 3x3 columns two blocks above the perch (the body alone is
+     * 1.6 wide, and the folded wings hang out to the sides).
+     */
+    boolean hasRoom(BlockPos perch) {
+        BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dy = 1; dy <= 2; dy++) {
+                    p.set(perch.getX() + dx, perch.getY() + dy, perch.getZ() + dz);
+                    if (!level().getBlockState(p).getCollisionShape(level(), p).isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /** Looks for a high treetop to sit on: leaves or logs with open room above, well above the floor. */
     @Nullable
     BlockPos findPerch(BlockPos around, int radius) {
         BlockPos best = null;
@@ -177,7 +196,7 @@ public class Pteranodon extends PathfinderMob implements DinosaurAnimated {
             }
             int top = level().getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
             BlockPos below = new BlockPos(x, top - 1, z);
-            if (canopyHeight(below) >= MIN_PERCH_HEIGHT && (best == null || below.getY() > best.getY())) {
+            if (canopyHeight(below) >= MIN_PERCH_HEIGHT && (best == null || below.getY() > best.getY()) && hasRoom(below)) {
                 best = below;
             }
         }

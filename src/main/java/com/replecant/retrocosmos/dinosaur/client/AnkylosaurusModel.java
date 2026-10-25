@@ -1,9 +1,10 @@
 package com.replecant.retrocosmos.dinosaur.client;
 
 import net.minecraft.client.model.geom.ModelPart;
+import com.replecant.retrocosmos.dinosaur.Ankylosaurus;
 import net.minecraft.util.Mth;
 
-/** Ankylosaurus: a ponderous waddle, head down to graze, and the club sweeping side to side when it strikes. */
+/** Ankylosaurus: a ponderous waddle, head down to graze, and the club cocked as a warning and then swept across when it strikes. */
 public class AnkylosaurusModel extends DinoModel {
     private final ModelPart body;
     private final ModelPart head;
@@ -47,14 +48,22 @@ public class AnkylosaurusModel extends DinoModel {
         DinoGeometry.applyPose(parts, DinoGeometry.ANKYLOSAURUS_GRAZE, s.graze);
         head.xRot += Mth.sin(t * 0.5F) * 0.06F * s.graze;
 
-        // idle tail wag; the strike is one full sweep of the club, the body bracing against it
-        tail1.yRot += Mth.sin(t * 0.07F) * 0.1F;
-        tail2.yRot += Mth.sin(t * 0.07F - 0.6F) * 0.12F;
-        float sweep = Mth.sin(s.swing * Mth.TWO_PI);
-        tail1.yRot += sweep * 0.55F;
-        tail2.yRot += sweep * 0.5F;
-        club.yRot += sweep * 0.35F;
-        body.yRot -= sweep * 0.12F;
+        // idle tail wag (stilled while swinging); the strike: the club is cocked to one side and raised - the warning -
+        // then swept across, the body bracing against it. Same curve and joint swings as the server-side hit test.
+        float idle = s.swing > 0.0F ? 0.0F : 1.0F;
+        tail1.yRot += Mth.sin(t * 0.07F) * 0.1F * idle;
+        tail2.yRot += Mth.sin(t * 0.07F - 0.6F) * 0.12F * idle;
+        float tick = s.swing * Ankylosaurus.SWING_TICKS;
+        float sweep = Ankylosaurus.sweepAt(tick);
+        float cocked = tick > 0.0F && tick < Ankylosaurus.WINDUP_TICKS ? -sweep : 0.0F;
+        tail1.yRot += sweep * Ankylosaurus.TAIL1_SWING;
+        tail2.yRot += sweep * Ankylosaurus.TAIL2_SWING;
+        club.yRot += sweep * Ankylosaurus.CLUB_SWING;
+        tail1.xRot -= cocked * 0.12F;
+        club.xRot -= cocked * 0.25F;
+        body.yRot += sweep * Ankylosaurus.BODY_BRACE;
+        body.zRot -= cocked * 0.05F;
+        head.xRot += cocked * 0.2F;
         applyAge(s);
     }
 }

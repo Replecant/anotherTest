@@ -1,6 +1,8 @@
 package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.dinosaur.ModDinosaurs;
+import com.replecant.retrocosmos.venus.ModVenus;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -47,6 +49,16 @@ public final class ModCreativeTabs {
             .icon(() -> new ItemStack(ModFurniture.CONTROL_PANEL.get()))
             .withTabsBefore(HOME.getKey())
             .displayItems((params, output) -> ModFurniture.stationItems().forEach(item -> output.accept(item.get())))
+            .build());
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> VENUS = TABS.register("venus", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.retrocosmos.venus"))
+            .icon(() -> new ItemStack(ModItems.ROCKET.get()))
+            .withTabsBefore(STATION.getKey())
+            .displayItems((params, output) -> {
+                ModVenus.items().forEach(item -> output.accept(item.get()));
+                ModDinosaurs.items().forEach(item -> output.accept(item.get()));
+            })
             .build());
 
     private ModCreativeTabs() {}

@@ -2,7 +2,7 @@ name: Build mod
 
 on:
   push:
-    branches: [ main, probe ]
+    branches: [ main, probe, 'probe-*' ]
   workflow_dispatch:
 
 permissions:
@@ -53,7 +53,7 @@ jobs:
           grep -q "STATION SMOKE OK" server.log || { echo "::error::Freedom Station smoke test failed"; exit 1; }
 
       - name: API probe (probe branch only)
-        if: always() && github.ref == 'refs/heads/probe'
+        if: always() && startsWith(github.ref, 'refs/heads/probe')
         run: |
           mkdir -p /tmp/logs
           bash tools/ci/api_probe.sh /tmp/logs/api.txt || true
@@ -64,11 +64,13 @@ jobs:
           mkdir -p /tmp/logs && cp build.log server.log /tmp/logs/ 2>/dev/null || true
           echo "status=${{ steps.build.outcome }} smoke=${{ steps.smoke.outcome }} neo=${{ steps.neo.outputs.version }} sha=${{ github.sha }}" > /tmp/logs/status.txt
           cd /tmp/logs
-          git init -q -b ci-logs
+          LOGS=ci-logs
+          case "${{ github.ref_name }}" in main|probe) ;; *) LOGS="ci-logs-${{ github.ref_name }}" ;; esac
+          git init -q -b "$LOGS"
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add . && git commit -qm "CI log for ${{ github.sha }}"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-logs
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "$LOGS"
 
       - name: Upload jar artifact
         if: steps.smoke.outcome == 'success'

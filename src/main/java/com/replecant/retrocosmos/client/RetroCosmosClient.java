@@ -1,6 +1,7 @@
 package com.replecant.retrocosmos.client;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.dinosaur.DinosaurClient;
 import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModMenus;
@@ -23,6 +24,7 @@ import net.neoforged.neoforge.common.NeoForge;
 public class RetroCosmosClient {
     public RetroCosmosClient(IEventBus modEventBus) {
         modEventBus.addListener(RetroCosmosClient::registerScreens);
+        DinosaurClient.init(modEventBus);
         modEventBus.addListener(RetroCosmosClient::registerGuiLayers);
         modEventBus.addListener(RetroCosmosClient::registerRenderers);
         NeoForge.EVENT_BUS.addListener(RetroCosmosClient::onClientTick);

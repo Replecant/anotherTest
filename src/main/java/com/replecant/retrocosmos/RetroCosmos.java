@@ -2,6 +2,7 @@ package com.replecant.retrocosmos;
 
 import com.mojang.logging.LogUtils;
 import com.replecant.retrocosmos.command.RetroCosmosCommands;
+import com.replecant.retrocosmos.dinosaur.ModDinosaurs;
 import com.replecant.retrocosmos.flight.FlightEvents;
 import com.replecant.retrocosmos.network.ModNetwork;
 import com.replecant.retrocosmos.oxygen.OxygenSystem;
@@ -16,6 +17,7 @@ import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.registry.ModMenus;
 import com.replecant.retrocosmos.station.StationProtection;
 import com.replecant.retrocosmos.station.StationSmokeTest;
+import com.replecant.retrocosmos.venus.ModVenus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -34,6 +36,8 @@ public class RetroCosmos {
 
     public RetroCosmos(IEventBus modEventBus, ModContainer modContainer) {
         ModFurniture.init();
+        ModVenus.init(modEventBus);
+        ModDinosaurs.init(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);

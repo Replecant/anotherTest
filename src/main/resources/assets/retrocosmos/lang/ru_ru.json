@@ -186,6 +186,7 @@
   "gui.retrocosmos.map.status.home": "ДОМ - GO",
   "gui.retrocosmos.map.status.locked": "ЗАКРЫТО",
   "gui.retrocosmos.map.belt": "Пояс астероидов",
+  "itemGroup.retrocosmos.venus": "Ретрокосмос: Венера",
   "command.retrocosmos.tp.station": "%s телепортирован на станцию «Свобода»",
   "message.retrocosmos.station.protected": "Имущество станции — корпус не разбирать!",
   "command.retrocosmos.tp.home": "%s телепортирован домой на Землю",

@@ -2218,6 +2218,12 @@ def main():
     flight.generate()
     import station_furniture
     station_furniture.generate()
+    for optional in ("venus", "dinosaurs"):
+        try:
+            module = __import__(optional)
+        except ImportError:
+            continue
+        module.generate()
     try:
         import furniture_art
     except ImportError:
@@ -2369,6 +2375,13 @@ def write_lang():
     import station_furniture
     EN.update(station_furniture.EN)
     RU.update(station_furniture.RU)
+    for optional in ("venus", "dinosaurs"):
+        try:
+            module = __import__(optional)
+        except ImportError:
+            continue
+        EN.update(getattr(module, "EN", {}))
+        RU.update(getattr(module, "RU", {}))
     assert EN.keys() == RU.keys(), set(EN) ^ set(RU)
     write_json(os.path.join(ASSETS, "lang", "en_us.json"), EN)
     write_json(os.path.join(ASSETS, "lang", "ru_ru.json"), RU)

@@ -83,6 +83,18 @@
         "maxCount": 5,
         "minCount": 2,
         "weight": 14
+      },
+      {
+        "type": "retrocosmos:compsognathus",
+        "maxCount": 6,
+        "minCount": 3,
+        "weight": 10
+      },
+      {
+        "type": "retrocosmos:ankylosaurus",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 4
       }
     ],
     "misc": [],

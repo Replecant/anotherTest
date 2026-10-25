@@ -338,7 +338,224 @@ def trex_spec():
                         "claw": (232, 220, 186), "claw_tip": (70, 56, 40), "foot": (66, 60, 40)}}
 
 
-SPECS = [raptor_spec(), bronto_spec(), trike_spec(), creeper_spec(), ptero_spec(), trex_spec()]
+def plesio_spec():
+    """Plesiosaur (elasmosaurus): Loch Ness of Venus - broad body, four paddles, a neck four blocks long."""
+    parts = [
+        P("body", None, (0, 16, 0), (0, 0, 0), [
+            B(-8, -5, -11, 16, 10, 22, "skin"),
+        ]),
+        P("neck1", "body", (0, -2, -10), (-0.4, 0, 0), [
+            B(-3.5, -3.5, -16, 7, 7, 17, "neck"),
+        ]),
+        P("neck2", "neck1", (0, 0, -15), (0.1, 0, 0), [
+            B(-2.5, -2.5, -16, 5, 5, 17, "neck"),
+        ]),
+        P("neck3", "neck2", (0, 0, -15), (0.12, 0, 0), [
+            B(-2, -2, -15, 4, 4, 16, "neck"),
+        ]),
+        P("neck4", "neck3", (0, 0, -14), (0.0, 0, 0), [
+            B(-1.5, -1.5, -13, 3, 3, 14, "neck"),
+        ]),
+        P("head", "neck4", (0, 0, -12), (0.3, 0, 0), [
+            B(-2.5, -2.5, -6, 5, 4, 6, "skin", eye=(-1.5, -3.5)),
+            B(-1.5, -1.5, -10, 3, 2, 4, "snout", teeth="bottom"),
+        ]),
+        P("jaw", "head", (0, 0.5, -5), (0.05, 0, 0), [
+            B(-1.5, 0, -5, 3, 1, 5, "jaw", teeth="top"),
+        ]),
+        P("tail1", "body", (0, -0.5, 10), (0.05, 0, 0), [
+            B(-4, -3, 0, 8, 6, 9, "skin"),
+        ]),
+        P("tail2", "tail1", (0, 0, 8.5), (0.05, 0, 0), [
+            B(-2, -2, 0, 4, 4, 10, "skin"),
+        ]),
+    ]
+    parts += legs("", [
+        P("flipper_front_l", "body", (7.5, 2.5, -6), (0, -0.45, 0.25), [
+            B(0, -0.5, -3, 13, 1, 7, "flipper"),
+        ]),
+        P("flipper_back_l", "body", (7, 2.5, 7), (0, -0.55, 0.2), [
+            B(0, -0.5, -2.5, 10, 1, 6, "flipper"),
+        ]),
+    ])
+    return {"name": "plesiosaur", "tex_w": 128, "parts": parts,
+            "palette": {"dorsal": (46, 80, 88), "base": (74, 118, 118), "belly": (200, 204, 174),
+                        "blotch": (104, 150, 140), "noise": 5, "eye": (250, 210, 60),
+                        "flipper": (56, 92, 98), "flipper_edge": (32, 58, 66)}}
+
+
+def meganeura_spec():
+    """Meganeura: a crow-sized dragonfly - huge jewel eyes, a striped tail and four glassy wings."""
+    parts = [
+        P("thorax", None, (0, 19, 0), (0, 0, 0), [
+            B(-1, -1, -1.5, 2, 2, 3, "dbody"),
+        ]),
+        P("head", "thorax", (0, 0, -1.5), (0, 0, 0), [
+            B(-1.5, -1, -2, 3, 2, 2, "deye"),
+        ]),
+        P("abdomen", "thorax", (0, 0, 1.5), (0.05, 0, 0), [
+            B(-0.5, -0.5, 0, 1, 1, 9, "dtail"),
+        ]),
+    ]
+    parts += legs("", [
+        P("wing_front_l", "thorax", (1, -1, -0.5), (0, 0.15, 0), [
+            B(0, -0.5, -1, 6, 1, 3, "dwing"),
+        ]),
+        P("wing_back_l", "thorax", (1, -1, 1.5), (0, -0.2, 0), [
+            B(0, -0.5, -1, 5, 1, 3, "dwing"),
+        ]),
+    ])
+    return {"name": "meganeura", "tex_w": 64, "parts": parts, "translucent": True,
+            "palette": {"body": (34, 120, 110), "body_dark": (18, 52, 50), "eye": (90, 220, 170),
+                        "eye_dark": (20, 90, 90), "wing_a": (120, 230, 210), "wing_b": (170, 120, 240),
+                        "vein": (30, 70, 70)}}
+
+
+def compy_spec():
+    """Compsognathus: a chicken-sized dinosaur, all legs, tail and curiosity."""
+    parts = [
+        P("body", None, (0, 17.5, 0), (-0.15, 0, 0), [
+            B(-1.5, -1.5, -3, 3, 3, 5, "skin"),
+        ]),
+        P("neck", "body", (0, -1, -2.5), (-0.75, 0, 0), [
+            B(-1, -1, -3, 2, 2, 3, "skin"),
+        ]),
+        P("head", "neck", (0, -0.5, -2.5), (0.8, 0, 0), [
+            B(-1.5, -1.5, -3, 3, 2, 3, "skin", eye=(-1.0, -1.5), small_eye=True),
+            B(-1, -1, -5, 2, 1, 2, "snout"),
+        ]),
+        P("tail1", "body", (0, -0.5, 2), (0.1, 0, 0), [
+            B(-1, -1, 0, 2, 2, 4, "skin"),
+        ]),
+        P("tail2", "tail1", (0, 0, 3.5), (0.05, 0, 0), [
+            B(-0.5, -0.5, 0, 1, 1, 5, "skin"),
+        ]),
+    ]
+    parts += legs("", [
+        P("leg_l", None, (1.2, 18.5, 0.5), (0, 0, 0), [
+            B(-0.5, 0, -0.5, 1, 5, 1, "skin"),
+            B(-0.5, 4.5, -2, 1, 1, 2, "foot"),
+        ]),
+    ])
+    return {"name": "compsognathus", "tex_w": 64, "parts": parts,
+            "palette": {"dorsal": (140, 98, 46), "base": (196, 164, 74), "belly": (234, 222, 172),
+                        "stripe": (104, 64, 34), "stripe_k": 1.3, "noise": 5, "eye": (255, 120, 40),
+                        "claw": (232, 220, 186), "foot": (120, 90, 50)}}
+
+
+def moth_spec():
+    """Spore moth: a fluffy lilac moth of the glowcap hollows with softly glowing eyespots."""
+    parts = [
+        P("body", None, (0, 20, 0), (0, 0, 0), [
+            B(-1.5, -1.5, -2.5, 3, 3, 5, "fur"),
+        ]),
+        P("head", "body", (0, 0, -2.5), (0, 0, 0), [
+            B(-1, -1, -2, 2, 2, 2, "fur", mothface=True),
+        ]),
+    ]
+    parts += legs("", [
+        P("antenna_l", "head", (0.5, -1, -1.5), (-1.0, 0, 0.45), [
+            B(0, -2, -0.5, 1, 2, 1, "antenna"),
+        ]),
+        P("wing_l", "body", (1.5, -1.5, -1), (0, -0.1, 0), [
+            B(0, -0.5, -2, 5, 1, 5, "mwing"),
+        ]),
+        P("hindwing_l", "body", (1.5, -1, 1.5), (0, -0.25, 0), [
+            B(0, -0.5, -1, 4, 1, 4, "mwing", hind=True),
+        ]),
+    ])
+    return {"name": "spore_moth", "tex_w": 64, "parts": parts, "glow": True,
+            "palette": {"fur": (214, 202, 222), "fur_dark": (156, 138, 170), "wing": (190, 172, 210),
+                        "wing_edge": (110, 90, 136), "ring": (56, 44, 76), "spot": (120, 255, 220),
+                        "antenna": (110, 90, 120), "eye": (30, 20, 40)}}
+
+
+def ankylo_spec():
+    """Ankylosaurus: a walking boulder - basalt hide, ochre armour plates, spikes, and that tail club."""
+    parts = [
+        P("body", None, (0, 13, 0), (0, 0, 0), [
+            B(-8, -6, -9, 16, 10, 18, "skin", armored=True),
+            B(-9, -8, -9.5, 18, 2, 19, "plates"),
+        ]),
+        P("head", "body", (0, -1, -9), (0.2, 0, 0), [
+            B(-4, -3, -7, 8, 6, 7, "skin", eye=(-1.5, -4.5)),
+            B(-3, -1, -9, 6, 4, 2, "beak"),
+            B(4, -3, -4, 2, 2, 2, "spike"), B(-6, -3, -4, 2, 2, 2, "spike"),
+        ]),
+        P("tail1", "body", (0, -2, 9), (0.1, 0, 0), [
+            B(-4, -3, 0, 8, 6, 7, "skin", armored=True),
+            B(-4.5, -4, 0, 9, 1, 6, "plates"),
+        ]),
+        P("tail2", "tail1", (0, 0, 6.5), (0.05, 0, 0), [
+            B(-2, -2, 0, 4, 4, 6, "skin"),
+        ]),
+        P("club", "tail2", (0, 0, 5.5), (0, 0, 0), [
+            B(-3.5, -2.5, 0, 7, 5, 5, "club"),
+        ]),
+    ]
+    parts += legs("", [
+        # a row of spikes jutting out and up along each flank
+        P("spikes_l", "body", (8, -4, 0), (0, 0, -0.45), [
+            B(0, -1, -7, 4, 2, 2, "spike"), B(0, -1, -1, 4, 2, 2, "spike"), B(0, -1, 5, 4, 2, 2, "spike"),
+        ]),
+        P("leg_front_l", None, (5.5, 17, -6), (0, 0, 0), [
+            B(-2.5, 0, -2.5, 5, 7, 5, "leg", nails=True),
+        ]),
+        P("leg_back_l", None, (5.5, 17, 6), (0, 0, 0), [
+            B(-3, 0, -3, 6, 7, 6, "leg", nails=True),
+        ]),
+    ])
+    return {"name": "ankylosaurus", "tex_w": 128, "parts": parts,
+            "palette": {"dorsal": (66, 64, 62), "base": (96, 92, 86), "belly": (156, 144, 120),
+                        "blotch": (80, 78, 74), "noise": 5, "eye": (230, 160, 40), "nail": (222, 206, 160),
+                        "plate": (192, 142, 62), "plate_light": (222, 176, 92), "plate_dark": (110, 74, 34),
+                        "spike": (236, 220, 170), "spike_base": (150, 110, 56), "beak": (60, 54, 48)}}
+
+
+def croc_spec():
+    """Deinosuchus: a four-block swamp crocodile - armoured back, eyes and nostrils on top for lurking."""
+    parts = [
+        P("body", None, (0, 19, 0), (0, 0, 0), [
+            B(-6, -3, -10, 12, 6, 20, "skin"),
+            B(-4, -4, -9, 8, 1, 18, "scutes"),
+        ]),
+        P("head", "body", (0, -0.5, -10), (0, 0, 0), [
+            B(-4, -2.5, -6, 8, 5, 6, "skin"),
+            B(-3.5, -3.5, -5, 2, 1, 2, "croceye"), B(1.5, -3.5, -5, 2, 1, 2, "croceye"),
+            B(-2.5, -1.5, -20, 5, 3, 14, "snout", teeth="bottom"),
+            B(-1, -2.5, -20, 2, 1, 2, "skin", nostril_bump=True),
+        ]),
+        P("jaw", "head", (0, 1.5, -5), (0, 0, 0), [
+            B(-2.5, 0, -15, 5, 2, 15, "jaw", teeth="top"),
+        ]),
+        P("tail1", "body", (0, -0.5, 10), (0.03, 0, 0), [
+            B(-4.5, -2.5, 0, 9, 5, 12, "skin"),
+            B(-1.5, -3.5, 0, 3, 1, 12, "scutes"),
+        ]),
+        P("tail2", "tail1", (0, 0, 11.5), (0.0, 0, 0), [
+            B(-3, -2, 0, 6, 4, 11, "skin"),
+            B(-1, -3, 0, 2, 1, 11, "scutes"),
+        ]),
+        P("tail3", "tail2", (0, 0, 10.5), (0.0, 0, 0), [
+            B(-1.5, -1.5, 0, 3, 3, 10, "skin"),
+        ]),
+    ]
+    parts += legs("", [
+        P("leg_front_l", "body", (5, 1.5, -7), (0, 0, -0.65), [
+            B(-1, 0, -1.5, 3, 4, 3, "leg"),
+        ]),
+        P("leg_back_l", "body", (5, 1.5, 7), (0, 0, -0.65), [
+            B(-1, 0, -2, 3, 4, 4, "leg"),
+        ]),
+    ])
+    return {"name": "deinosuchus", "tex_w": 128, "parts": parts,
+            "palette": {"dorsal": (44, 56, 34), "base": (70, 86, 50), "belly": (176, 170, 120),
+                        "blotch": (54, 68, 40), "noise": 5, "eye": (220, 210, 60), "nail": (200, 190, 150),
+                        "scute": (52, 62, 38), "scute_light": (86, 100, 60)}}
+
+
+SPECS = [raptor_spec(), bronto_spec(), trike_spec(), creeper_spec(), ptero_spec(), trex_spec(),
+         plesio_spec(), meganeura_spec(), compy_spec(), moth_spec(), ankylo_spec(), croc_spec()]
 
 # Pose offsets (radians, added to the rest rotation). Used by the Java models and the preview renderer.
 POSES = {
@@ -367,6 +584,18 @@ POSES = {
         "dive": {"body": (0.55, 0, 0), "neck": (0.15, 0, 0), "head": (0.1, 0, 0),
                  "wing_l": (0, -0.7, 0.25), "wing_r": (0, 0.7, -0.25),
                  "wingtip_l": (0, -0.6, 0), "wingtip_r": (0, 0.6, 0), "jaw": (0.5, 0, 0)},
+    },
+    "plesiosaur": {
+        # the Loch Ness pose: neck up out of the water in a swan's S, head looking about
+        "peek": {"neck1": (-1.05, 0, 0), "neck2": (-0.3, 0, 0), "neck3": (0.35, 0, 0), "neck4": (0.5, 0, 0),
+                 "head": (0.55, 0, 0)},
+    },
+    "ankylosaurus": {
+        "graze": {"head": (0.55, 0, 0, 0, 1.5, 0)},
+    },
+    "deinosuchus": {
+        # the strike: head thrown up, jaws gaping
+        "lunge": {"head": (-0.3, 0, 0), "jaw": (0.95, 0, 0), "body": (-0.08, 0, 0)},
     },
     "tyrannosaurus": {
         # the roar: head thrown up, jaws wide, puny arms flailing
@@ -567,7 +796,7 @@ def paint(spec, t):
             c = lerp(pal["base"], mul(pal["dorsal"], 0.95), t.fy * 1.1) if t.face != "top" else pal["dorsal"]
         if "stripe" in pal:
             # tiger stripes over the back, flanks, neck and tail (ochre on the raptor, dark on the T-rex)
-            k = 0.9 if sp == "raptor" else 0.32
+            k = pal.get("stripe_k", 0.9 if sp == "raptor" else 0.32)
             band = (t.mz * k + abs(t.mx) * 0.55 * k / 0.9 + t.my * 0.25 * k / 0.9)
             if t.fy < 0.62 or t.ny < -0.6:
                 if (math.floor(band) % 4) == 0 and t.ny < 0.5:
@@ -616,11 +845,22 @@ def paint(spec, t):
                 c = (236, 230, 206) if t.i % 3 == 1 else (150, 30, 30)
             if t.face == "top":
                 c = (150, 40, 40)  # inside of the mouth
-        e = eye_texel(t, feat.get("eye"), pal, big=(sp != "brontosaurus"))
+        e = eye_texel(t, feat.get("eye"), pal, big=(sp != "brontosaurus" and not feat.get("small_eye")))
+        if e == "brow" and feat.get("small_eye"):
+            e = None
+        if feat.get("nostril_bump") and t.face == "top":
+            c = (24, 24, 16)
         if e == "brow":
             c = mul(c, 0.62)
         elif e is not None:
             c = e
+        if feat.get("armored") and t.face in ("east", "west", "north", "south") and t.fy < 0.5:
+            # armour scutes running down the upper flanks
+            along = (t.lz - t.z0) if t.face in ("east", "west") else (t.lx - t.x0)
+            u = (along + (int(t.fy * 3) % 2) * 1.5) % 3 / 3
+            c = pal["plate"] if u > 0.3 else pal["plate_dark"]
+            if t.fy > 0.38:
+                c = pal["plate_dark"]
         # edges of every face a touch darker: reads like a chunky sculpted model at a distance
         if t.edge and t.face != "top":
             c = mul(c, 0.9)
@@ -946,11 +1186,170 @@ EXTRA_PAINTERS = {"cskin": p_cskin, "fringe": p_fringe, "pod": p_pod, "stalk": p
                   "bulb": p_bulb, "membrane": p_membrane, "bone": p_bone, "pcrest": p_pcrest, "pfoot": p_pfoot}
 
 
+# ---- materials of the third wave (sea, swamp, highlands and the small life) --------------------------------------
+
+def _flat_cut(t, along, across, shape):
+    """Flat faces of a 1-thick plate keep texels inside shape(along 0..1, across 0..1); rim faces are cut away."""
+    if t.face not in ("top", "bottom"):
+        return False
+    return shape(along, across)
+
+
+def p_flipper(spec, t, noise):
+    pal = spec["palette"]
+    span = abs(t.lx) / t.w
+    chord = (t.lz - t.z0) / t.d
+    if t.face not in ("top", "bottom"):
+        return None, 0
+    if abs(chord - 0.5) > 0.5 * (1.0 - span ** 2.2) + 0.05:  # rounded, tapering paddle
+        return None, 0
+    c = pal["flipper"] if t.face == "top" else lerp(pal["flipper"], pal["belly"], 0.5)
+    if chord > 0.75:
+        c = pal["flipper_edge"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_dbody(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["body"] if t.face != "bottom" else pal["body_dark"]
+    return tuple(v + noise * 0.5 for v in c), 255
+
+
+def p_deye(spec, t, noise):
+    pal = spec["palette"]
+    side = t.face in ("east", "west") or (t.face in ("north", "top") and abs(t.lx) > 0.6)
+    c = pal["eye"] if side else pal["eye_dark"]
+    if t.face == "bottom":
+        c = pal["body_dark"]
+    return c, 255
+
+
+def p_dtail(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["body"] if int(math.floor(t.lz)) % 2 == 0 else pal["body_dark"]
+    if t.lz > t.z1 - 1:
+        c = pal["eye"]
+    return c, 255
+
+
+def p_dwing(spec, t, noise):
+    """Glassy dragonfly wing (drawn translucent): teal-to-violet sheen, dark veins, a dark spot near the tip."""
+    pal = spec["palette"]
+    if t.face not in ("top", "bottom"):
+        return None, 0
+    span = abs(t.lx) / t.w
+    c = lerp(pal["wing_a"], pal["wing_b"], span)
+    a = 140
+    if span > 0.8 and (t.lz - t.z0) < 1.0:
+        c, a = pal["vein"], 220  # pterostigma
+    elif (t.lz - t.z0) < 1.0:
+        c, a = lerp(pal["vein"], c, 0.35), 210  # leading-edge vein
+    elif (t.lz - t.z0) > t.d - 1.0 and span > 0.15:
+        a = 110
+    return c, a
+
+
+def p_fur(spec, t, noise):
+    pal = spec["palette"]
+    c = pal["fur"] if hash3(t.box_id, t.i, t.j, 11) > 0.35 else pal["fur_dark"]
+    if t.feat.get("mothface") and t.face == "north":
+        c = pal["eye"] if t.j == 0 else pal["fur_dark"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_antenna(spec, t, noise):
+    return spec["palette"]["antenna"], 255
+
+
+def _moth_spot(t):
+    """Eyespot centre of a moth wing in wing-local units (span 0..1, chord 0..1)."""
+    span = abs(t.lx) / t.w
+    chord = (t.lz - t.z0) / t.d
+    return math.hypot((span - 0.55) * t.w, (chord - 0.5) * t.d)
+
+
+def p_mwing(spec, t, noise):
+    pal = spec["palette"]
+    if t.face not in ("top", "bottom"):
+        return None, 0
+    span = abs(t.lx) / t.w
+    chord = (t.lz - t.z0) / t.d
+    if t.feat.get("hind"):
+        inside = math.hypot(span * 0.9, (chord - 0.45) * 1.3) < 1.0
+    else:
+        inside = chord < 0.25 + 0.9 * span + 0.2 and math.hypot(span - 0.1, chord - 0.5) < 1.05
+    if not inside:
+        return None, 0
+    c = pal["wing"] if t.face == "top" else lerp(pal["wing"], pal["fur"], 0.5)
+    r = _moth_spot(t)
+    if t.face == "top" and r < 1.6:
+        c = pal["spot"] if r < 0.8 else pal["ring"]
+    elif span > 0.82:
+        c = pal["wing_edge"]
+    return tuple(v + noise * 0.6 for v in c), 255
+
+
+def p_plates(spec, t, noise):
+    """Osteoderm armour: staggered rows of big ochre scutes, each with a raised boss, soft dark grout."""
+    pal = spec["palette"]
+    if t.face == "top":
+        size = 4.0
+        row = int(math.floor((t.lz - t.z0) / size))
+        off = (row % 2) * size / 2
+        u = ((t.lx - t.x0 + off) % size) / size
+        v = ((t.lz - t.z0) % size) / size
+        boss = math.hypot(u - 0.55, v - 0.55)
+        c = pal["plate_light"] if boss < 0.2 else pal["plate"]
+        if u < 0.2 or v < 0.2:
+            c = lerp(pal["plate"], pal["plate_dark"], 0.7)
+    else:
+        c = pal["plate"] if t.j == 0 else pal["plate_dark"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_spike(spec, t, noise):
+    pal = spec["palette"]
+    out = abs(t.lx) - min(abs(t.x0), abs(t.x1)) if abs(t.x0) > 1 or abs(t.x1) > 1 else 0
+    f = out / max(1.0, t.w)
+    c = lerp(pal["spike_base"], pal["spike"], f * 1.4)
+    return tuple(v + noise * 0.5 for v in c), 255
+
+
+def p_club(spec, t, noise):
+    pal = spec["palette"]
+    lump = value_noise(t.lx * 1.7, t.ly * 1.7, t.lz * 1.7, 1.5, 21)
+    c = pal["plate_light"] if lump > 0.62 else pal["plate"] if lump > 0.38 else pal["plate_dark"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_scutes(spec, t, noise):
+    pal = spec["palette"]
+    ridge = (int(math.floor(t.lx - t.x0)) % 2 == 0)
+    c = pal["scute_light"] if ridge and int(math.floor(t.lz)) % 3 != 0 else pal["scute"]
+    return tuple(v + noise for v in c), 255
+
+
+def p_croceye(spec, t, noise):
+    pal = spec["palette"]
+    if t.face in ("top", "north", "east", "west"):
+        c = (20, 20, 10) if (t.face == "top" and t.i == 0) else pal["eye"]
+    else:
+        c = pal["dorsal"]
+    return c, 255
+
+
+EXTRA_PAINTERS.update({"flipper": p_flipper, "dbody": p_dbody, "deye": p_deye, "dtail": p_dtail, "dwing": p_dwing,
+                       "fur": p_fur, "antenna": p_antenna, "mwing": p_mwing, "plates": p_plates, "spike": p_spike,
+                       "club": p_club, "scutes": p_scutes, "croceye": p_croceye})
+
+
 def glow_texel(spec, t):
     """Emissive overlay (drawn full-bright in game): the creeper's spore bulb and its eyes."""
     if t.mat == "bulb":
         c, _ = p_bulb(spec, t, 0)
         return c + (255,)
+    if t.mat == "mwing" and t.face == "top" and _moth_spot(t) < 0.8:
+        return (150, 255, 225, 255)
     if t.mat in ("pod", "cskin") and t.feat.get("face") and _creeper_face(t) and t.j in (2, 3):
         return (150, 255, 110, 255)
     return None
@@ -1119,6 +1518,12 @@ EGGS = {
     "venus_creeper": ((110, 180, 70), (232, 250, 130)),
     "pteranodon": ((180, 94, 52), (226, 60, 36)),
     "tyrannosaurus": ((88, 102, 54), (40, 46, 28)),
+    "plesiosaur": ((74, 118, 118), (200, 204, 174)),
+    "meganeura": ((34, 120, 110), (150, 120, 240)),
+    "compsognathus": ((196, 164, 74), (104, 64, 34)),
+    "spore_moth": ((196, 180, 214), (120, 255, 220)),
+    "ankylosaurus": ((96, 92, 86), (192, 142, 62)),
+    "deinosuchus": ((70, 86, 50), (176, 170, 120)),
 }
 
 EGG_SPOTS = [(5, 3), (9, 4), (4, 7), (8, 8), (11, 7), (6, 11), (10, 11), (7, 5), (12, 10), (4, 10)]
@@ -1283,6 +1688,46 @@ def fang_icon():
     return img
 
 
+def tooth_icon(enamel, root, curve, length):
+    """A tooth: straight-ish and conical (plesiosaur) or a stout crocodile peg."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    pts = {}
+    for k in range(50):
+        t = k / 49
+        cx = 8.0 + math.sin(t * math.pi * 0.5) * curve
+        cy = 2.0 + t * length
+        r = 3.6 * (1 - t) ** 0.7 + 0.4
+        for px in range(16):
+            for py in range(16):
+                if (px + 0.5 - cx) ** 2 + (py + 0.5 - cy) ** 2 <= r * r:
+                    pts[(px, py)] = max(pts.get((px, py), -1.0), t)
+    for (px, py), t in pts.items():
+        edge = any((px + a, py + b) not in pts for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        c = root if t < 0.2 else lerp(enamel, (255, 252, 240), (t - 0.2) * 1.2)
+        if edge:
+            c = mul(c, 0.6)
+        img.putpixel((px, py), tuple(int(v) for v in c) + (255,))
+    return img
+
+
+def plate_icon():
+    """An ankylosaurus osteoderm: a domed ochre plate with a raised keel and a short spike."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for x in range(16):
+        for y in range(16):
+            r = math.hypot((x - 7.5) / 6.5, (y - 8.5) / 5.5)
+            if r <= 1.0:
+                c = lerp((222, 176, 92), (110, 74, 34), r ** 2)
+                if abs(x - 7.5) < 1.0 and 4 <= y < 12 or abs(y - 8.5) < 0.6 and 3 < x < 12:
+                    c = (240, 210, 140)
+                if r > 0.86:
+                    c = (80, 52, 24)
+                img.putpixel((x, y), tuple(int(v) for v in c) + (255,))
+    for (x, y) in ((6, 5), (7, 4), (8, 4), (9, 5)):  # the keel's raised point
+        img.putpixel((x, y), (250, 232, 170, 255))
+    return img
+
+
 def dagger_icon():
     """The fang lashed to a leather-wrapped grip with a brass pommel, held like a vanilla sword (tip top-right)."""
     img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
@@ -1329,6 +1774,16 @@ def always(item, lo=1, hi=1):
     return {"rolls": 1, "bonus_rolls": 0, "entries": [entry]}
 
 
+def rare(item, chance, per_looting=0.03):
+    """A rare drop: a flat chance, a little better with Looting."""
+    return {"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": item}],
+            "conditions": [{"condition": "minecraft:killed_by_player"},
+                           {"condition": "minecraft:random_chance_with_enchanted_bonus", "enchantment": "minecraft:looting",
+                            "unenchanted_chance": chance,
+                            "enchanted_chance": {"type": "minecraft:linear", "base": chance + per_looting,
+                                                 "per_level_above_first": per_looting}}]}
+
+
 def loot(name, pools):
     write_json(os.path.join(DATA, "loot_table", "entities", name + ".json"),
                {"type": "minecraft:entity", "pools": pools, "random_sequence": f"{MOD}:entities/{name}"})
@@ -1354,6 +1809,21 @@ EN = {
     "item.retrocosmos.tyrannosaurus_fang": "Tyrannosaurus Fang",
     "item.retrocosmos.fang_dagger": "Fang Dagger",
     "block.retrocosmos.tyrannosaurus_skull": "Tyrannosaurus Skull",
+    "entity.retrocosmos.plesiosaur": "Plesiosaur",
+    "item.retrocosmos.plesiosaur_spawn_egg": "Plesiosaur Spawn Egg",
+    "entity.retrocosmos.meganeura": "Meganeura",
+    "item.retrocosmos.meganeura_spawn_egg": "Meganeura Spawn Egg",
+    "entity.retrocosmos.compsognathus": "Compsognathus",
+    "item.retrocosmos.compsognathus_spawn_egg": "Compsognathus Spawn Egg",
+    "entity.retrocosmos.spore_moth": "Spore Moth",
+    "item.retrocosmos.spore_moth_spawn_egg": "Spore Moth Spawn Egg",
+    "entity.retrocosmos.ankylosaurus": "Ankylosaurus",
+    "item.retrocosmos.ankylosaurus_spawn_egg": "Ankylosaurus Spawn Egg",
+    "entity.retrocosmos.deinosuchus": "Deinosuchus",
+    "item.retrocosmos.deinosuchus_spawn_egg": "Deinosuchus Spawn Egg",
+    "item.retrocosmos.plesiosaur_tooth": "Plesiosaur Tooth",
+    "item.retrocosmos.deinosuchus_tooth": "Deinosuchus Tooth",
+    "item.retrocosmos.ankylosaurus_plate": "Ankylosaurus Plate",
 }
 
 RU = {
@@ -1372,6 +1842,21 @@ RU = {
     "item.retrocosmos.tyrannosaurus_fang": "Клык тиранозавра",
     "item.retrocosmos.fang_dagger": "Кинжал из клыка",
     "block.retrocosmos.tyrannosaurus_skull": "Череп тиранозавра",
+    "entity.retrocosmos.plesiosaur": "Плезиозавр",
+    "item.retrocosmos.plesiosaur_spawn_egg": "Яйцо призыва плезиозавра",
+    "entity.retrocosmos.meganeura": "Меганевра",
+    "item.retrocosmos.meganeura_spawn_egg": "Яйцо призыва меганевры",
+    "entity.retrocosmos.compsognathus": "Компсогнат",
+    "item.retrocosmos.compsognathus_spawn_egg": "Яйцо призыва компсогната",
+    "entity.retrocosmos.spore_moth": "Споровый мотылёк",
+    "item.retrocosmos.spore_moth_spawn_egg": "Яйцо призыва спорового мотылька",
+    "entity.retrocosmos.ankylosaurus": "Анкилозавр",
+    "item.retrocosmos.ankylosaurus_spawn_egg": "Яйцо призыва анкилозавра",
+    "entity.retrocosmos.deinosuchus": "Дейнозух",
+    "item.retrocosmos.deinosuchus_spawn_egg": "Яйцо призыва дейнозуха",
+    "item.retrocosmos.plesiosaur_tooth": "Зуб плезиозавра",
+    "item.retrocosmos.deinosuchus_tooth": "Зуб дейнозуха",
+    "item.retrocosmos.ankylosaurus_plate": "Пластина анкилозавра",
 }
 
 
@@ -1386,6 +1871,12 @@ def generate():
     generated_item("tyrannosaurus_fang")
     save(dagger_icon(), "item", "fang_dagger")
     generated_item("fang_dagger", parent="minecraft:item/handheld")
+    save(tooth_icon((230, 226, 206), (120, 110, 90), 1.2, 12.0), "item", "plesiosaur_tooth")
+    generated_item("plesiosaur_tooth")
+    save(tooth_icon((214, 204, 160), (96, 84, 56), 0.4, 9.5), "item", "deinosuchus_tooth")
+    generated_item("deinosuchus_tooth")
+    save(plate_icon(), "item", "ankylosaurus_plate")
+    generated_item("ankylosaurus_plate")
     shaped("fang_dagger", ["F", "L", "S"], {"F": "tyrannosaurus_fang", "L": "minecraft:leather", "S": "minecraft:stick"},
            "fang_dagger", category="equipment")
 
@@ -1407,6 +1898,15 @@ def generate():
                            drop("minecraft:beef", 10, 16, smelt=True, looting=(0, 4)),
                            drop("minecraft:bone", 6, 10, looting=(0, 3)),
                            drop("minecraft:leather", 3, 6, looting=(0, 2))])
+    loot("plesiosaur", [drop("minecraft:beef", 2, 5, smelt=True, looting=(0, 2)), drop("minecraft:bone", 1, 3),
+                        rare(f"{MOD}:plesiosaur_tooth", 0.12)])
+    loot("meganeura", [])
+    loot("compsognathus", [drop("minecraft:chicken", 0, 1, smelt=True)])
+    loot("spore_moth", [drop("minecraft:glowstone_dust", 0, 1)])
+    loot("ankylosaurus", [drop("minecraft:beef", 2, 4, smelt=True), drop("minecraft:leather", 1, 3),
+                          rare(f"{MOD}:ankylosaurus_plate", 0.15)])
+    loot("deinosuchus", [drop("minecraft:leather", 1, 3), drop("minecraft:bone", 0, 2),
+                         rare(f"{MOD}:deinosuchus_tooth", 0.12)])
 
 
 if __name__ == "__main__":

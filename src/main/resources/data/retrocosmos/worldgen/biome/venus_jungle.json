@@ -79,6 +79,12 @@
         "maxCount": 8,
         "minCount": 8,
         "weight": 10
+      },
+      {
+        "type": "retrocosmos:meganeura",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 8
       }
     ],
     "axolotls": [],
@@ -94,6 +100,12 @@
         "maxCount": 3,
         "minCount": 1,
         "weight": 12
+      },
+      {
+        "type": "retrocosmos:compsognathus",
+        "maxCount": 6,
+        "minCount": 3,
+        "weight": 8
       }
     ],
     "misc": [],

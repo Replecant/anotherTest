@@ -13,7 +13,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -93,6 +95,60 @@ public final class ModDinosaurs {
                     .clientTrackingRange(16)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** Plesiosaur: the long-necked sea monster of the steaming sea. */
+    public static final DeferredHolder<EntityType<?>, EntityType<Plesiosaur>> PLESIOSAUR = ModEntities.ENTITIES.register("plesiosaur",
+            id -> EntityType.Builder.of(Plesiosaur::new, MobCategory.WATER_CREATURE)
+                    .sized(2.4F, 1.4F)
+                    .eyeHeight(1.0F)
+                    .clientTrackingRange(12)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** Meganeura: giant dragonflies over the swamp and jungle (ambient). */
+    public static final DeferredHolder<EntityType<?>, EntityType<Meganeura>> MEGANEURA = ModEntities.ENTITIES.register("meganeura",
+            id -> EntityType.Builder.of(Meganeura::new, MobCategory.AMBIENT)
+                    .sized(0.6F, 0.3F)
+                    .clientTrackingRange(5)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** Compsognathus: skittish chicken-sized scavengers. */
+    public static final DeferredHolder<EntityType<?>, EntityType<Compsognathus>> COMPSOGNATHUS = ModEntities.ENTITIES.register("compsognathus",
+            id -> EntityType.Builder.of(Compsognathus::new, MobCategory.CREATURE)
+                    .sized(0.4F, 0.7F)
+                    .eyeHeight(0.6F)
+                    .clientTrackingRange(8)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** Spore moth: glowing moths of the glowcap hollows (ambient). */
+    public static final DeferredHolder<EntityType<?>, EntityType<SporeMoth>> SPORE_MOTH = ModEntities.ENTITIES.register("spore_moth",
+            id -> EntityType.Builder.of(SporeMoth::new, MobCategory.AMBIENT)
+                    .sized(0.5F, 0.4F)
+                    .clientTrackingRange(5)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** Ankylosaurus: the armoured tank of the highlands. */
+    public static final DeferredHolder<EntityType<?>, EntityType<Ankylosaurus>> ANKYLOSAURUS = ModEntities.ENTITIES.register("ankylosaurus",
+            id -> EntityType.Builder.of(Ankylosaurus::new, MobCategory.CREATURE)
+                    .sized(1.5F, 1.3F)
+                    .eyeHeight(0.9F)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** Deinosuchus: the giant ambush crocodile of the fern swamp. */
+    public static final DeferredHolder<EntityType<?>, EntityType<Deinosuchus>> DEINOSUCHUS = ModEntities.ENTITIES.register("deinosuchus",
+            id -> EntityType.Builder.of(Deinosuchus::new, MobCategory.MONSTER)
+                    .sized(1.5F, 0.85F)
+                    .eyeHeight(0.6F)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    // ---- curios the expedition can sell ----
+    public static final DeferredItem<Item> PLESIOSAUR_TOOTH = item(ModItems.ITEMS.registerItem("plesiosaur_tooth",
+            Item::new, p -> p.rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<Item> DEINOSUCHUS_TOOTH = item(ModItems.ITEMS.registerItem("deinosuchus_tooth",
+            Item::new, p -> p.rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<Item> ANKYLOSAURUS_PLATE = item(ModItems.ITEMS.registerItem("ankylosaurus_plate",
+            Item::new, p -> p.rarity(Rarity.UNCOMMON)));
+
     // ---- the tyrant's trophies ----
     public static final DeferredBlock<TyrannosaurusSkullBlock> TYRANNOSAURUS_SKULL = ModBlocks.BLOCKS.register("tyrannosaurus_skull",
             id -> new TyrannosaurusSkullBlock(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, id))
@@ -111,6 +167,12 @@ public final class ModDinosaurs {
     public static final DeferredItem<SpawnEggItem> VENUS_CREEPER_SPAWN_EGG = egg("venus_creeper_spawn_egg", VENUS_CREEPER);
     public static final DeferredItem<SpawnEggItem> PTERANODON_SPAWN_EGG = egg("pteranodon_spawn_egg", PTERANODON);
     public static final DeferredItem<SpawnEggItem> TYRANNOSAURUS_SPAWN_EGG = egg("tyrannosaurus_spawn_egg", TYRANNOSAURUS);
+    public static final DeferredItem<SpawnEggItem> PLESIOSAUR_SPAWN_EGG = egg("plesiosaur_spawn_egg", PLESIOSAUR);
+    public static final DeferredItem<SpawnEggItem> MEGANEURA_SPAWN_EGG = egg("meganeura_spawn_egg", MEGANEURA);
+    public static final DeferredItem<SpawnEggItem> COMPSOGNATHUS_SPAWN_EGG = egg("compsognathus_spawn_egg", COMPSOGNATHUS);
+    public static final DeferredItem<SpawnEggItem> SPORE_MOTH_SPAWN_EGG = egg("spore_moth_spawn_egg", SPORE_MOTH);
+    public static final DeferredItem<SpawnEggItem> ANKYLOSAURUS_SPAWN_EGG = egg("ankylosaurus_spawn_egg", ANKYLOSAURUS);
+    public static final DeferredItem<SpawnEggItem> DEINOSUCHUS_SPAWN_EGG = egg("deinosuchus_spawn_egg", DEINOSUCHUS);
 
     private ModDinosaurs() {}
 
@@ -151,6 +213,12 @@ public final class ModDinosaurs {
         event.put(VENUS_CREEPER.get(), VenusCreeper.createAttributes().build());
         event.put(PTERANODON.get(), Pteranodon.createAttributes().build());
         event.put(TYRANNOSAURUS.get(), Tyrannosaurus.createAttributes().build());
+        event.put(PLESIOSAUR.get(), Plesiosaur.createAttributes().build());
+        event.put(MEGANEURA.get(), Meganeura.createAttributes().build());
+        event.put(COMPSOGNATHUS.get(), Compsognathus.createAttributes().build());
+        event.put(SPORE_MOTH.get(), SporeMoth.createAttributes().build());
+        event.put(ANKYLOSAURUS.get(), Ankylosaurus.createAttributes().build());
+        event.put(DEINOSUCHUS.get(), Deinosuchus.createAttributes().build());
     }
 
     /** On the ground, under the jungle canopy; Venus is dim, so light level does not matter. */
@@ -172,6 +240,65 @@ public final class ModDinosaurs {
         // leaves count for MOTION_BLOCKING: chunk-generation spawns land right on top of the canopy
         event.register(PTERANODON.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING,
                 ModDinosaurs::checkPteranodonSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        // the sea monster wants open, deep water
+        event.register(PLESIOSAUR.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.OCEAN_FLOOR,
+                (type, level, reason, pos, random) -> waterDepth(level, pos) >= PLESIO_MIN_DEPTH && awayFromPeople(level, reason, pos)
+                        && (!natural(reason) || nearbyCount(level, pos, Plesiosaur.class, 64) < 3),
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        // the swamp crocodile only ever spawns in water, so it can't crowd the land with monsters
+        event.register(DEINOSUCHUS.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.OCEAN_FLOOR,
+                (type, level, reason, pos, random) -> waterDepth(level, pos) >= 2 && awayFromPeople(level, reason, pos)
+                        && (!natural(reason) || random.nextInt(CROC_CHANCE) == 0
+                        && nearbyCount(level, pos, Deinosuchus.class, CROC_DENSITY_RANGE) < CROCS_NEARBY_MAX),
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(COMPSOGNATHUS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> Mob.checkMobSpawnRules(type, level, reason, pos, random)
+                        && awayFromPeople(level, reason, pos), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ANKYLOSAURUS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> Mob.checkMobSpawnRules(type, level, reason, pos, random)
+                        && awayFromPeople(level, reason, pos), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        // small ambient life: anywhere open and not underground, any light level
+        event.register(MEGANEURA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> ambientOk(level, reason, pos, 8), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(SPORE_MOTH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> ambientOk(level, reason, pos, 10), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    }
+
+    private static final int PLESIO_MIN_DEPTH = 6;
+    private static final int CROC_CHANCE = 6, CROCS_NEARBY_MAX = 2, CROC_DENSITY_RANGE = 48;
+
+    private static boolean natural(EntitySpawnReason reason) {
+        return reason == EntitySpawnReason.NATURAL || reason == EntitySpawnReason.CHUNK_GENERATION;
+    }
+
+    private static int nearbyCount(ServerLevelAccessor level, BlockPos pos, Class<? extends Entity> kind, int range) {
+        return level.getEntitiesOfClass(kind, new AABB(pos).inflate(range)).size();
+    }
+
+    /** Depth of the water column at pos (0 if pos isn't water), counted up and down from pos. */
+    private static int waterDepth(ServerLevelAccessor level, BlockPos pos) {
+        if (!level.getFluidState(pos).is(FluidTags.WATER)) {
+            return 0;
+        }
+        int depth = 1;
+        BlockPos.MutableBlockPos p = pos.mutable();
+        while (depth < 24 && level.getFluidState(p.move(0, -1, 0)).is(FluidTags.WATER)) {
+            depth++;
+        }
+        p.set(pos);
+        while (depth < 24 && level.getFluidState(p.move(0, 1, 0)).is(FluidTags.WATER)) {
+            depth++;
+        }
+        return depth;
+    }
+
+    /** Ambient fliers: on the surface (open sky above), not too many of them about. */
+    private static boolean ambientOk(ServerLevelAccessor level, EntitySpawnReason reason, BlockPos pos, int maxNearby) {
+        if (!natural(reason)) {
+            return true;
+        }
+        return level.canSeeSky(pos) && level.getFluidState(pos).isEmpty()
+                && nearbyCount(level, pos, VenusFlier.class, 32) < maxNearby;
     }
 
     private static final int CREEPER_CHANCE = 6, CREEPERS_NEARBY_MAX = 2, CREEPER_DENSITY_RANGE = 56;

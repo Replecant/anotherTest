@@ -44,6 +44,9 @@ public class DinosaurRenderer<T extends Mob & DinosaurAnimated> extends MobRende
         state.flightPitch = entity.flightPitch(partialTick);
         state.roar = entity.roarAmount(partialTick);
         state.sweep = entity.sweepAmount(partialTick);
+        state.peek = entity.peekAmount(partialTick);
+        state.swing = entity.swingAmount(partialTick);
+        state.lunge = entity.lungeAmount(partialTick);
     }
 
     /** The creeper's fuse: it bloats and wobbles like the vanilla creeper before bursting. */

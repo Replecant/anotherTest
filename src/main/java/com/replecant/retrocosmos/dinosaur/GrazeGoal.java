@@ -3,14 +3,22 @@ package com.replecant.retrocosmos.dinosaur;
 import java.util.EnumSet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.Animal;
 
-/** The brontosaurus stops, lowers its long neck to the ground and munches for a while. */
+/** A grazer (brontosaurus, ankylosaurus) stops, lowers its head to the ground and munches for a while. */
 public class GrazeGoal extends Goal {
-    private final Brontosaurus bronto;
+    /** A mob that shows its grazing to the client (usually through a synced flag). */
+    public interface Grazer {
+        void setGrazing(boolean grazing);
+    }
+
+    private final Animal bronto;
+    private final Grazer grazer;
     private int ticks;
 
-    public GrazeGoal(Brontosaurus bronto) {
+    public <T extends Animal & Grazer> GrazeGoal(T bronto) {
         this.bronto = bronto;
+        this.grazer = bronto;
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
     }
 
@@ -29,12 +37,12 @@ public class GrazeGoal extends Goal {
     public void start() {
         ticks = adjustedTickDelay(110 + bronto.getRandom().nextInt(90));
         bronto.getNavigation().stop();
-        bronto.setGrazing(true);
+        grazer.setGrazing(true);
     }
 
     @Override
     public void stop() {
-        bronto.setGrazing(false);
+        grazer.setGrazing(false);
     }
 
     @Override

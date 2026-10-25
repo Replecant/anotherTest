@@ -1300,6 +1300,15 @@ LINES = {
     "cooper.first.tyrannosaurus_fang": (
         "Good heavens - a tyrant lizard's fang! As long as my hand! You... you didn't fight it, did you? Sit down. Have a drink.",
         "Боже правый - клык ящера-тирана! Длиной с мою ладонь! Вы... вы ведь не дрались с ним? Присядьте. Выпейте чего-нибудь."),
+    "cooper.first.plesiosaur_tooth": (
+        "A sea-serpent's tooth! So the sailors' stories were true - out there in that boiling sea, something with a neck like a crane.",
+        "Зуб морского змея! Значит, байки моряков не врали - там, в кипящем море, водится тварь с шеей, как у подъёмного крана."),
+    "cooper.first.deinosuchus_tooth": (
+        "Crocodile? No - something far worse. Look at the size of it! Stay away from the swamp banks, my friend.",
+        "Крокодил? Нет - нечто куда хуже. Вы только посмотрите на размер! Держитесь подальше от болотных берегов, друг мой."),
+    "cooper.first.ankylosaurus_plate": (
+        "Armour plate from a living tank! Our engineers would give their slide rules for an alloy this tough.",
+        "Броневая пластина живого танка! Наши инженеры отдали бы свои логарифмические линейки за такой сплав."),
     "cooper.first.generic": ("Now THAT is something I've never seen before. Into the collection!",
                              "Вот ЭТОГО я ещё никогда не видел. В коллекцию!"),
     # ---- guards ----

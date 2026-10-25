@@ -45,6 +45,21 @@ public interface DinosaurAnimated {
         return 0.0F;
     }
 
+    /** Plesiosaur holding its neck up out of the water. */
+    default float peekAmount(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Ankylosaurus tail-club swing (0..1 over the swing). */
+    default float swingAmount(float partialTick) {
+        return 0.0F;
+    }
+
+    /** Deinosuchus strike, jaws gaping. */
+    default float lungeAmount(float partialTick) {
+        return 0.0F;
+    }
+
     /** Tyrannosaurus tail sweep. */
     default float sweepAmount(float partialTick) {
         return 0.0F;

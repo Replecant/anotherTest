@@ -35,7 +35,7 @@ import net.minecraft.world.phys.Vec3;
  * Brontosaurus: the classic long-neck. Huge, slow and peaceful; wanders the jungle, stops to graze with its head
  * down at the ground, groans, and shoulders smaller creatures out of its way. Hard to knock about. Breeds on ferns.
  */
-public class Brontosaurus extends Animal implements DinosaurAnimated {
+public class Brontosaurus extends Animal implements DinosaurAnimated, GrazeGoal.Grazer {
     private static final EntityDataAccessor<Boolean> GRAZING = SynchedEntityData.defineId(Brontosaurus.class, EntityDataSerializers.BOOLEAN);
 
     private final Smoothed graze = new Smoothed(0.05F);
@@ -78,7 +78,8 @@ public class Brontosaurus extends Animal implements DinosaurAnimated {
         return entityData.get(GRAZING);
     }
 
-    void setGrazing(boolean grazing) {
+    @Override
+    public void setGrazing(boolean grazing) {
         entityData.set(GRAZING, grazing);
     }
 

@@ -24,4 +24,8 @@ public class DinosaurRenderState extends LivingEntityRenderState {
     /** Tyrannosaurus roar and tail sweep 0..1. */
     public float roar;
     public float sweep;
+    /** Plesiosaur neck up, ankylosaurus club swing, deinosuchus strike 0..1. */
+    public float peek;
+    public float swing;
+    public float lunge;
 }

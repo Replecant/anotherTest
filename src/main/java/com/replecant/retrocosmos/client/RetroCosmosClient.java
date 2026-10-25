@@ -5,6 +5,7 @@ import com.replecant.retrocosmos.dinosaur.DinosaurClient;
 import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModMenus;
+import com.replecant.retrocosmos.tribe.TribeClient;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.NoopRenderer;
@@ -25,6 +26,7 @@ public class RetroCosmosClient {
     public RetroCosmosClient(IEventBus modEventBus) {
         modEventBus.addListener(RetroCosmosClient::registerScreens);
         DinosaurClient.init(modEventBus);
+        TribeClient.init(modEventBus);
         modEventBus.addListener(RetroCosmosClient::registerGuiLayers);
         modEventBus.addListener(RetroCosmosClient::registerRenderers);
         NeoForge.EVENT_BUS.addListener(RetroCosmosClient::onClientTick);

@@ -2,6 +2,8 @@ package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.dinosaur.ModDinosaurs;
+import com.replecant.retrocosmos.ruins.ModRuins;
+import com.replecant.retrocosmos.tribe.ModTribes;
 import com.replecant.retrocosmos.venus.ModVenus;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -58,6 +60,8 @@ public final class ModCreativeTabs {
             .displayItems((params, output) -> {
                 ModVenus.items().forEach(item -> output.accept(item.get()));
                 ModDinosaurs.items().forEach(item -> output.accept(item.get()));
+                ModRuins.items().forEach(item -> output.accept(item.get()));
+                ModTribes.items().forEach(item -> output.accept(item.get()));
             })
             .build());
 

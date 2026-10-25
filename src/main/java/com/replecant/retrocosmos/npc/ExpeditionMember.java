@@ -565,18 +565,37 @@ public class ExpeditionMember extends AbstractVillager {
             return;
         }
         List<Player> near = listeners(CHAT_RANGE);
-        if (near.isEmpty()) {
+        if (near.isEmpty() || !claimCrewVoice()) {
             return;
         }
         String key = line(role().key + ".idle");
         near.forEach(p -> say(p, key));
     }
 
-    /** A shout everyone around hears ("flee", "alert", "kill"), at most every 10 seconds. */
+    /**
+     * When the crew last said anything out loud, per dimension: one voice at a time, so three guards don't all
+     * report the same raptor.
+     */
+    private static final java.util.Map<net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>, Long> LAST_CREW_VOICE =
+            new java.util.concurrent.ConcurrentHashMap<>();
+    private static final int CREW_VOICE_GAP = 300;
+
+    /** Claims the crew's voice for this speaker if nobody spoke recently. */
+    private boolean claimCrewVoice() {
+        long now = level().getGameTime();
+        long last = LAST_CREW_VOICE.getOrDefault(level().dimension(), -CREW_VOICE_GAP - 1L);
+        if (now - last < CREW_VOICE_GAP) {
+            return false;
+        }
+        LAST_CREW_VOICE.put(level().dimension(), now);
+        return true;
+    }
+
+    /** A shout everyone around hears ("flee", "alert", "kill"), at most every 30 seconds per crew member. */
     void shout(String what) {
         long now = level().getGameTime();
         String group = role().key + "." + what;
-        if (now - lastShout < 200 || CrewLines.count(group) == 0) {
+        if (now - lastShout < 600 || CrewLines.count(group) == 0 || !claimCrewVoice()) {
             return;
         }
         lastShout = now;

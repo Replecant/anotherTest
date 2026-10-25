@@ -67,6 +67,16 @@ public final class VenusLanding {
         }
     }
 
+    /** The camp's pad if a camp has been built in this level (for keeping wildlife away), else null. */
+    @Nullable
+    public static BlockPos campPad(ServerLevel level) {
+        if (!Venus.isVenus(level)) {
+            return null;
+        }
+        CampData data = level.getDataStorage().computeIfAbsent(CampData.TYPE);
+        return data.built ? data.pad : null;
+    }
+
     /** Returns where the rocket's engine block stands at the camp, building the camp first if needed. */
     public static BlockPos ensureCamp(ServerLevel level) {
         CampData data = level.getDataStorage().computeIfAbsent(CampData.TYPE);

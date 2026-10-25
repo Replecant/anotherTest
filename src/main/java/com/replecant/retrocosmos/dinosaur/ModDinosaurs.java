@@ -2,11 +2,15 @@ package com.replecant.retrocosmos.dinosaur;
 
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModItems;
+import com.replecant.retrocosmos.venus.VenusLanding;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -15,7 +19,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -91,10 +97,42 @@ public final class ModDinosaurs {
     /** On the ground, under the jungle canopy; Venus is dim, so light level does not matter. */
     private static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(RAPTOR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkAnyLightMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                ModDinosaurs::checkRaptorSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BRONTOSAURUS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Mob::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                (type, level, reason, pos, random) -> Mob.checkMobSpawnRules(type, level, reason, pos, random)
+                        && awayFromPeople(level, reason, pos), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(TRICERATOPS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Mob::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                (type, level, reason, pos, random) -> Mob.checkMobSpawnRules(type, level, reason, pos, random)
+                        && awayFromPeople(level, reason, pos), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    }
+
+    /** Raptor packs are the only monsters on Venus, so without limits they would fill the whole monster cap. */
+    private static final int RAPTOR_CHANCE = 6, RAPTORS_NEARBY_MAX = 4, RAPTOR_DENSITY_RANGE = 48;
+
+    private static boolean checkRaptorSpawn(EntityType<VenusRaptor> type, ServerLevelAccessor level, EntitySpawnReason reason,
+                                            BlockPos pos, RandomSource random) {
+        if (!Monster.checkAnyLightMonsterSpawnRules(type, level, reason, pos, random) || !awayFromPeople(level, reason, pos)) {
+            return false;
+        }
+        if (reason == EntitySpawnReason.NATURAL) {
+            if (random.nextInt(RAPTOR_CHANCE) != 0) {
+                return false;
+            }
+            int nearby = level.getEntitiesOfClass(VenusRaptor.class, new AABB(pos).inflate(RAPTOR_DENSITY_RANGE)).size();
+            return nearby < RAPTORS_NEARBY_MAX;
+        }
+        return true;
+    }
+
+    /** Natural spawns keep clear of the expedition camp and of anyone living on Venus (crew, tribes). */
+    private static boolean awayFromPeople(ServerLevelAccessor level, EntitySpawnReason reason, BlockPos pos) {
+        if (reason != EntitySpawnReason.NATURAL && reason != EntitySpawnReason.CHUNK_GENERATION) {
+            return true;
+        }
+        BlockPos camp = VenusLanding.campPad(level.getLevel());
+        if (camp != null && camp.distSqr(pos) < 56 * 56) {
+            return false;
+        }
+        return level.getEntitiesOfClass(net.minecraft.world.entity.npc.villager.AbstractVillager.class, new AABB(pos).inflate(40)).isEmpty();
     }
 }

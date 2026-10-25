@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:venus_giant_fern"
+  ],
+  "result": {
+    "id": "retrocosmos:fern_fiber",
+    "count": 3
+  }
+}

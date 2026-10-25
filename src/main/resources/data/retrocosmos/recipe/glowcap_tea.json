@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:venus_glowcap",
+    "retrocosmos:venus_glowcap",
+    "minecraft:bowl"
+  ],
+  "result": {
+    "id": "retrocosmos:glowcap_tea",
+    "count": 1
+  }
+}

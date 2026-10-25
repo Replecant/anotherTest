@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.block.LaunchPadBlock;
+import com.replecant.retrocosmos.npc.NpcAnchor;
 import com.replecant.retrocosmos.registry.ModBlocks;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -37,12 +38,13 @@ public final class FreedomStation {
     /** Height of the structure's lowest layer. */
     private static final int BASE_Y = 96;
     /** Bump when the station design changes: older stations are cleared and rebuilt on the next flight there. */
-    public static final int VERSION = 5;
+    public static final int VERSION = 6;
     /** Region wiped before a rebuild (covers every station version so far). */
     private static final int CLEAR_RADIUS = 72, CLEAR_MIN_Y = BASE_Y - 16, CLEAR_MAX_Y = BASE_Y + 64;
 
     /** Station layout in world coordinates. */
-    public record Layout(BlockPos origin, BlockPos size, BlockPos padCenter, BlockPos arrival, List<AABB> pressurized) {
+    public record Layout(BlockPos origin, BlockPos size, BlockPos padCenter, BlockPos arrival, List<AABB> pressurized,
+                         List<NpcAnchor> npcs) {
         /** Where the rocket's engine block stands: on top of the center pad block. */
         public BlockPos padBase() {
             return padCenter.above();
@@ -93,7 +95,8 @@ public final class FreedomStation {
                                 origin.getX() + a.get(3).getAsInt() + 1, origin.getY() + a.get(4).getAsInt() + 1, origin.getZ() + a.get(5).getAsInt() + 1));
                     }
                     layout = new Layout(origin, size, origin.offset(pos(json.getAsJsonArray("pad_center"))),
-                            origin.offset(pos(json.getAsJsonArray("arrival"))), List.copyOf(boxes));
+                            origin.offset(pos(json.getAsJsonArray("arrival"))), List.copyOf(boxes),
+                            List.copyOf(NpcAnchor.read(json, origin)));
                 }
             } catch (Exception e) {
                 RetroCosmos.LOGGER.error("Retro Cosmos: could not read {}", ANCHORS, e);
@@ -147,6 +150,7 @@ public final class FreedomStation {
                 }
             }
         }
+        NpcAnchor.spawnAll(level, layout.npcs());
         data.markPlaced(VERSION);
         RetroCosmos.LOGGER.info("Retro Cosmos: Freedom Station built at {}", layout.origin());
         return layout;
@@ -177,12 +181,16 @@ public final class FreedomStation {
      * Returns human-readable problems with structure-local coordinates; empty when everything is fine.
      */
     public static List<String> audit(ServerLevel level, Layout layout) {
+        return audit(level, layout.origin(), layout.size());
+    }
+
+    /** {@link #audit(ServerLevel, Layout)} for any box (origin + size). */
+    public static List<String> audit(ServerLevel level, BlockPos o, BlockPos size) {
         List<String> problems = new ArrayList<>();
         BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-        BlockPos o = layout.origin();
-        for (int x = 0; x < layout.size().getX(); x++) {
-            for (int y = 0; y < layout.size().getY(); y++) {
-                for (int z = 0; z < layout.size().getZ(); z++) {
+        for (int x = 0; x < size.getX(); x++) {
+            for (int y = 0; y < size.getY(); y++) {
+                for (int z = 0; z < size.getZ(); z++) {
                     p.set(o.getX() + x, o.getY() + y, o.getZ() + z);
                     BlockState state = level.getBlockState(p);
                     if (state.isAir()) {

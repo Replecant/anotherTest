@@ -2,6 +2,7 @@ package com.replecant.retrocosmos.registry;
 
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.dinosaur.ModDinosaurs;
+import com.replecant.retrocosmos.npc.ExpeditionNpcs;
 import com.replecant.retrocosmos.ruins.ModRuins;
 import com.replecant.retrocosmos.tribe.ModTribes;
 import com.replecant.retrocosmos.venus.ModVenus;
@@ -50,7 +51,10 @@ public final class ModCreativeTabs {
             .title(Component.translatable("itemGroup.retrocosmos.station"))
             .icon(() -> new ItemStack(ModFurniture.CONTROL_PANEL.get()))
             .withTabsBefore(HOME.getKey())
-            .displayItems((params, output) -> ModFurniture.stationItems().forEach(item -> output.accept(item.get())))
+            .displayItems((params, output) -> {
+                ModFurniture.stationItems().forEach(item -> output.accept(item.get()));
+                ExpeditionNpcs.items().forEach(item -> output.accept(item.get()));
+            })
             .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> VENUS = TABS.register("venus", () -> CreativeModeTab.builder()

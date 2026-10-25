@@ -100,6 +100,16 @@ public final class StationSmokeTest {
         int campPad = LaunchPadBlock.countPad(event.getServer().overworld(), camp.below());
         int campTower = LaunchSite.towerHeight(event.getServer().overworld(), camp.below());
         RetroCosmos.LOGGER.info("Retro Cosmos smoke: Venus camp pad={}/9 tower={}", campPad, campTower);
+        // crew spawned from the anchors (station office and camp)
+        var crew = new java.util.TreeMap<String, Integer>();
+        for (var entity : level.getAllEntities()) {
+            crew.merge(net.minecraft.world.entity.EntityType.getKey(entity.getType()).toString(), 1, Integer::sum);
+        }
+        RetroCosmos.LOGGER.info("Retro Cosmos smoke: entities in the test world {}", crew);
+        // the camp template stands on footings around the pad: audit a box covering it
+        var campProblems = FreedomStation.audit(event.getServer().overworld(), camp.offset(-24, -2, -34), new BlockPos(49, 22, 49));
+        campProblems.stream().limit(100).forEach(problem -> RetroCosmos.LOGGER.warn("CAMP AUDIT {}", problem));
+        problems.addAll(campProblems);
         if (campPad < LaunchSite.PAD_SIZE || campTower < 6) {
             problems.add("Venus camp incomplete: pad " + campPad + ", tower " + campTower);
         }

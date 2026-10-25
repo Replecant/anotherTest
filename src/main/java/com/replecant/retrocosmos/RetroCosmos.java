@@ -5,6 +5,7 @@ import com.replecant.retrocosmos.command.RetroCosmosCommands;
 import com.replecant.retrocosmos.dinosaur.ModDinosaurs;
 import com.replecant.retrocosmos.flight.FlightEvents;
 import com.replecant.retrocosmos.network.ModNetwork;
+import com.replecant.retrocosmos.npc.ExpeditionNpcs;
 import com.replecant.retrocosmos.oxygen.OxygenSystem;
 import com.replecant.retrocosmos.registry.ModAttachments;
 import com.replecant.retrocosmos.registry.ModBlockEntities;
@@ -42,6 +43,7 @@ public class RetroCosmos {
         ModDinosaurs.init(modEventBus);
         ModRuins.init(modEventBus);
         ModTribes.init(modEventBus);
+        ExpeditionNpcs.init(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);

@@ -310,6 +310,15 @@ STATION_DOOR = rc("station_door")         # vanilla door properties, opens by ha
 AIRLOCK_DOOR = rc("airlock_door")         # vanilla door properties, opens by hand
 P_LIFTOFF, P_VESPER, P_SPACE_POP, P_SUIT_CHECK, P_HOMESTEAD, P_FREEDOM = (
     rc("poster_" + n) for n in ("liftoff", "vesper", "space_pop", "suit_check", "homestead", "freedom"))
+# Venusian artifacts (ruins blocks) shown in Dr. Cooper's office
+V_URN = rc("venusian_urn")                # no properties
+V_STELE = rc("venusian_stele")            # facing
+V_GLYPH = rc("venusian_glyph_stone")      # glyph 0..3
+V_SUN_DISC = rc("venusian_sun_disc")      # facing
+V_ALTAR = rc("venusian_altar")            # no properties
+V_PILLAR = rc("venusian_pillar")          # axis
+ARTIFACTS = {V_URN, V_STELE, V_GLYPH, V_SUN_DISC, V_ALTAR, V_PILLAR}
+ON_PEDESTAL = {V_URN, V_GLYPH, V_SUN_DISC}
 POSTERS = (P_LIFTOFF, P_VESPER, P_SPACE_POP, P_SUIT_CHECK, P_HOMESTEAD, P_FREEDOM)
 
 # Full opaque building cubes: what walls, floors and ceilings are made of (supports wall decor and lights).
@@ -1034,8 +1043,8 @@ BAND_ROOMS = [
     # DECK B - science & engineering (east band, corridor to the west)
     ("machine_shop", "workshop", "tech", "Machine shop", ["DECK B", "MACHINE SHOP", "ENGINEERING", ""],
      (29, -36, 36, -21), "east", [(12, 3, "open")]),
-    ("stores", "storage", "store", "Stores / spares", ["DECK B", "STORES", "SPARES & PARTS", ""],
-     (29, -18, 36, -11), "east", [(4, 1, "open")]),
+    ("archaeology", "archaeology", "living", "Xeno-archaeology office (Dr. Cooper)",
+     ["XENO-", "ARCHAEOLOGY", "DR. H. COOPER", "DECK B"], (29, -18, 36, -11), "east", [(4, 1, "open")]),
     ("laboratory", "laboratory", "tech", "Laboratory", ["- DECK B -", "LABORATORY", "PROPELLANT & AIR", ""],
      (29, -8, 36, 8), "east", [(7, 3, "open")]),
     ("reactor", "reactor", "reactor", "Reactor / power room", ["DECK B", "REACTOR ROOM", "AUTHORIZED", "PERSONNEL ONLY"],
@@ -1074,6 +1083,8 @@ REQUIRED = {
     "reactor": {REACTOR: 2, CHROME: 8, CONTROL_PANEL: 2, STRIPED: 1, "locker": 3},
     "observation": {TELESCOPE: 1, GLOBE: 1, EGG_CHAIR: 3, WINDOW: 10},
     "storage": {CARGO_CRATE: 8},
+    "archaeology": {TAPE: 2, GLOBE: 1, STAR_CHART: 1, CARGO_CRATE: 1, CAPTAIN_CHAIR: 1, "artifact": 5, GLASS: 6,
+                    CARTOGRAPHY: 1, LECTERN: 1},
     "workshop": {WORKBENCH: 1, SMITHING: 1, STONECUTTER: 1, STOVE: 1, SUPPLY_CABINET: 2},
     "radio": {RADIO: 3, CONTROL_PANEL: 3, COMPUTER: 3, TAPE: 2},
     "recreation": {TAPE: 6, JUKEBOX: 1, TABLE: 2, SOFA: 2, "poster": 1},
@@ -1247,6 +1258,45 @@ class Furnisher:
             r.crate(u, v, 1, goods[(k + 3) % len(goods)])
             k += 1
         r.lights_grid((3,), (2, 5))
+
+    def archaeology(self, r):
+        """Dr. H. Cooper's xeno-archaeology office and small museum (8 x 8, door at u = 4 on the corridor wall).
+        Visitors stand on the door side (v 0..3); the doctor works behind his desk (v 6)."""
+        # wall vitrine on the left: quartz plinth, three artifacts in glass compartments with a glass lid
+        for v in range(0, 7):
+            r.block(0, v, 0, SQUARTZ)
+            r.block(0, v, 2, GLASS)
+            if v % 2 == 0:
+                r.block(0, v, 1, GLASS)
+        r.block(0, 1, 1, V_URN)
+        r.block(0, 3, 1, V_GLYPH, {"glyph": "1"})
+        r.fput(0, 5, 1, V_SUN_DISC, "right")
+        r.wall(1, 0, 2, SCONCE, "front")
+        # large pieces on the right wall: a stele and a small altar on the floor, a glyph stone on a pedestal
+        r.fput(7, 1, 0, V_STELE, "left")
+        r.block(7, 3, 0, V_ALTAR)
+        r.trim(7, 5, 0, "y")
+        r.block(7, 5, 1, V_GLYPH, {"glyph": "3"})
+        r.wall(7, 2, 2, SCONCE, "right")
+        r.wall(7, 4, 2, SCONCE, "right", lit=False)
+        # the doctor's desk, his chair and the archive behind him
+        r.desk(2, 5, GLOBE, mat=DARK_OAK)
+        r.desk(3, 5, mat=DARK_OAK)
+        r.desk(4, 5, LAMP, mat=DARK_OAK)
+        r.desk(5, 5, RADIO, mat=DARK_OAK, lit=False)
+        r.seat(4, 6, CAPTAIN_CHAIR, "front")
+        for u in (1, 2):
+            r.fput(u, 7, 0, TAPE, "front")
+            r.fput(u, 7, 1, TAPE, "front")
+        r.fput(0, 7, 0, LECTERN, "right", has_book="false", powered="false")
+        r.block(6, 7, 0, CARTOGRAPHY)
+        r.crate(7, 7, 0, [(rc("glyph_tablet"), 2), ("minecraft:paper", 16), ("minecraft:brush", 1)])
+        r.window([4], [1], "back", PORTHOLE)
+        r.wall(3, 7, 2, STAR_CHART, "back")
+        r.wall(5, 7, 2, CLOCK, "back")
+        r.carpet("red", range(2, 6), range(1, 4))
+        r.light(3, 2)
+        r.light(3, 6)
 
     def laboratory(self, r):
         for u in (1, 2, 14, 15):
@@ -1789,8 +1839,8 @@ class Builder(Station):
         for key, room in self.rooms.items():
             if room.kind == "cabin":
                 fn.cabin(room, int(key.split("_")[1]))
-            elif key in ("stores", "galley_stores"):
-                fn.storage(room, food=(key == "galley_stores"))
+            elif key == "galley_stores":
+                fn.storage(room, food=True)
             elif hasattr(fn, key):
                 getattr(fn, key)(room)
         self.room_doors()
@@ -1964,6 +2014,8 @@ class Checker:
                 b = st.below(c)
                 if not (self.is_desk(b) or (name == GLOBE and st.get(b) == CHROME)):
                     self.fail(f"{name} at {c} is not standing on a desk ({st.get(b)})")
+            if name in ON_PEDESTAL and not (self.is_desk(st.below(c)) or st.get(st.below(c)) == CHROME):
+                self.fail(f"artifact {name} at {c} is not on a pedestal ({st.get(st.below(c))})")
             if name == CONTROL_PANEL and not self.is_desk(st.below(c)):
                 self.fail(f"control panel at {c} is not above a desk ({st.get(st.below(c))})")
             if name == COMPUTER:
@@ -2209,6 +2261,7 @@ class Checker:
             counts["seats"] = sum(counts.get(k, 0) for k in (SOFA, STOOL, EGG_CHAIR, CAPTAIN_CHAIR))
             counts["wall_clock_or_chart"] = counts.get(CLOCK, 0) + counts.get(STAR_CHART, 0)
             counts["locker"] = counts.get(CREW_LOCKER, 0) // 2
+            counts["artifact"] = sum(v for k, v in counts.items() if k in ARTIFACTS)
             counts["vending"] = counts.get(VENDING, 0) // 2
             counts["poster"] = sum(v for k, v in counts.items() if k in POSTERS) // 2
             self.counts[key] = counts
@@ -2302,6 +2355,22 @@ def to_nbt(st):
     })
 
 
+# NPC anchors (structure-local after normalisation): Dr. Cooper stands behind his desk, facing his visitors.
+def npc_anchors(st):
+    room = st.rooms["archaeology"]
+    pos = room.at(3, 6)
+    yaw = {"south": 0, "west": 90, "north": 180, "east": 270}[room.wdir("front")]
+    return [("cooper", pos, yaw, pos)]
+
+
+def check_npcs(st, checker):
+    for role, pos, yaw, home in npc_anchors(st):
+        if not (st.get(pos) == AIR and st.get(st.above(pos)) == AIR and st.is_full(st.below(pos))):
+            checker.fail(f"npc {role} at {pos}: needs air with two blocks headroom on a solid floor")
+        if pos not in getattr(checker, "reach", set()):
+            checker.fail(f"npc {role} at {pos} cannot be reached from the arrival spot")
+
+
 def anchors(st):
     (ox, oy, oz), (mx, my, mz) = bounds(st)
     ax, ay, az = ARRIVAL
@@ -2312,6 +2381,8 @@ def anchors(st):
         "pad_center": [0 - ox, DECK - oy, 0 - oz],
         "arrival": [ax - ox, ay - oy, az - oz],
         "pressurized": pressurized_boxes(st),
+        "npcs": [{"role": role, "pos": [p[0] - ox, p[1] - oy, p[2] - oz], "yaw": yaw,
+                  "home": [h[0] - ox, h[1] - oy, h[2] - oz]} for role, p, yaw, h in npc_anchors(st)],
     }
 
 
@@ -2408,6 +2479,8 @@ def generate(verbose=False):
     validate(st)
     checker = Checker(st)
     problems = checker.run()
+    check_npcs(st, checker)
+    problems = checker.problems
     if problems:
         raise SystemExit("station.py: checker found problems:\n  " + "\n  ".join(problems[:200]) +
                          (f"\n  ... {len(problems)} in total" if len(problems) > 200 else ""))

@@ -10,7 +10,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
@@ -42,6 +50,15 @@ public final class ModOinstein {
             DeferredRegister.create(Registries.STRUCTURE_PLACEMENT, RetroCosmos.MODID);
     public static final DeferredHolder<StructurePlacementType<?>, StructurePlacementType<ExclusiveSpreadPlacement>> EXCLUSIVE_SPREAD =
             PLACEMENTS.register("exclusive_spread", () -> ExclusiveSpreadPlacement.TYPE);
+
+    public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES =
+            DeferredRegister.create(Registries.STRUCTURE_TYPE, RetroCosmos.MODID);
+    public static final DeferredHolder<StructureType<?>, StructureType<DryJigsawStructure>> DRY_JIGSAW =
+            STRUCTURE_TYPES.register("dry_jigsaw", () -> DryJigsawStructure.TYPE);
+
+    /** Dr. Oinstein's mutants and robots (entity type tag, data from the mob packages). */
+    public static final TagKey<EntityType<?>> FORCES = TagKey.create(Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "oinstein_forces"));
 
     public static final ResourceKey<DamageType> LASER_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
             Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "laser"));
@@ -79,6 +96,21 @@ public final class ModOinstein {
 
     public static void init(IEventBus modEventBus) {
         PLACEMENTS.register(modEventBus);
+        STRUCTURE_TYPES.register(modEventBus);
+        modEventBus.addListener(ModOinstein::registerSpawnPlacements);
+    }
+
+    /** The four Oinstein mobs share {@link OinsteinSpawns#check} (also set where the mutants are registered). */
+    private static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        for (String name : new String[] {"atomic_sentry", "atomic_automaton", "hominid_novus", "hominus_sapiens"}) {
+            BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.fromNamespaceAndPath(RetroCosmos.MODID, name))
+                    .ifPresent(type -> register(event, type));
+        }
+    }
+
+    private static <T extends Entity> void register(RegisterSpawnPlacementsEvent event, EntityType<T> type) {
+        event.register(type, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, OinsteinSpawns::check,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     /** Items for the Venus creative tab, in order. */

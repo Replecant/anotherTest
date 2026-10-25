@@ -1,5 +1,6 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "retrocosmos:dry_jigsaw",
+  "wet_tolerance": 0.2,
   "biomes": "#retrocosmos:has_structure/venusian_ruined_village",
   "step": "surface_structures",
   "spawn_overrides": {},

@@ -179,8 +179,8 @@ public final class ModTribes {
     /** No natural biome spawns; these rules apply to the outposts' structure spawn overrides. Labs are lit, so any light. */
     private static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(HOMINID_NOVUS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkAnyLightMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                com.replecant.retrocosmos.oinstein.OinsteinSpawns::check, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(HOMINUS_SAPIENS.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkAnyLightMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                com.replecant.retrocosmos.oinstein.OinsteinSpawns::check, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }

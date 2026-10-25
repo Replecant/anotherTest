@@ -2,7 +2,6 @@ package com.replecant.retrocosmos.venus;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,6 +33,6 @@ public class VenusTallPlantBlock extends DoublePlantBlock {
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return super.mayPlaceOn(state, level, pos) || (onStone && state.isFaceSturdy(level, pos, Direction.UP));
+        return super.mayPlaceOn(state, level, pos) || (onStone && state.is(VenusPlantBlock.ROCK_FLOOR));
     }
 }

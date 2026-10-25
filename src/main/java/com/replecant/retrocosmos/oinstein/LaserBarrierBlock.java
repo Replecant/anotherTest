@@ -94,8 +94,9 @@ public class LaserBarrierBlock extends Block {
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects,
                                 boolean intersects) {
-        if (!state.getValue(POWERED) || !(level instanceof ServerLevel server) || !(entity instanceof LivingEntity living)) {
-            return;
+        if (!state.getValue(POWERED) || !(level instanceof ServerLevel server) || !(entity instanceof LivingEntity living)
+                || entity.getType().is(ModOinstein.FORCES)) {
+            return;                         // Dr. Oinstein's own forces are keyed to the barrier: it only stops them
         }
         if (living.hurtServer(server, server.damageSources().source(ModOinstein.LASER_DAMAGE), DAMAGE)) {
             double d = state.getValue(AXIS) == Direction.Axis.X ? entity.getZ() - (pos.getZ() + 0.5)

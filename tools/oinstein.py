@@ -569,7 +569,7 @@ STRIPE = st("hull_panel_striped")
 EMITTER_S = st(EMITTER, powered=True)
 TESLA_S = st(TESLA)
 JAR_S = st(JAR)
-COARSE = V("coarse_dirt")
+PACKED = V("packed_mud")      # trodden ground: not #minecraft:dirt, so no Venus plants or trees take root
 DOUBLE_SLAB = V("smooth_stone_slab", type="double", waterlogged=False)
 
 
@@ -776,6 +776,10 @@ def audit(s):
         if not (s.full(x, y - 1, z) or (below is None and y - 1 <= s.G) or (below or "").endswith("_slab")
                 or below in (M("iron_trapdoor"),)):
             problems.append(f"entity {nbt['id']} at {(x, y, z)} floats over {below}")
+    barriers = [p for p, st_ in s.b.items() if st_[0] in (P(BARRIER), P(EMITTER))]
+    for (x, y, z), nbt in s.entities:
+        if any(abs(bx - x) <= 2 and abs(bz - z) <= 2 and -3 <= by - y <= 3 for (bx, by, bz) in barriers):
+            problems.append(f"entity {nbt['id']} at {(x, y, z)} stands next to a laser barrier")
     if problems:
         raise SystemExit(f"oinstein.py: {s.name}:\n  " + "\n  ".join(problems[:40]))
 
@@ -1001,7 +1005,7 @@ def build_capture_camp():
     for x in range(W):
         for z in range(1, D):
             if rnd.random() < 0.55:
-                s.set(x, G, z, COARSE if rnd.random() < 0.7 else CON)
+                s.set(x, G, z, PACKED if rnd.random() < 0.7 else CON)
     # palisade
     for x in range(W):
         for z in (1, D - 1):
@@ -1035,7 +1039,6 @@ def build_capture_camp():
     # cages along the east side
     for i, z in enumerate((4, 9, 14)):
         cage(s, 18, z, 4, 4, captives=2 if i == 1 else 1)
-    s.mob(16, G + 1, 10, NOVUS)
     # watchtower in the north-west corner
     watchtower(s, 2, 3, G + 7)
     # truck and crate depot (south-west)
@@ -1059,8 +1062,6 @@ def build_capture_camp():
     # forces
     s.mob(gx - 1, G + 1, 3, NOVUS)
     s.mob(gx + 1, G + 1, 3, NOVUS)
-    s.mob(12, G + 1, 12, AUTOMATON)
-    s.mob(14, G + 1, 15, SAPIENS)
     s.set(13, G + 1, 6, standing_banner(rnd.randrange(16)))
     s.set(13, G + 1, 8, campfire(False))
     return s
@@ -1149,7 +1150,6 @@ def build_field_lab():
     poster(s, 9, 2, 18, "oinstein_poster_insignia", "north")
     s.set(13, 2, 18, wall_banner("north"))
     s.mob(8, 1, 9, SAPIENS)
-    s.mob(10, 1, 15, SAPIENS)
     s.mob(dx + 3, G + 1, 2, NOVUS)
     # roof furniture: green skylights over the lab, vent stacks, a radio mast, sandbagged hatches
     for x in range(5, 12):
@@ -1232,7 +1232,6 @@ def build_relay_pylon():
     s.fill(c - 1, G + 1, 0, c + 1, G + 2, 0, S_AIR)
     s.fill(12, G + 1, 12, 12, G + 1, 12, S_AIR)
     s.set(c + 2, G + 1, 2, standing_banner(8))
-    s.mob(c, G + 1, 4, SENTRY)
     s.mob(10, G + 1, 13, AUTOMATON)
     return s
 
@@ -1278,8 +1277,6 @@ def build_checkpoint():
     s.mob(12, G + 3, 6, SENTRY)
     s.set(13, G + 1, 8, standing_banner(12))
     s.mob(6, G + 1, 3, NOVUS)
-    s.mob(8, G + 1, 9, AUTOMATON)
-    s.mob(3, G + 1, 9, NOVUS)
     return s
 
 
@@ -1334,17 +1331,21 @@ def spawn_overrides(weights):
     return {"monster": {"bounding_box": "piece", "spawns": spawns}}
 
 
-OUTPOST_SPAWNS = {SENTRY: (4, 1, 1), AUTOMATON: (3, 1, 1), NOVUS: (6, 1, 2), SAPIENS: (2, 1, 1)}
-COMPLEX_SPAWNS = {SENTRY: (5, 1, 2), AUTOMATON: (5, 1, 2), NOVUS: (8, 1, 3), SAPIENS: (4, 1, 2)}
+# Reinforcements inside the Institute only; OinsteinSpawns.java lets one in four through and caps the garrison
+# at 8 of his forces within 48 blocks.
+COMPLEX_SPAWNS = {SENTRY: (3, 1, 1), AUTOMATON: (3, 1, 1), NOVUS: (5, 1, 1), SAPIENS: (2, 1, 1)}
 
 
 def wg(kind, name, obj):
     write_json(os.path.join(DATA, "worldgen", kind, name + ".json"), obj)
 
 
-def jigsaw_structure(name, pool, biomes_tag, start_height, adaptation, overrides):
+def jigsaw_structure(name, pool, biomes_tag, start_height, adaptation, overrides, dry_search=0, sea_margin=0):
     wg("structure", name, {
-        "type": "minecraft:jigsaw", "biomes": f"#{MOD}:has_structure/{biomes_tag}", "step": "surface_structures",
+        "type": f"{MOD}:dry_jigsaw", "dry_search_chunks": dry_search,
+        # the Institute's solid paving and beard_box keep a low site dry; the outposts must stay above the sea
+        # (the half-buried field lab by its own depth, or the aquifer floods its stair trench)
+        "sea_level_margin": sea_margin, "biomes": f"#{MOD}:has_structure/{biomes_tag}", "step": "surface_structures",
         "spawn_overrides": overrides, "terrain_adaptation": adaptation, "start_pool": f"{MOD}:{pool}", "size": 1,
         "start_height": {"absolute": start_height}, "project_start_to_heightmap": "WORLD_SURFACE_WG",
         "max_distance_from_center": 80, "use_expansion_hack": False})
@@ -1368,7 +1369,8 @@ def worldgen():
     entries = []
     for name, (_fn, G, weight) in OUTPOSTS.items():
         single_pool(f"{name}/start", f"oinstein/{name}")
-        jigsaw_structure(name, f"{name}/start", "oinstein_outpost", -G, "beard_thin", spawn_overrides(OUTPOST_SPAWNS))
+        # outposts keep only their placed garrison: no spawn overrides (a solo player should be able to clear one)
+        jigsaw_structure(name, f"{name}/start", "oinstein_outpost", -G, "beard_thin", {}, sea_margin=G - 1)
         entries.append({"structure": f"{MOD}:{name}", "weight": weight})
     wg("structure_set", "oinstein_outposts", {"structures": entries, "placement": {
         "type": f"{MOD}:exclusive_spread", "spacing": 56, "separation": 24, "salt": 731940117,
@@ -1381,7 +1383,8 @@ def worldgen():
     tag("worldgen/biome/oinstein_complex_preferred", [P(b) for b in ("venus_cycad_plains", "venus_jungle")],
         namespace=MOD)
     single_pool(f"{COMPLEX}/start", f"oinstein/{COMPLEX}")
-    jigsaw_structure(COMPLEX, f"{COMPLEX}/start", COMPLEX, -1, "beard_box", spawn_overrides(COMPLEX_SPAWNS))
+    jigsaw_structure(COMPLEX, f"{COMPLEX}/start", COMPLEX, -1, "beard_box", spawn_overrides(COMPLEX_SPAWNS), dry_search=2,
+                     sea_margin=-64)
     wg("structure_set", "oinstein_institute", {"structures": [{"structure": f"{MOD}:{COMPLEX}", "weight": 1}],
                                                "placement": {"type": "minecraft:concentric_rings", "distance": 12,
                                                              "spread": 1, "count": 1, "salt": 731940118,
@@ -1391,7 +1394,20 @@ def worldgen():
 TEMPLATES = {f"oinstein/{n}": fn for n, (fn, _g, _w) in OUTPOSTS.items()}
 
 
+def clear_above(s, layers=3):
+    """Explicit air over the open ground of a template: vegetation that a neighbouring chunk's features placed on the
+    terrain before this part of the structure was built would otherwise stand on the steel and concrete."""
+    columns = {(x, z) for (x, y, z) in s.b}
+    for (x, z) in columns:
+        if (x, s.G, z) not in s.b and (x, s.G - 1, z) in s.b:
+            s.b[(x, s.G, z)] = PACKED      # bare ground over a foundation: trodden earth, not the old (planted) topsoil
+        for y in range(s.G + 1, s.G + 1 + layers):
+            if s.inside(x, y, z) and (x, y, z) not in s.b:
+                s.b[(x, y, z)] = S_AIR
+
+
 def finish(s):
+    clear_above(s)
     connect_panes(s)
     audit(s)
     return s
@@ -1420,7 +1436,7 @@ def hazard_band(s, x0, z0, x1, z1, y):
                 s.set(x, y, z, YCON if ((x + z) // 2) % 2 == 0 else BCON)
 
 
-def guard_tower(s, x0, z0, size, top, lights=True):
+def guard_tower(s, x0, z0, size, top, lights=True, sentry=True):
     """A concrete guard tower with a hazard band, an open steel platform, a railing, searchlights and a sentry."""
     G = s.G
     x1, z1 = x0 + size - 1, z0 + size - 1
@@ -1438,7 +1454,8 @@ def guard_tower(s, x0, z0, size, top, lights=True):
     for y in range(G + 1, top + 1):
         s.set(x0 + 1, y, z0 + 1, V("ladder", facing="south", waterlogged=False))
     s.set(x0 + 1, top + 1, z0 + 1, S_AIR)
-    s.mob(x0 + size // 2, top + 1, z0 + size // 2, SENTRY)
+    if sentry:
+        s.mob(x0 + size // 2, top + 1, z0 + size // 2, SENTRY)
 
 
 def cooling_tower(s, cx, cz, y0, height, r_base, r_waist, r_top):
@@ -1547,7 +1564,7 @@ def build_complex():
         for z in range(N):
             s.set(x, G, z, LCON if (x % 8 in (0, 7) or z % 8 in (0, 7)) else CON)
             if rnd.random() < 0.05:
-                s.set(x, G, z, COARSE)
+                s.set(x, G, z, PACKED)
     # the access road from the gate to the hall
     for z in range(0, 41):
         for x in range(43, 53):
@@ -1568,7 +1585,7 @@ def build_complex():
     # towers: corners, mid-sides
     T = 6
     for (x, z) in ((0, 0), (N - T, 0), (0, N - T), (N - T, N - T), (0, 45), (N - T, 45), (45, N - T)):
-        guard_tower(s, x, z, T, G + 14)
+        guard_tower(s, x, z, T, G + 14, sentry=z == 0)        # only the front corners are manned
     # ------------------------------------------------------------ the main gate (north, sealed)
     gx0, gx1 = 44, 51
     for (tx0, tx1) in ((37, 43), (52, 58)):
@@ -1725,8 +1742,6 @@ def build_complex():
     s.set(lx0 + 2, G + 5, hz1 - 1, lamp())
     s.set(lx0 + 2, G + 5, hz1, V("redstone_block"))
     s.mob(47, G + 1, 55, SAPIENS)
-    s.mob(41, G + 1, 50, NOVUS)
-    s.mob(55, G + 1, 50, NOVUS)
     s.protect_box(px0, G, hz0 - 2, px1, G + 8, hz0 + 1)
     # ------------------------------------------------------------ reactor hall with its dome
     rx0, rz0, rx1, rz1 = 8, 8, 27, 27
@@ -1762,7 +1777,6 @@ def build_complex():
     s.set(18, G + 2, rz1, st("airlock_door", facing="south", half="upper", hinge="right", open=False))
     s.set(16, G + 3, rz1 + 1, sign("south", SIGN_DANGER))
     s.set(19, G + 3, rz1 + 1, wall_banner("south"))
-    s.mob(17, G + 1, 20, SAPIENS)
     # smokestacks
     smokestack(s, 30, 9, H - 4)
     smokestack(s, 30, 22, H - 6)
@@ -1818,7 +1832,6 @@ def build_complex():
     s.set(18, G + 3, bz0 - 1, wall_banner("north"))
     s.set(20, G + 3, bz0 - 1, wall_banner("north"))
     s.mob(14, G + 1, 68, NOVUS)
-    s.mob(25, G + 1, 68, NOVUS)
     ax0, az0, ax1, az1 = 8, 78, 20, 88
     s.fill(ax0, G, az0, ax1, G + 5, az1, CON)
     s.fill(ax0 + 1, G + 1, az0 + 1, ax1 - 1, G + 4, az1 - 1, S_AIR)
@@ -1840,15 +1853,13 @@ def build_complex():
     for (x, z) in ((40, 12), (55, 12), (40, 28), (55, 28), (30, 40), (66, 40), (30, 78), (58, 70), (88, 58)):
         s.fill(x, G + 1, z, x, G + 4, z, V("lightning_rod", facing="up", powered=False, waterlogged=False))
         s.set(x, G + 5, z, LANTERN_SEA)
-    # forces in the yard
-    for (x, z) in ((47, 12), (40, 34), (56, 34), (70, 45), (24, 48), (80, 60), (46, 76)):
+    # the garrison of the yard (with the towers, the barracks and the pens: 13 on the surface, one in the foyer)
+    for (x, z) in ((47, 14), (70, 45), (46, 76)):
         s.mob(x, G + 1, z, AUTOMATON)
-    for (x, z) in ((45, 7), (50, 7), (60, 36), (35, 36), (70, 66), (12, 34)):
+    for (x, z) in ((45, 8), (50, 8)):
         s.mob(x, G + 1, z, NOVUS)
-    for (x, z) in ((47, 37), (78, 40)):
-        s.mob(x, G + 1, z, SAPIENS)
-    for (x, z) in ((47, 24), (20, 40), (75, 50), (30, 58), (86, 88)):
-        s.mob(x, G + 1, z, SENTRY)
+    s.mob(78, G + 1, 40, SAPIENS)
+    s.mob(30, G + 1, 58, SENTRY)
     for (x, z) in ((42, 36), (53, 36), (42, 20), (53, 20)):
         s.set(x, G + 1, z, standing_banner(8))
     return s

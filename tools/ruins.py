@@ -1990,7 +1990,16 @@ def build_plaza():
         s.protect.add((x, 1, z))
     s.mossify(0.5, turf=0.25)
     s.plants(0.3, tall=0.2)
+    clear_paving(s)
     return s
+
+
+def clear_paving(s, layers=2):
+    """Air over a village's open paving: plants that grew on the topsoil before the paving replaced it must go."""
+    for (x, y, z) in [p for p in s.b if p[1] == 0]:
+        for yy in range(1, 1 + layers):
+            if s.inside(x, yy, z) and (x, yy, z) not in s.b:
+                s.b[(x, yy, z)] = S_AIR
 
 
 def street_surface(s, rnd):
@@ -2034,6 +2043,7 @@ def build_street(kind):
     for j in jig:
         x, z, f = j[0], j[1], j[2]
         s.set(x, 1, z, lot_jigsaw(f) if len(j) > 3 else street_jigsaw(f))
+    clear_paving(s, 1)
     return s
 
 
@@ -2315,8 +2325,11 @@ def pool(name, entries, fallback="minecraft:empty"):
 
 
 def structure(name, start_pool, biomes_tag, start_height, adaptation, size=1, max_dist=80):
+    """A jigsaw structure that refuses wet sites (retrocosmos:dry_jigsaw, see oinstein/DryJigsawStructure.java):
+    single buildings must stand wholly on dry land, a village may have a few streets or houses over a stream."""
     wg("structure", name, {
-        "type": "minecraft:jigsaw", "biomes": f"#{MOD}:has_structure/{biomes_tag}", "step": "surface_structures",
+        "type": f"{MOD}:dry_jigsaw", "wet_tolerance": 0.2 if size > 1 else 0.0,
+        "biomes": f"#{MOD}:has_structure/{biomes_tag}", "step": "surface_structures",
         "spawn_overrides": {}, "terrain_adaptation": adaptation, "start_pool": f"{MOD}:{start_pool}", "size": size,
         "start_height": {"absolute": start_height}, "project_start_to_heightmap": "WORLD_SURFACE_WG",
         "max_distance_from_center": max_dist, "use_expansion_hack": False})

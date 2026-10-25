@@ -534,6 +534,10 @@
   "chat.retrocosmos.tribe.captive.0": "Sky-man! Help! Bad white-coat man lock tribe in box!",
   "chat.retrocosmos.tribe.captive.1": "Ugh... no fire... no sky... want go home...",
   "chat.retrocosmos.tribe.captive.2": "White-coat man make tribe-brother big and angry. Next is me!",
+  "chat.retrocosmos.tribe.captive.3": "Psst! Sky-man! Bars too strong for tribe hands...",
+  "chat.retrocosmos.tribe.captive.4": "Glass-head come with needle every night. Ugh. Hurts.",
+  "chat.retrocosmos.tribe.captive.5": "Tribe hear iron-man walking. Clank, clank. Sky-man careful!",
+  "chat.retrocosmos.tribe.captive.6": "Sky-man open box? Tribe give amber! Much amber!",
   "chat.retrocosmos.tribe.captive.locked": "Box shut tight! Sky-man find way to open!",
   "chat.retrocosmos.tribe.freed.0": "Free! Sky-man good! Tribe remember!",
   "chat.retrocosmos.tribe.freed.1": "Ugh! Sky-man strong friend! Take, take! Gift!",
@@ -649,9 +653,5 @@
   "chat.retrocosmos.npc.scientist.flee.3": "Sergeant! Do something!",
   "chat.retrocosmos.npc.scientist.protest.0": "Ow! I'm a scientist, not a test subject!",
   "chat.retrocosmos.npc.scientist.protest.1": "Please! These instruments are delicate - and so am I.",
-  "chat.retrocosmos.npc.scientist.protest.2": "I shall be noting this in my report.",
-  "chat.retrocosmos.tribe.captive.3": "Psst! Sky-man! Bars too strong for tribe hands...",
-  "chat.retrocosmos.tribe.captive.4": "Glass-head come with needle every night. Ugh. Hurts.",
-  "chat.retrocosmos.tribe.captive.5": "Tribe hear iron-man walking. Clank, clank. Sky-man careful!",
-  "chat.retrocosmos.tribe.captive.6": "Sky-man open box? Tribe give amber! Much amber!"
+  "chat.retrocosmos.npc.scientist.protest.2": "I shall be noting this in my report."
 }

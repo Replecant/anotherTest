@@ -1,5 +1,6 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "retrocosmos:dry_jigsaw",
+  "wet_tolerance": 0.0,
   "biomes": "#retrocosmos:has_structure/venusian_pyramid",
   "step": "surface_structures",
   "spawn_overrides": {},

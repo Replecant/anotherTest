@@ -1415,7 +1415,7 @@ def write_camps():
                                                 "processors": "minecraft:empty", "projection": "rigid"}}
                      for n in names]})
     write_json(os.path.join(DATA, "worldgen", "structure", "tribal_camp.json"), {
-        "type": "minecraft:jigsaw",
+        "type": f"{MOD}:dry_jigsaw",     # never on water (see oinstein/DryJigsawStructure.java)
         "biomes": f"#{MOD}:has_structure/tribal_camp",
         "max_distance_from_center": 80,
         "project_start_to_heightmap": "WORLD_SURFACE_WG",

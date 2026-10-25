@@ -1,38 +1,10 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "retrocosmos:dry_jigsaw",
+  "dry_search_chunks": 0,
+  "sea_level_margin": 0,
   "biomes": "#retrocosmos:has_structure/oinstein_outpost",
   "step": "surface_structures",
-  "spawn_overrides": {
-    "monster": {
-      "bounding_box": "piece",
-      "spawns": [
-        {
-          "type": "retrocosmos:atomic_sentry",
-          "weight": 4,
-          "minCount": 1,
-          "maxCount": 1
-        },
-        {
-          "type": "retrocosmos:atomic_automaton",
-          "weight": 3,
-          "minCount": 1,
-          "maxCount": 1
-        },
-        {
-          "type": "retrocosmos:hominid_novus",
-          "weight": 6,
-          "minCount": 1,
-          "maxCount": 2
-        },
-        {
-          "type": "retrocosmos:hominus_sapiens",
-          "weight": 2,
-          "minCount": 1,
-          "maxCount": 1
-        }
-      ]
-    }
-  },
+  "spawn_overrides": {},
   "terrain_adaptation": "beard_thin",
   "start_pool": "retrocosmos:oinstein_relay_pylon/start",
   "size": 1,

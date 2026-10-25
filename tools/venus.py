@@ -1264,15 +1264,23 @@ def features():
         heightmap("OCEAN_FLOOR"), biome_filter()])
 
     # ---------------- ground cover & plants ----------------
-    not_water = {"type": "minecraft:all_of", "predicates": [AIR, {"type": "minecraft:matching_block_tag",
-                                                                  "tag": "minecraft:dirt", "offset": [0, -1, 0]}]}
+    # Plants only take root on natural Venus ground: soil-like blocks (#minecraft:dirt) or, for the fungi, the bare
+    # rock of the planet (#retrocosmos:venus_rock_floor) - never on the steel, concrete or masonry of structures.
+    tag("block/venus_rock_floor", [P("venus_stone"), P("venus_cobblestone"), P("venus_black_rock"), "minecraft:stone",
+                                   "minecraft:deepslate", "minecraft:tuff", "minecraft:gravel"], namespace=MOD)
+    soil_below = {"type": "minecraft:matching_block_tag", "tag": "minecraft:dirt", "offset": [0, -1, 0]}
+    ground_below = {"type": "minecraft:any_of", "predicates": [
+        soil_below, {"type": "minecraft:matching_block_tag", "tag": f"{MOD}:venus_rock_floor", "offset": [0, -1, 0]}]}
+    not_water = {"type": "minecraft:all_of", "predicates": [AIR, soil_below]}
+    on_ground = {"type": "minecraft:all_of", "predicates": [AIR, ground_below]}
     patch("patch_venus_sedge", provider(B("venus_sedge")), 48, predicate=not_water)
     patch("patch_venus_horsetail", provider(B("venus_horsetail")), 40, xz=5, y=2, predicate=not_water)
     patch("patch_venus_cycad", provider(B("venus_cycad")), 18, xz=6, y=2, predicate=not_water)
     patch("patch_venus_fire_lily", provider(B("venus_fire_lily")), 24, xz=5, y=2, predicate=not_water)
-    patch("patch_venus_glowcap", provider(B("venus_glowcap")), 32, xz=6, y=3)
+    patch("patch_venus_glowcap", provider(B("venus_glowcap")), 32, xz=6, y=3, predicate=on_ground)
     for tall in ("venus_tree_fern", "venus_giant_fern", "venus_glowstalk"):
-        patch(f"patch_{tall}", None, 40 if tall != "venus_tree_fern" else 24, xz=7, y=3, predicate=AIR,
+        patch(f"patch_{tall}", None, 40 if tall != "venus_tree_fern" else 24, xz=7, y=3,
+              predicate=on_ground if tall == "venus_glowstalk" else not_water,
               block_feature={"type": "minecraft:simple_block",
                              "config": {"to_place": provider(B(tall, half="lower"))}})
     surface = lambda n: [count(n), SQUARE, heightmap("WORLD_SURFACE_WG"), biome_filter()]

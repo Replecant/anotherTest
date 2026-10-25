@@ -534,6 +534,10 @@
   "chat.retrocosmos.tribe.captive.0": "Небесный человек! Помоги! Злой человек в белом халате запер племя в ящике!",
   "chat.retrocosmos.tribe.captive.1": "Угх... нет огня... нет неба... хочу домой...",
   "chat.retrocosmos.tribe.captive.2": "Человек в халате сделал брата огромным и злым. Следующий - я!",
+  "chat.retrocosmos.tribe.captive.3": "Псст! Небесный человек! Прутья слишком крепкие для рук племени...",
+  "chat.retrocosmos.tribe.captive.4": "Стеклоголовый каждую ночь приходит с иглой. Угх. Больно.",
+  "chat.retrocosmos.tribe.captive.5": "Племя слышит железного человека. Бряк, бряк. Небесный человек, осторожно!",
+  "chat.retrocosmos.tribe.captive.6": "Небесный человек откроет ящик? Племя даст янтарь! Много янтаря!",
   "chat.retrocosmos.tribe.captive.locked": "Ящик заперт! Небесный человек, найди, как открыть!",
   "chat.retrocosmos.tribe.freed.0": "Свобода! Небесный человек хороший! Племя запомнит!",
   "chat.retrocosmos.tribe.freed.1": "Угх! Небесный человек - сильный друг! Бери, бери! Подарок!",
@@ -649,9 +653,5 @@
   "chat.retrocosmos.npc.scientist.flee.3": "Сержант! Сделайте же что-нибудь!",
   "chat.retrocosmos.npc.scientist.protest.0": "Ай! Я учёный, а не подопытный!",
   "chat.retrocosmos.npc.scientist.protest.1": "Прошу вас! Приборы хрупкие - и я тоже.",
-  "chat.retrocosmos.npc.scientist.protest.2": "Я отмечу это в своём отчёте.",
-  "chat.retrocosmos.tribe.captive.3": "Псст! Небесный человек! Прутья слишком крепкие для рук племени...",
-  "chat.retrocosmos.tribe.captive.4": "Стеклоголовый каждую ночь приходит с иглой. Угх. Больно.",
-  "chat.retrocosmos.tribe.captive.5": "Племя слышит железного человека. Бряк, бряк. Небесный человек, осторожно!",
-  "chat.retrocosmos.tribe.captive.6": "Небесный человек откроет ящик? Племя даст янтарь! Много янтаря!"
+  "chat.retrocosmos.npc.scientist.protest.2": "Я отмечу это в своём отчёте."
 }

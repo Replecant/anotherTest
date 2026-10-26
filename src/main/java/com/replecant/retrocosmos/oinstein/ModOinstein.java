@@ -18,6 +18,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -56,6 +63,17 @@ public final class ModOinstein {
     public static final DeferredHolder<StructureType<?>, StructureType<DryJigsawStructure>> DRY_JIGSAW =
             STRUCTURE_TYPES.register("dry_jigsaw", () -> DryJigsawStructure.TYPE);
 
+    public static final DeferredRegister<StructurePieceType> STRUCTURE_PIECES =
+            DeferredRegister.create(Registries.STRUCTURE_PIECE, RetroCosmos.MODID);
+    public static final DeferredHolder<StructurePieceType, StructurePieceType> ATTACHED_TEMPLATE =
+            STRUCTURE_PIECES.register("attached_template",
+                    () -> (StructurePieceType.StructureTemplateType) AttachedTemplatePiece::new);
+
+    public static final DeferredRegister<StructureProcessorType<?>> PROCESSORS =
+            DeferredRegister.create(Registries.STRUCTURE_PROCESSOR, RetroCosmos.MODID);
+    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<FurnitureFacingProcessor>> FURNITURE_FACING =
+            PROCESSORS.register("furniture_facing", () -> FurnitureFacingProcessor.TYPE);
+
     /** Dr. Oinstein's mutants and robots (entity type tag, data from the mob packages). */
     public static final TagKey<EntityType<?>> FORCES = TagKey.create(Registries.ENTITY_TYPE,
             Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "oinstein_forces"));
@@ -73,6 +91,15 @@ public final class ModOinstein {
     public static final DeferredBlock<LaserEmitterBlock> LASER_EMITTER = block("laser_emitter", LaserEmitterBlock::new,
             p -> unbreakable(p).mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).noOcclusion()
                     .lightLevel(s -> s.getValue(LaserEmitterBlock.POWERED) ? 7 : 0));
+
+    // ---------------- Security clearance: the reader beside each barrier and its three cards ----------------
+    public static final DeferredBlock<KeycardReaderBlock> KEYCARD_READER = block("keycard_reader", KeycardReaderBlock::new,
+            p -> unbreakable(p).mapColor(MapColor.METAL).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(s -> s.getValue(KeycardReaderBlock.STATUS) == KeycardReaderBlock.Status.LOCKED ? 4 : 8)
+                    .isRedstoneConductor((s, l, pos) -> false));
+    public static final DeferredItem<KeycardItem> KEYCARD_ALPHA = keycard(KeycardReaderBlock.Clearance.A, Rarity.UNCOMMON);
+    public static final DeferredItem<KeycardItem> KEYCARD_BETA = keycard(KeycardReaderBlock.Clearance.B, Rarity.UNCOMMON);
+    public static final DeferredItem<KeycardItem> KEYCARD_GAMMA = keycard(KeycardReaderBlock.Clearance.C, Rarity.RARE);
 
     // ---------------- Steel and lab fittings ----------------
     public static final DeferredBlock<Block> RIVETED_STEEL = block("oinstein_riveted_steel", Block::new, ModOinstein::steel);
@@ -97,6 +124,8 @@ public final class ModOinstein {
     public static void init(IEventBus modEventBus) {
         PLACEMENTS.register(modEventBus);
         STRUCTURE_TYPES.register(modEventBus);
+        STRUCTURE_PIECES.register(modEventBus);
+        PROCESSORS.register(modEventBus);
         modEventBus.addListener(ModOinstein::registerSpawnPlacements);
     }
 
@@ -116,6 +145,17 @@ public final class ModOinstein {
     /** Items for the Venus creative tab, in order. */
     public static List<DeferredItem<? extends Item>> items() {
         return Collections.unmodifiableList(ITEMS);
+    }
+
+    /** A security card: stacks to one, never used up; a grey lore line names the barrier it opens. */
+    private static DeferredItem<KeycardItem> keycard(KeycardReaderBlock.Clearance clearance, Rarity rarity) {
+        String name = clearance.card();
+        DeferredItem<KeycardItem> item = ModItems.ITEMS.register(name, id -> new KeycardItem(new Item.Properties()
+                .setId(ResourceKey.create(Registries.ITEM, id)).stacksTo(1).rarity(rarity)
+                .component(DataComponents.LORE, new ItemLore(List.of(Component.translatable("item.retrocosmos." + name + ".lore")
+                        .withStyle(ChatFormatting.GRAY)))), clearance));
+        ITEMS.add(item);
+        return item;
     }
 
     private static BlockBehaviour.Properties unbreakable(BlockBehaviour.Properties p) {

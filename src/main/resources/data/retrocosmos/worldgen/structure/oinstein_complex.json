@@ -1,4 +1,14 @@
 {
+  "extra_pieces": [
+    {
+      "template": "retrocosmos:oinstein/oinstein_lower_lab",
+      "offset": [
+        -5,
+        -31,
+        3
+      ]
+    }
+  ],
   "type": "retrocosmos:dry_jigsaw",
   "dry_search_chunks": 2,
   "sea_level_margin": -64,

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
 
 /**
@@ -21,7 +22,8 @@ import net.minecraft.world.phys.AABB;
  * through the Institute's structure spawn overrides, and those would otherwise refill the monster cap inside the
  * compound day and night. So a natural spawn passes only one time in four, and only while fewer than
  * {@link #INSTITUTE_CAP} of his forces are within {@link #INSTITUTE_RADIUS} blocks (elsewhere {@link #CAP} within
- * {@link #RADIUS}). Spawns from eggs, commands, structures and spawners are not limited.
+ * {@link #RADIUS}); none at all in the lower laboratory (its {@link AttachedTemplatePiece}). Spawns from eggs,
+ * commands, structures and spawners are not limited.
  */
 public final class OinsteinSpawns {
     public static final ResourceKey<Structure> INSTITUTE = ResourceKey.create(Registries.STRUCTURE,
@@ -42,7 +44,11 @@ public final class OinsteinSpawns {
             return false;
         }
         ServerLevel server = level.getLevel();
-        boolean institute = server.structureManager().getStructureWithPieceAt(pos, h -> h.is(INSTITUTE)).isValid();
+        StructureStart start = server.structureManager().getStructureWithPieceAt(pos, h -> h.is(INSTITUTE));
+        boolean institute = start.isValid();
+        if (institute && start.getPieces().stream().anyMatch(p -> p instanceof AttachedTemplatePiece && p.getBoundingBox().isInside(pos))) {
+            return false;                   // the lower laboratory keeps its placed guards only
+        }
         int radius = institute ? INSTITUTE_RADIUS : RADIUS;
         int cap = institute ? INSTITUTE_CAP : CAP;
         int near = level.getEntitiesOfClass(LivingEntity.class, new AABB(pos).inflate(radius),

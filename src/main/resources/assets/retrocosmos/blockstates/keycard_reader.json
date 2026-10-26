@@ -1,0 +1,139 @@
+{
+  "variants": {
+    "facing=north,level=a,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_a_locked"
+    },
+    "facing=east,level=a,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_a_locked",
+      "y": 90
+    },
+    "facing=south,level=a,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_a_locked",
+      "y": 180
+    },
+    "facing=west,level=a,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_a_locked",
+      "y": 270
+    },
+    "facing=north,level=a,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_a_denied"
+    },
+    "facing=east,level=a,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_a_denied",
+      "y": 90
+    },
+    "facing=south,level=a,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_a_denied",
+      "y": 180
+    },
+    "facing=west,level=a,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_a_denied",
+      "y": 270
+    },
+    "facing=north,level=a,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_a_granted"
+    },
+    "facing=east,level=a,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_a_granted",
+      "y": 90
+    },
+    "facing=south,level=a,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_a_granted",
+      "y": 180
+    },
+    "facing=west,level=a,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_a_granted",
+      "y": 270
+    },
+    "facing=north,level=b,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_b_locked"
+    },
+    "facing=east,level=b,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_b_locked",
+      "y": 90
+    },
+    "facing=south,level=b,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_b_locked",
+      "y": 180
+    },
+    "facing=west,level=b,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_b_locked",
+      "y": 270
+    },
+    "facing=north,level=b,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_b_denied"
+    },
+    "facing=east,level=b,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_b_denied",
+      "y": 90
+    },
+    "facing=south,level=b,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_b_denied",
+      "y": 180
+    },
+    "facing=west,level=b,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_b_denied",
+      "y": 270
+    },
+    "facing=north,level=b,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_b_granted"
+    },
+    "facing=east,level=b,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_b_granted",
+      "y": 90
+    },
+    "facing=south,level=b,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_b_granted",
+      "y": 180
+    },
+    "facing=west,level=b,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_b_granted",
+      "y": 270
+    },
+    "facing=north,level=c,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_c_locked"
+    },
+    "facing=east,level=c,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_c_locked",
+      "y": 90
+    },
+    "facing=south,level=c,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_c_locked",
+      "y": 180
+    },
+    "facing=west,level=c,status=locked": {
+      "model": "retrocosmos:block/keycard_reader_c_locked",
+      "y": 270
+    },
+    "facing=north,level=c,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_c_denied"
+    },
+    "facing=east,level=c,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_c_denied",
+      "y": 90
+    },
+    "facing=south,level=c,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_c_denied",
+      "y": 180
+    },
+    "facing=west,level=c,status=denied": {
+      "model": "retrocosmos:block/keycard_reader_c_denied",
+      "y": 270
+    },
+    "facing=north,level=c,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_c_granted"
+    },
+    "facing=east,level=c,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_c_granted",
+      "y": 90
+    },
+    "facing=south,level=c,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_c_granted",
+      "y": 180
+    },
+    "facing=west,level=c,status=granted": {
+      "model": "retrocosmos:block/keycard_reader_c_granted",
+      "y": 270
+    }
+  }
+}

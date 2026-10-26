@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -28,13 +33,16 @@ import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
  * other pieces may have at most {@code wet_tolerance} of their samples wet (streams through a village).
  * With {@code dry_search_chunks} > 0 (the one-per-world Institute) nearby chunks are tried in turn when the placement
  * chunk itself is wet, so the structure still appears - on dry land a little to the side.
+ * {@code extra_pieces} are templates attached to the start piece (offset in its template coordinates, rotated with it)
+ * as {@link AttachedTemplatePiece}s: the Institute's lower laboratory.
  */
 public class DryJigsawStructure extends Structure {
     public static final MapCodec<DryJigsawStructure> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             JigsawStructure.CODEC.forGetter(s -> s.inner),
             Codec.intRange(0, 3).optionalFieldOf("dry_search_chunks", 0).forGetter(s -> s.searchChunks),
             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("wet_tolerance", 0.0F).forGetter(s -> s.wetTolerance),
-            Codec.intRange(-64, 32).optionalFieldOf("sea_level_margin", 0).forGetter(s -> s.seaLevelMargin))
+            Codec.intRange(-64, 32).optionalFieldOf("sea_level_margin", 0).forGetter(s -> s.seaLevelMargin),
+            ExtraPiece.CODEC.listOf().optionalFieldOf("extra_pieces", List.of()).forGetter(s -> s.extraPieces))
             .apply(i, DryJigsawStructure::new));
     public static final StructureType<DryJigsawStructure> TYPE = () -> CODEC;
 
@@ -42,13 +50,23 @@ public class DryJigsawStructure extends Structure {
     private final int searchChunks;
     private final float wetTolerance;
     private final int seaLevelMargin;
+    private final List<ExtraPiece> extraPieces;
 
-    public DryJigsawStructure(JigsawStructure inner, int searchChunks, float wetTolerance, int seaLevelMargin) {
+    /** A template attached to the start piece at {@code offset} (in the start template's own coordinates). */
+    public record ExtraPiece(Identifier template, BlockPos offset) {
+        public static final Codec<ExtraPiece> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Identifier.CODEC.fieldOf("template").forGetter(ExtraPiece::template),
+                BlockPos.CODEC.fieldOf("offset").forGetter(ExtraPiece::offset)).apply(i, ExtraPiece::new));
+    }
+
+    public DryJigsawStructure(JigsawStructure inner, int searchChunks, float wetTolerance, int seaLevelMargin,
+                              List<ExtraPiece> extraPieces) {
         super(new StructureSettings(inner.biomes(), inner.spawnOverrides(), inner.step(), inner.terrainAdaptation()));
         this.inner = inner;
         this.searchChunks = searchChunks;
         this.wetTolerance = wetTolerance;
         this.seaLevelMargin = seaLevelMargin;
+        this.extraPieces = extraPieces;
     }
 
     @Override
@@ -71,10 +89,23 @@ public class DryJigsawStructure extends Structure {
             }
             StructurePiecesBuilder pieces = stub.get().getPiecesBuilder();
             if (isDry(ctx, pieces.build().pieces())) {
+                attach(ctx, pieces);
                 return Optional.of(new GenerationStub(stub.get().position(), Either.right(pieces)));
             }
         }
         return Optional.empty();
+    }
+
+    private void attach(GenerationContext ctx, StructurePiecesBuilder pieces) {
+        if (extraPieces.isEmpty() || pieces.isEmpty()
+                || !(pieces.build().pieces().get(0) instanceof PoolElementStructurePiece start)) {
+            return;
+        }
+        for (ExtraPiece extra : extraPieces) {
+            BlockPos pos = start.getPosition().offset(
+                    StructureTemplate.transform(extra.offset(), Mirror.NONE, start.getRotation(), BlockPos.ZERO));
+            pieces.addPiece(new AttachedTemplatePiece(ctx.structureTemplateManager(), extra.template(), pos, start.getRotation()));
+        }
     }
 
     private boolean isDry(GenerationContext ctx, List<StructurePiece> pieces) {

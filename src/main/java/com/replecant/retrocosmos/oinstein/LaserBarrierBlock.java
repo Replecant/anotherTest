@@ -28,7 +28,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * Dr. Oinstein's laser barrier: a sheet of red beams strung between {@link LaserEmitterBlock} posts. While
  * {@code powered} it is solid (a thin pane you cannot pass), glows, hums and burns and throws back whatever touches
- * it. Unbreakable; a future controller switches it off by clearing {@code powered} (see {@link #setPowered}).
+ * it. Unbreakable; a {@link KeycardReaderBlock} beside it switches the grid off by clearing {@code powered} (see
+ * {@link #setPowered}).
  */
 public class LaserBarrierBlock extends Block {
     public static final MapCodec<LaserBarrierBlock> CODEC = simpleCodec(LaserBarrierBlock::new);
@@ -128,7 +129,7 @@ public class LaserBarrierBlock extends Block {
         }
     }
 
-    /** Switches every connected barrier block (and its emitters) on or off - for a future control console. */
+    /** Switches every connected barrier block (and its emitters) on or off - see {@link KeycardReaderBlock#unlock}. */
     public static void setPowered(Level level, BlockPos start, boolean on) {
         java.util.ArrayDeque<BlockPos> todo = new java.util.ArrayDeque<>();
         java.util.Set<BlockPos> seen = new java.util.HashSet<>();

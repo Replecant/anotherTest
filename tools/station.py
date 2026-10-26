@@ -443,6 +443,7 @@ STYLES = {
     "store":    dict(floor=ALU, walls=(ALU, HULL, HULL, ALU), ceil=ALU),
     "eva":      dict(floor=ALU, walls=(STRIPED, HULL, HULL, CHROME), ceil=HULL),
     "airlock":  dict(floor=STRIPED, walls=(HULL, HULL, HULL, HULL), ceil=HULL),
+    "shop":     dict(floor=WHITE, walls=(TURQ, CREAM, CREAM, CHROME), ceil=WHITE),
 }
 
 
@@ -1051,9 +1052,9 @@ BAND_ROOMS = [
      (29, 11, 36, 26), "east", [(7, 3, "open")]),
     # DECK C - life support (south band, corridor to the north)
     ("hydroponics", "hydroponics", "hydro", "Hydroponics bay", ["DECK C", "HYDROPONICS", "BAY", ""],
-     (21, 29, 36, 36), "south", [(12, 3, "open")]),
-    ("galley_stores", "storage", "store", "Galley stores", ["DECK C", "GALLEY STORES", "PROVISIONS", ""],
-     (11, 29, 18, 36), "south", [(4, 1, "open")]),
+     (25, 29, 36, 36), "south", [(10, 2, "open")]),
+    ("showroom", "showroom", "shop", "Atomic Home showroom (Betty Palmer)",
+     ["ATOMIC HOME", "FURNITURE OF", "TOMORROW", "DECK C"], (11, 29, 22, 36), "south", [(5, 2, "open")]),
     ("mess", "mess", "mess", "Mess hall & galley", ["- DECK C -", "MESS HALL", "& GALLEY", ""],
      (-8, 29, 8, 36), "south", [(7, 3, "open")]),
     ("medical", "medical", "medical", "Medical bay", ["DECK C", "MEDICAL BAY", "SICKBAY", ""],
@@ -1079,7 +1080,9 @@ REQUIRED = {
     "washroom": {SINK: 2, STATION_DOOR: 2, TINTED_GLASS: 1, "locker": 2},
     "medical": {"bed": 2, BREWING: 1, CONTROL_PANEL: 1, SUPPLY_CABINET: 2, SINK: 1},
     "laboratory": {REFINERY: 1, LIQUEFIER: 1, CHROME: 4, BREWING: 1, SINK: 1, COMPUTER: 4, O2_RACK: 1},
-    "hydroponics": {PLANTER: 20, CEILING_LIGHT: 6, COMPOSTER: 1},
+    "hydroponics": {PLANTER: 12, CEILING_LIGHT: 5, COMPOSTER: 1},
+    "showroom": {SOFA: 4, TABLE: 2, FLOOR_LAMP: 1, CREW_BUNK: 2, "vending": 1, STOVE: 1, SINK: 1, CONSOLE: 1, TAPE: 3,
+                 "poster": 3, GLASS: 8, CHANDELIER: 1},
     "reactor": {REACTOR: 2, CHROME: 8, CONTROL_PANEL: 2, STRIPED: 1, "locker": 3},
     "observation": {TELESCOPE: 1, GLOBE: 1, EGG_CHAIR: 3, WINDOW: 10},
     "storage": {CARGO_CRATE: 8},
@@ -1094,7 +1097,7 @@ REQUIRED = {
 }
 # Beds, planters and the like only where they belong.
 ALLOWED_KINDS = {
-    "bed": {"cabin", "commander", "medical"},
+    "bed": {"cabin", "commander", "medical", "showroom"},
     PLANTER: {"hydroponics"},
     POTTED_FERN: {"hydroponics"},
     REACTOR: {"reactor"},
@@ -1376,7 +1379,8 @@ class Furnisher:
 
     # ------------------------------------------------------------- DECK C
     def hydroponics(self, r):
-        rows = [(7, range(10, 15)), (5, range(9, 14)), (4, range(7, 14)), (1, range(4, 11))]
+        """12 x 8 corner bay (trapezoid): planter rows with walkways, grow lights, potting counter by the door."""
+        rows = [(7, range(10, 12)), (5, range(9, 11)), (4, range(7, 11)), (2, range(5, 10))]   # aisle at u = 11
         for v, us in rows:
             for u in us:
                 r.put(u, v, 0, PLANTER, {"lit": "true"})
@@ -1388,13 +1392,73 @@ class Furnisher:
                     r.light(u, v)
         r.window(range(r.U), (2, 3), "back")
         r.window(range(r.V), (2, 3), "left")
-        r.block(15, 1, 0, COMPOSTER, {"level": "0"})
-        r.desk(15, 2, POTTED_FERN)
-        r.desk(15, 3, LANTERN)
-        r.fput(15, 4, 0, SINK, "left")
-        r.chest(15, 5, 0, "left", [("minecraft:bone_meal", 32)])
-        r.chest(15, 6, 0, "left", [("minecraft:wheat_seeds", 32), ("minecraft:shears", 1)])
-        r.wall(15, 4, 2, CLOCK, "right")
+        # potting / tool counter along the corridor wall, left of the door
+        r.block(4, 0, 0, COMPOSTER, {"level": "0"})
+        r.desk(5, 0, POTTED_FERN)
+        r.desk(6, 0, LANTERN)
+        r.fput(7, 0, 0, SINK, "back")
+        r.chest(8, 0, 0, "back", [("minecraft:bone_meal", 32)])
+        r.chest(9, 0, 0, "back", [("minecraft:wheat_seeds", 32), ("minecraft:shears", 1)])
+        r.wall(11, 3, 2, CLOCK, "right")
+
+    def showroom(self, r):
+        """Betty Palmer's "Atomic Home" furniture showroom, 12 x 8, door u 5..6, display windows on the corridor.
+        Front: living room of tomorrow (left window) and a diner booth (right window); back: bedroom set, the
+        sales counter with the register, catalogue tapes and Betty's desk, and a kitchen / vending corner."""
+        st = self.st
+        # shop front: both layers of the corridor wall glazed at eye height, neon signs between door and windows
+        for u in (1, 2, 3, 8, 9, 10):
+            for h in (1, 2):
+                st.put(r.at(u, -1, h), GLASS)
+                st.put(r.at(u, -2, h), GLASS)
+        for u in (4, 7):
+            c = r.at(u, -3, 1)
+            if st.get(r.at(u, -2, 1)) in WALL_BLOCKS and st.get(c) == AIR:
+                st.put(c, NEON, {"facing": r.wdir("front"), "lit": "true"})
+            else:
+                st.error(f"showroom neon at {c} has no wall")
+        # living room of tomorrow: two-seat sofa, boomerang coffee table, floor lamp, radiogram, Sputnik chandelier
+        for u in (1, 2):
+            r.seat(u, 3, SOFA, "front")
+            r.fput(u, 2, 0, TABLE, "front")
+        r.put(0, 3, 0, FLOOR_LAMP, {"lit": "true"})
+        r.desk(3, 3, RADIO, mat=DARK_OAK, lit=False)
+        r.light(1, 2, CHANDELIER)
+        r.carpet("cyan", range(0, 4), range(0, 4))
+        r.poster(0, 0, 1, P_LIFTOFF, "left")
+        # diner corner: a booth on a checkered floor under a neon sign
+        for u in range(8, 12):
+            for v in range(0, 4):
+                st.put(st.below(r.at(u, v)), CHECKER)
+        for v in (2, 3):
+            r.seat(8, v, SOFA, "right")
+            r.fput(9, v, 0, TABLE, "front")
+            r.seat(10, v, SOFA, "left")
+        r.wall(11, 2, 2, NEON, "right", lit=False)
+        r.poster(11, 0, 1, P_SPACE_POP, "right")
+        # bedroom set: crew bunk, nightstand with rocket lamp, locker, star chart, "home sweet home" poster
+        r.bunk(1, 7, "left")
+        r.desk(2, 7, LAMP, mat=SPRUCE)
+        r.locker(3, 7, "front")
+        r.wall(0, 6, 2, STAR_CHART, "left", lit=False)
+        r.poster(0, 5, 1, P_HOMESTEAD, "left")
+        r.carpet("light_blue", range(0, 3), range(5, 7))
+        # sales counter with the register, Betty's desk, catalogue tapes on the back wall
+        r.desk(4, 5, LAMP)
+        r.fput(5, 5, 0, CONSOLE, "front")
+        r.desk(6, 5, mat=SQUARTZ)
+        r.desk(7, 5, GLOBE, mat=SQUARTZ)
+        r.desk(7, 6, RADIO, mat=DARK_OAK, lit=False)       # Betty's desk
+        for u in (4, 5, 6):
+            r.fput(u, 7, 0, TAPE, "front")
+        r.poster(5, 7, 1, P_FREEDOM, "back")
+        r.wall(7, 7, 2, CLOCK, "back")
+        # kitchen / vending corner: vending machine, stove, sink, a cabinet as the refrigerator
+        r.chest(8, 7, 0, "front", [("minecraft:apple", 4)])
+        r.fput(9, 7, 0, SINK, "front")
+        r.fput(10, 7, 0, STOVE, "front", lit=False)
+        r.vending(11, 6, "left", True)
+        r.lights_grid((3, 9), (1, 5))
 
     def mess(self, r):
         r.window(range(1, 16), (1, 2), "back")
@@ -2357,10 +2421,13 @@ def to_nbt(st):
 
 # NPC anchors (structure-local after normalisation): Dr. Cooper stands behind his desk, facing his visitors.
 def npc_anchors(st):
-    room = st.rooms["archaeology"]
-    pos = room.at(3, 6)
-    yaw = {"south": 0, "west": 90, "north": 180, "east": 270}[room.wdir("front")]
-    return [("cooper", pos, yaw, pos)]
+    out = []
+    for role, key, (u, v) in (("cooper", "archaeology", (3, 6)), ("decorator", "showroom", (5, 6))):
+        room = st.rooms[key]
+        pos = room.at(u, v)
+        yaw = {"south": 0, "west": 90, "north": 180, "east": 270}[room.wdir("front")]
+        out.append((role, pos, yaw, pos))
+    return out
 
 
 def check_npcs(st, checker):

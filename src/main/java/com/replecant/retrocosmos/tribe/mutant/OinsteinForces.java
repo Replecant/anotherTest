@@ -27,9 +27,14 @@ public final class OinsteinForces {
         return entity != null && entity.getType().is(TAG);
     }
 
+    /** One of the forces or the doctor himself (the boss is not in the tag, but nothing of his hurts him or his). */
+    public static boolean isAlly(Entity entity) {
+        return isForce(entity) || entity instanceof com.replecant.retrocosmos.tribe.boss.OinsteinBoss;
+    }
+
     /** Whom the forces go after: players (not creative/spectator) and free tribesfolk. Never their own kind. */
     public static boolean isEnemy(LivingEntity target) {
-        if (target == null || isForce(target) || !target.isAlive()) {
+        if (target == null || isAlly(target) || !target.isAlive()) {
             return false;
         }
         if (target instanceof Player player) {

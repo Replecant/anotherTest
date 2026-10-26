@@ -74,8 +74,8 @@ public class BlasterBolt extends ThrowableProjectile {
 
     @Override
     protected boolean canHitEntity(Entity entity) {
-        // Oinstein's own bolts pass through his creatures
-        if (OinsteinForces.isForce(getOwner()) && OinsteinForces.isForce(entity)) {
+        // Oinstein's own bolts (his creatures' and his walker's) pass through his creatures and him
+        if (OinsteinForces.isAlly(getOwner()) && OinsteinForces.isAlly(entity)) {
             return false;
         }
         return super.canHitEntity(entity);

@@ -115,17 +115,17 @@ public class HominidNovus extends Monster {
     /** Oinstein's creatures never turn on each other. */
     @Override
     public boolean canAttack(LivingEntity target) {
-        return !OinsteinForces.isForce(target) && super.canAttack(target);
+        return !OinsteinForces.isAlly(target) && super.canAttack(target);
     }
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        super.setTarget(target != null && OinsteinForces.isForce(target) ? null : target);
+        super.setTarget(target != null && OinsteinForces.isAlly(target) ? null : target);
     }
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
-        if (OinsteinForces.isForce(source.getEntity())) {
+        if (OinsteinForces.isAlly(source.getEntity())) {
             return false;
         }
         boolean hurt = super.hurtServer(level, source, amount);

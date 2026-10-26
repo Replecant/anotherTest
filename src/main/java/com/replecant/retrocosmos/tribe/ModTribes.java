@@ -1,8 +1,22 @@
 package com.replecant.retrocosmos.tribe;
 
 import com.replecant.retrocosmos.RetroCosmos;
+import com.replecant.retrocosmos.oinstein.OinsteinBossAnchorBlock;
+import com.replecant.retrocosmos.oinstein.OinsteinBossAnchorBlockEntity;
+import com.replecant.retrocosmos.registry.ModBlocks;
 import com.replecant.retrocosmos.registry.ModEntities;
 import com.replecant.retrocosmos.registry.ModItems;
+import com.replecant.retrocosmos.tribe.boss.DrOinstein;
+import com.replecant.retrocosmos.tribe.boss.HomoNovus;
+import com.replecant.retrocosmos.tribe.boss.OinsteinStrider;
+import java.util.Set;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,6 +105,40 @@ public final class ModTribes {
                     .updateInterval(2)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    // ---- Dr. Oinstein himself, the Venus boss (not in #oinstein_forces; his summons are) ----
+    /** Phase one: the Atomic Strider walker with the doctor in the cockpit. */
+    public static final DeferredHolder<EntityType<?>, EntityType<OinsteinStrider>> OINSTEIN_STRIDER = ModEntities.ENTITIES.register("oinstein_strider",
+            id -> EntityType.Builder.of(OinsteinStrider::new, MobCategory.MONSTER)
+                    .sized(2.2F, 4.4F)
+                    .eyeHeight(3.6F)
+                    .clientTrackingRange(12)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+    /** The transition: the doctor on foot, thrown out of the wreck, injecting the serum (scripted, invulnerable). */
+    public static final DeferredHolder<EntityType<?>, EntityType<DrOinstein>> DR_OINSTEIN = ModEntities.ENTITIES.register("dr_oinstein",
+            id -> EntityType.Builder.of(DrOinstein::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.95F)
+                    .eyeHeight(1.62F)
+                    .clientTrackingRange(12)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+    /** Phase two: Homo Novus. */
+    public static final DeferredHolder<EntityType<?>, EntityType<HomoNovus>> HOMO_NOVUS = ModEntities.ENTITIES.register("homo_novus",
+            id -> EntityType.Builder.of(HomoNovus::new, MobCategory.MONSTER)
+                    .sized(1.3F, 3.1F)
+                    .eyeHeight(2.6F)
+                    .clientTrackingRange(12)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, RetroCosmos.MODID);
+    /** The arena marker that brings the boss out (see {@link OinsteinBossAnchorBlockEntity}). */
+    public static final DeferredBlock<OinsteinBossAnchorBlock> OINSTEIN_BOSS_ANCHOR = ModBlocks.BLOCKS.register("oinstein_boss_anchor",
+            id -> new OinsteinBossAnchorBlock(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, id))
+                    .strength(-1.0F, 3600000.0F).noLootTable().noCollision().noOcclusion().pushReaction(PushReaction.BLOCK)
+                    .sound(SoundType.METAL).isValidSpawn((state, level, pos, type) -> false)));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OinsteinBossAnchorBlockEntity>> OINSTEIN_BOSS_ANCHOR_BE =
+            BLOCK_ENTITIES.register("oinstein_boss_anchor",
+                    () -> new BlockEntityType<>(OinsteinBossAnchorBlockEntity::new, Set.of(OINSTEIN_BOSS_ANCHOR.get())));
+
     public static final TagKey<Item> REPAIRS_BONE_SPEAR = TagKey.create(Registries.ITEM,
             Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "repairs_bone_spear"));
     /** Bone & flint: about as good as stone, a little tougher. */
@@ -137,10 +185,19 @@ public final class ModTribes {
     public static final DeferredItem<SpawnEggItem> HOMINUS_SAPIENS_SPAWN_EGG = item("hominus_sapiens_spawn_egg", SpawnEggItem::new,
             p -> p.spawnEgg(HOMINUS_SAPIENS.get()));
 
+    // ---- the boss ----
+    public static final DeferredItem<SpawnEggItem> OINSTEIN_STRIDER_SPAWN_EGG = item("oinstein_strider_spawn_egg", SpawnEggItem::new,
+            p -> p.spawnEgg(OINSTEIN_STRIDER.get()));
+    public static final DeferredItem<SpawnEggItem> HOMO_NOVUS_SPAWN_EGG = item("homo_novus_spawn_egg", SpawnEggItem::new,
+            p -> p.spawnEgg(HOMO_NOVUS.get()));
+    public static final DeferredItem<BlockItem> OINSTEIN_BOSS_ANCHOR_ITEM = item("oinstein_boss_anchor",
+            p -> new BlockItem(OINSTEIN_BOSS_ANCHOR.get(), p), p -> p.useBlockDescriptionPrefix().rarity(Rarity.EPIC));
+
     private ModTribes() {}
 
     /** Called from the mod constructor before the deferred registers are attached. */
     public static void init(IEventBus modEventBus) {
+        BLOCK_ENTITIES.register(modEventBus);
         modEventBus.addListener(ModTribes::createAttributes);
         modEventBus.addListener(ModTribes::addToVanillaTabs);
         modEventBus.addListener(ModTribes::registerSpawnPlacements);
@@ -164,6 +221,8 @@ public final class ModTribes {
             event.accept(TRIBESMAN_SPAWN_EGG.get());
             event.accept(HOMINID_NOVUS_SPAWN_EGG.get());
             event.accept(HOMINUS_SAPIENS_SPAWN_EGG.get());
+            event.accept(OINSTEIN_STRIDER_SPAWN_EGG.get());
+            event.accept(HOMO_NOVUS_SPAWN_EGG.get());
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(BONE_SPEAR.get());
             event.accept(RAY_BLASTER.get());
@@ -174,6 +233,9 @@ public final class ModTribes {
         event.put(TRIBESMAN.get(), Tribesman.createAttributes().build());
         event.put(HOMINID_NOVUS.get(), HominidNovus.createAttributes().build());
         event.put(HOMINUS_SAPIENS.get(), HominusSapiens.createAttributes().build());
+        event.put(OINSTEIN_STRIDER.get(), OinsteinStrider.createAttributes().build());
+        event.put(DR_OINSTEIN.get(), DrOinstein.createAttributes().build());
+        event.put(HOMO_NOVUS.get(), HomoNovus.createAttributes().build());
     }
 
     /** No natural biome spawns; these rules apply to the outposts' structure spawn overrides. Labs are lit, so any light. */

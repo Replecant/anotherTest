@@ -335,13 +335,38 @@ public class Tribesman extends AbstractVillager {
 
     /** Out of the cage: thanks, a gift, a friend for life - then off home through the jungle. */
     private void free(ServerLevel level, Player player) {
+        free(level, player, true);
+    }
+
+    /**
+     * Dr. Oinstein is beaten: every captive of his goes free at once, cheering - gifts and reputation for the hero
+     * (if any player is about), only the first few say so in chat.
+     */
+    public void liberate(ServerLevel level, @Nullable Player hero, boolean speak) {
+        if (!captive) {
+            return;
+        }
+        if (hero != null) {
+            free(level, hero, speak);
+        } else {
+            captive = false;
+            freedTicks = 240;
+            freedFrom = position();
+            clearHome();
+            playSound(SoundEvents.VILLAGER_CELEBRATE, 1.0F, getVoicePitch());
+        }
+    }
+
+    private void free(ServerLevel level, Player player, boolean speak) {
         captive = false;
         freedTicks = 240;
         freedFrom = position();
         clearHome();
         fire = null;
         fireSearchCooldown = 260;
-        say(player, "chat.retrocosmos.tribe.freed." + random.nextInt(2));
+        if (speak) {
+            say(player, "chat.retrocosmos.tribe.freed." + random.nextInt(2));
+        }
         playSound(SoundEvents.VILLAGER_CELEBRATE, 1.0F, getVoicePitch());
         level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, getX(), getY() + 1.4, getZ(), 8, 0.4, 0.4, 0.4, 0.0);
         spawnAtLocation(level, new ItemStack(ModTribes.VENUS_AMBER.get(), 2 + random.nextInt(3)));

@@ -104,7 +104,7 @@ public class NovusSlamGoal extends Goal {
         }
         level.sendParticles(ParticleTypes.EXPLOSION, c.x, mob.getY() + 0.3, c.z, 2, 0.4, 0.1, 0.4, 0.0);
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(RANGE, 2.0, RANGE),
-                e -> e != mob && e.isAlive() && !OinsteinForces.isForce(e))) {
+                e -> e != mob && e.isAlive() && !OinsteinForces.isAlly(e))) {
             double dx = e.getX() - c.x;
             double dz = e.getZ() - c.z;
             double dist = Math.max(0.5, Math.sqrt(dx * dx + dz * dz));

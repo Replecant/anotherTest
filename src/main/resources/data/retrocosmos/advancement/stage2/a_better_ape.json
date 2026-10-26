@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:brain_flask"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.a_better_ape.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.a_better_ape.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "defeated": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100
+  },
+  "parent": "retrocosmos:stage2/venus"
+}

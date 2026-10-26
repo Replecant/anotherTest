@@ -12,6 +12,10 @@ public final class CrewLines {
             Map.entry("cooper.idle", 6),
             Map.entry("cooper.protest", 3),
             Map.entry("cooper.thanks", 4),
+            Map.entry("decorator.greet", 6),
+            Map.entry("decorator.idle", 6),
+            Map.entry("decorator.protest", 3),
+            Map.entry("decorator.thanks", 4),
             Map.entry("guard.alert", 4),
             Map.entry("guard.idle", 5),
             Map.entry("guard.kill", 3),
@@ -24,6 +28,7 @@ public final class CrewLines {
 
     private static final Map<String, Integer> NAMES = Map.ofEntries(
             Map.entry("cooper", 1),
+            Map.entry("decorator", 1),
             Map.entry("guard", 8),
             Map.entry("scientist.0", 2),
             Map.entry("scientist.1", 2),

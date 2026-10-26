@@ -32,6 +32,7 @@ public final class ExpeditionNpcs {
     public static final String COOPER = "cooper";
     public static final String GUARD = "guard";
     public static final String SCIENTIST = "scientist";
+    public static final String DECORATOR = "decorator";
 
     private static final List<DeferredItem<? extends Item>> ITEMS = new ArrayList<>();
 
@@ -54,6 +55,8 @@ public final class ExpeditionNpcs {
             p -> new CrewSpawnEggItem(CrewRole.GUARD, p), UnaryOperator.identity());
     public static final DeferredItem<CrewSpawnEggItem> SCIENTIST_SPAWN_EGG = item("scientist_spawn_egg",
             p -> new CrewSpawnEggItem(CrewRole.SCIENTIST, p), UnaryOperator.identity());
+    public static final DeferredItem<CrewSpawnEggItem> DECORATOR_SPAWN_EGG = item("decorator_spawn_egg",
+            p -> new CrewSpawnEggItem(CrewRole.DECORATOR, p), UnaryOperator.identity());
 
     private ExpeditionNpcs() {}
 
@@ -115,6 +118,7 @@ public final class ExpeditionNpcs {
             event.accept(COOPER_SPAWN_EGG.get());
             event.accept(GUARD_SPAWN_EGG.get());
             event.accept(SCIENTIST_SPAWN_EGG.get());
+            event.accept(DECORATOR_SPAWN_EGG.get());
         }
     }
 

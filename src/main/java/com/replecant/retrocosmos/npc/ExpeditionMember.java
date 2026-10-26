@@ -332,7 +332,7 @@ public class ExpeditionMember extends AbstractVillager {
             output.putIntArray("Post", new int[]{home.getX(), home.getY(), home.getZ()});
         }
         output.putLong("LastRestock", lastRestock);
-        output.putInt("LedgerVersion", tradesVersion);
+        output.putInt("LedgerVersion", ledgerVersion(role()));
         if (!delivered.isEmpty()) {
             output.store("Delivered", Codec.STRING.listOf(), new ArrayList<>(delivered));
         }
@@ -354,10 +354,19 @@ public class ExpeditionMember extends AbstractVillager {
         delivered.clear();
         input.read("Delivered", Codec.STRING.listOf()).ifPresent(delivered::addAll);
         applyRoleStats();
-        if (role() == CrewRole.COOPER && tradesVersion != CooperTrades.VERSION) {
-            offers = null;  // the ledger changed (new relics, blueprints...): fresh offers
-            tradesVersion = CooperTrades.VERSION;
+        if (role().isMerchant() && tradesVersion != ledgerVersion(role())) {
+            offers = null;  // the ledger changed (new relics, blueprints, furniture...): fresh offers
+            tradesVersion = ledgerVersion(role());
         }
+    }
+
+    /** Version of this role's trade list (see CooperTrades / DecoratorTrades). */
+    static int ledgerVersion(CrewRole role) {
+        return switch (role) {
+            case COOPER -> CooperTrades.VERSION;
+            case DECORATOR -> DecoratorTrades.VERSION;
+            default -> 0;
+        };
     }
 
     // ------------------------------------------------------------------
@@ -389,6 +398,8 @@ public class ExpeditionMember extends AbstractVillager {
             tool = new ItemStack(Items.WRITABLE_BOOK);
         } else if (kind == WorkKind.DISPLAY && role() == CrewRole.COOPER) {
             tool = new ItemStack(Items.BRUSH);
+        } else if (role() == CrewRole.DECORATOR && kind.action == ACT_INSPECT) {
+            tool = new ItemStack(Items.FEATHER);  // her feather duster
         }
         setItemSlot(EquipmentSlot.MAINHAND, tool);
     }
@@ -454,6 +465,15 @@ public class ExpeditionMember extends AbstractVillager {
                 } else if (r == 3) {
                     Vec3 head = getEyePosition();
                     level.sendParticles(ParticleTypes.ENCHANT, head.x, head.y + 0.4, head.z, 6, 0.3, 0.2, 0.3, 0.4);
+                }
+            }
+            case SHOWROOM -> {
+                if (r < 5) {
+                    swing(InteractionHand.MAIN_HAND);  // a flick of the feather duster
+                } else if (r == 6) {
+                    level.sendParticles(ParticleTypes.WHITE_ASH, x, y, z, 5, 0.3, 0.2, 0.3, 0.01);
+                } else if (r == 7) {
+                    level.sendParticles(ParticleTypes.WAX_ON, x, y + 0.2, z, 3, 0.3, 0.2, 0.3, 0.0);
                 }
             }
             case DISPLAY -> {
@@ -624,7 +644,7 @@ public class ExpeditionMember extends AbstractVillager {
             return InteractionResult.SUCCESS;
         }
         long now = level().getGameTime();
-        if (role() == CrewRole.COOPER) {
+        if (role().isMerchant()) {
             if (isTrading()) {
                 return InteractionResult.SUCCESS;
             }
@@ -634,11 +654,12 @@ public class ExpeditionMember extends AbstractVillager {
             }
             if (now - lastSpoke > 20 * 8) {
                 lastSpoke = now;
-                say(player, line("cooper.greet"));
+                say(player, line(role().key + ".greet"));
             }
             endWork();
             setTradingPlayer(player);
-            openTradingScreen(player, Component.translatable("entity.retrocosmos.expedition_member.trade_title", getName()), 1);
+            String title = role() == CrewRole.COOPER ? "trade_title" : "trade_title." + role().key;
+            openTradingScreen(player, Component.translatable("entity.retrocosmos.expedition_member." + title, getName()), 1);
             return InteractionResult.SUCCESS;
         }
         if (now - lastSpoke >= 20) {
@@ -669,6 +690,8 @@ public class ExpeditionMember extends AbstractVillager {
         }
         if (role() == CrewRole.COOPER) {
             offers.addAll(CooperTrades.create());
+        } else if (role() == CrewRole.DECORATOR) {
+            offers.addAll(DecoratorTrades.create());
         }
     }
 
@@ -684,6 +707,12 @@ public class ExpeditionMember extends AbstractVillager {
         super.notifyTrade(offer);
         Player player = getTradingPlayer();
         if (player == null) {
+            return;
+        }
+        if (role() == CrewRole.DECORATOR) {
+            if (random.nextInt(3) == 0) {
+                say(player, line("decorator.thanks"));
+            }
             return;
         }
         if (CooperTrades.isCredit(offer.getResult())) {
@@ -741,8 +770,8 @@ public class ExpeditionMember extends AbstractVillager {
             protest(player);
             return false;
         }
-        if (attacker instanceof ExpeditionMember || role() == CrewRole.COOPER) {
-            return false;  // no friendly fire; and nothing on Freedom Station is going to hurt the Doctor
+        if (attacker instanceof ExpeditionMember || role().isMerchant()) {
+            return false;  // no friendly fire; and nothing on Freedom Station is going to hurt the Doctor or Betty
         }
         if (attacker instanceof LivingEntity living && !(attacker instanceof Tribesman)) {
             callGuards(living);

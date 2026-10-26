@@ -22,7 +22,9 @@ public enum WorkKind {
     /** Workbenches, lecterns, chart tables: write it all down. */
     DESK(ExpeditionMember.ACT_NOTES, 0.9),
     /** Relics, shelves, urns, stelae: Dr. Cooper dusts and admires them. */
-    DISPLAY(ExpeditionMember.ACT_INSPECT, 0.8);
+    DISPLAY(ExpeditionMember.ACT_INSPECT, 0.8),
+    /** Any other piece of mod furniture: the showroom saleswoman dusts and straightens it. */
+    SHOWROOM(ExpeditionMember.ACT_INSPECT, 0.6);
 
     /** Arm pose while doing it (an ExpeditionMember.ACT_* constant). */
     public final int action;
@@ -71,7 +73,7 @@ public enum WorkKind {
                     return DISPLAY;
                 }
             }
-            return null;
+            return state.getBlock() instanceof com.replecant.retrocosmos.furniture.FurnitureBlock ? SHOWROOM : null;
         }
         if (state.is(Blocks.BREWING_STAND) || state.is(BlockTags.CAULDRONS)) {
             return LAB;
@@ -93,8 +95,10 @@ public enum WorkKind {
     public boolean interests(CrewRole role) {
         return switch (role) {
             case COOPER -> this == DISPLAY || this == DESK || this == SCOPE;
-            case SCIENTIST -> this != DISPLAY;
+            case SCIENTIST -> this != DISPLAY && this != SHOWROOM;
             case GUARD -> false;
+            case DECORATOR -> this == SHOWROOM || this == CONSOLE || this == DESK || this == DISPLAY || this == PLANT
+                    || this == SCOPE;
         };
     }
 }

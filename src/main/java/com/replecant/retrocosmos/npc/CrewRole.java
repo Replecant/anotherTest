@@ -7,7 +7,9 @@ public enum CrewRole {
     /** Camp guard: patrols, stands watch, shoots what threatens the camp. */
     GUARD(ExpeditionNpcs.GUARD, 4, 10, 40.0, 4.0),
     /** Scientist: works at the camp's instruments and plants, flees to the guards. */
-    SCIENTIST(ExpeditionNpcs.SCIENTIST, 4, 12, 26.0, 0.0);
+    SCIENTIST(ExpeditionNpcs.SCIENTIST, 4, 12, 26.0, 0.0),
+    /** Betty Palmer of the Atomic Home Showroom on Freedom Station: sells furniture, never leaves her counter. */
+    DECORATOR(ExpeditionNpcs.DECORATOR, 1, 4, 30.0, 0.0);
 
     public final String key;
     /** Number of skins. */
@@ -23,6 +25,11 @@ public enum CrewRole {
         this.radius = radius;
         this.health = health;
         this.armor = armor;
+    }
+
+    /** Trades through the merchant screen (and so stays put, safe on the station). */
+    public boolean isMerchant() {
+        return this == COOPER || this == DECORATOR;
     }
 
     public static CrewRole byKey(String key) {

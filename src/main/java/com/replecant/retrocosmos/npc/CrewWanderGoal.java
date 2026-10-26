@@ -24,6 +24,7 @@ public class CrewWanderGoal extends Goal {
             case COOPER -> 0.45;
             case GUARD -> 0.5;
             case SCIENTIST -> 0.55;
+            case DECORATOR -> 0.45;
         };
     }
 
@@ -32,6 +33,7 @@ public class CrewWanderGoal extends Goal {
             case COOPER -> 160 + member.getRandom().nextInt(300);
             case GUARD -> 100 + member.getRandom().nextInt(260);
             case SCIENTIST -> 120 + member.getRandom().nextInt(240);
+            case DECORATOR -> 140 + member.getRandom().nextInt(260);
         };
     }
 
@@ -53,7 +55,7 @@ public class CrewWanderGoal extends Goal {
         BlockPos home = member.home();
         int r = member.role().radius;
         boolean strayed = member.blockPosition().distSqr(home) > (double) (r + 6) * (r + 6);
-        int spread = strayed ? 2 : (member.role() == CrewRole.COOPER ? r - 1 : r);
+        int spread = strayed ? 2 : (member.role().isMerchant() ? r - 1 : r);
         for (int tries = 0; tries < 12; tries++) {
             int dx = member.getRandom().nextInt(spread * 2 + 1) - spread;
             int dz = member.getRandom().nextInt(spread * 2 + 1) - spread;

@@ -23,8 +23,8 @@ from gen_resources import ASSETS, MOD, item_def, save, write_json
 JAVA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "java",
                         "com", "replecant", "retrocosmos", "npc", "client")
 
-ROLES = ("cooper", "guard", "scientist")
-VARIANTS = {"cooper": 1, "guard": 4, "scientist": 4}
+ROLES = ("cooper", "guard", "scientist", "decorator")
+VARIANTS = {"cooper": 1, "guard": 4, "scientist": 4, "decorator": 1}
 
 
 # ----------------------------------------------------------------------------
@@ -901,6 +901,182 @@ def scientist(v):
 
 
 # ----------------------------------------------------------------------------
+# Betty Palmer - the Atomic Home Showroom's saleswoman
+# ----------------------------------------------------------------------------
+
+DRESS = ((246, 178, 198), (222, 148, 172), (186, 112, 138))
+DOT = (253, 247, 249)
+APRON = ((252, 252, 248), (228, 228, 224), (200, 202, 204))
+BLONDE = ((238, 212, 146), (210, 180, 112), (252, 238, 190))
+PEARL = ((250, 246, 236), (214, 206, 196))
+CATEYE = (190, 40, 78)
+
+
+def dotted(x, y, seed=0):
+    """Polka dots: a white dot every few texels in a staggered grid."""
+    return (x + 2 * (y // 2) + seed) % 4 == 0 and y % 2 == 0
+
+
+def decorator():
+    sk = Skin(60)
+    tone = "light"
+    s, sh, dk, lip = TONES[tone]
+    hb, hs, hl = BLONDE
+    head_base(sk, tone, (hb, hs), hair_rows_front=2)
+    pal = {"h": hb, "H": hl, "S": s, "s": sh, "d": dk, "w": EYE_WHITE, "e": IRIS["blue"], "b": hs,
+           "l": (204, 30, 58), "k": mix(s, (240, 120, 130), 0.35)}
+    face_grid(sk, [
+        "hhhhhhhh",
+        "hHhhhhHh",
+        "hSSSSSSh",
+        "SbbSSbbS",
+        "SwesSewS",
+        "SkSddSkS",
+        "SSSllSSS",
+        "sSSSSSSs",
+    ], pal)
+    ear(sk, tone)
+    # cat-eye glasses: outer rims swept up into little wings, a fine bridge
+    for x, y in ((0, 4), (7, 4), (0, 3), (1, 3), (6, 3), (7, 3), (3, 4), (4, 4)):
+        sk.px("head", "front", x, y, CATEYE if y == 3 or x in (0, 7) else mix(CATEYE, s, 0.45))
+    for x in (1, 2, 5, 6):
+        sk.px("head", "front", x, 5, mix(CATEYE, s, 0.6))
+    for x in range(5, 8):
+        sk.px("head", "right", x, 3, mul(CATEYE, 0.9))
+    for x in range(0, 3):
+        sk.px("head", "left", x, 3, mul(CATEYE, 0.9))
+    sk.px("head", "right", 6, 6, GOLD[0])  # pearl-drop earrings
+    sk.px("head", "left", 1, 6, PEARL[0])
+    sk.px("head", "right", 6, 6, PEARL[0])
+
+    # the bouffant on the hat layer (the gear part piles it higher), flipped up at the ends
+    def bouffant(face, x, y, w, h):
+        n = noise(x, y, 61 + len(face))
+        if face == "top":
+            return hl if n > 0.25 else hb
+        if face == "bottom":
+            return None
+        if face == "front":
+            if y == 0:
+                return hl if x % 3 == 0 else hb
+            if y == 1 and x in (0, 1, 6, 7):
+                return hb
+            if x in (0, 7) and y in (5, 6):
+                return hl if y == 6 else hb  # the flip
+            return None
+        if face == "back":
+            if y <= 5:
+                return hl if n > 0.25 else (hs if n < -0.35 else hb)
+            if y == 6:
+                return hl
+            return None
+        front_col = 7 if face == "right" else 0
+        if x == front_col and 1 <= y <= 4:
+            return None
+        if y <= 5:
+            return hl if n > 0.25 else (hs if n < -0.35 else hb)
+        if y == 6:
+            return hl if x % 2 else hb
+        return None
+    sk.fill_all("hat", bouffant, grain=0.04)
+
+    # the dress: pastel pink with white polka dots, red belt, a crisp half apron
+    D0, D1, D2 = DRESS
+    A0, A1, A2 = APRON
+
+    def dress(face, x, y, w, h):
+        if face == "top":
+            return D0
+        if face == "bottom":
+            return D1
+        c = DOT if dotted(x, y, 1 if face in ("right", "left") else 0) else D0
+        if y == 7:
+            return CHERRY[0] if face != "back" else CHERRY[1]
+        if face == "front" and y >= 8 and 1 <= x <= 6:
+            return A1 if y == 11 and x % 2 else A0
+        if face == "back" and y == 8 and x in (2, 3, 4, 5):
+            return A0  # apron bow
+        if face in ("right", "left") and y == 8:
+            return A1  # apron strings
+        return c
+    sk.fill_all("body", dress, grain=0.03)
+    # rounded neckline and the pearl necklace
+    for x in (2, 3, 4, 5):
+        sk.px("body", "front", x, 0, s)
+    for x, y in ((3, 1), (4, 1)):
+        sk.px("body", "front", x, y, sh)
+    for x, y, c in ((2, 1, PEARL[0]), (5, 1, PEARL[0]), (3, 2, PEARL[1]), (4, 2, PEARL[0])):
+        sk.px("body", "front", x, y, c)
+    for x in range(8):
+        sk.px("body", "top", x, 0, s if 2 <= x <= 5 else D0)
+        sk.px("body", "top", x, 1, PEARL[0] if x in (2, 5) else (s if 2 < x < 5 else D0))
+    sk.px("body", "front", 3, 7, GOLD[0])
+    sk.px("body", "front", 4, 7, GOLD[0])
+    # jacket layer: Peter Pan collar and the apron stand out
+    for x in (1, 6):
+        sk.px("jacket", "front", x, 0, A0)
+    sk.px("jacket", "front", 2, 1, A1)
+    sk.px("jacket", "front", 5, 1, A1)
+    for y in range(8, 12):
+        for x in range(1, 7):
+            sk.px("jacket", "front", x, y, A1 if y == 11 and x % 2 else A0)
+    for x in range(8):
+        sk.px("jacket", "front", x, 7, CHERRY[0] if x not in (3, 4) else GOLD[0])
+        sk.px("jacket", "back", x, 7, CHERRY[1])
+    for face in ("right", "left"):
+        for x in range(4):
+            sk.px("jacket", face, x, 7, CHERRY[0])
+
+    # arms: short puffed sleeves, bare arms, a gold bracelet, a pink manicure
+    for part in ("right_arm", "left_arm"):
+        limb(sk, part, [(3, DRESS), (4, APRON), (12, (s, sh))])
+        hands(sk, part, tone, rows=(10, 11))
+        for face in ("front", "back", "right", "left"):
+            for x in range(4):
+                if dotted(x, 1):
+                    sk.px(part, face, x, 1, DOT)
+    for x in range(4):
+        for face in ("front", "back", "right", "left"):
+            sk.px("left_arm", face, x, 9, GOLD[0] if (x + (face == "back")) % 2 else GOLD[1])
+    sk.px("right_arm", "front", 1, 11, (226, 80, 110))
+    sk.px("left_arm", "front", 2, 11, (226, 80, 110))
+    for part in ("right_sleeve", "left_sleeve"):
+        def puff(face, x, y, w, h):
+            if face == "top":
+                return D0
+            if face == "bottom":
+                return None
+            if y < 3:
+                return DOT if dotted(x, y, 2) else D0
+            if y == 3:
+                return A0
+            return None
+        sk.fill_all(part, puff, grain=0.03)
+
+    # legs: the dress over the thighs, nylons, cherry-red pumps
+    nylon = (mix(s, (210, 170, 140), 0.25), mix(sh, (190, 150, 120), 0.25))
+    for part in ("right_leg", "left_leg"):
+        limb(sk, part, [(5, DRESS), (11, nylon), (12, (CHERRY[0], CHERRY[1]))])
+        for x in range(4):
+            sk.px(part, "front", x, 10, CHERRY[0] if x in (1, 2) else nylon[0])
+            for y in range(4):
+                sk.px(part, "bottom", x, y, CHERRY[2])
+        sk.px(part, "back", 1, 11, (40, 30, 30))  # heel
+        sk.px(part, "back", 2, 11, (40, 30, 30))
+        for y in range(6, 10):
+            sk.px(part, "back", 1, y, nylon[1])  # stocking seam
+    for part in ("right_pants", "left_pants"):
+        def hem(face, x, y, w, h):
+            if face in ("top", "bottom") or y > 5:
+                return None
+            if y == 5:
+                return A1 if (x % 2 == 0) else None  # petticoat lace peeking out
+            return DOT if dotted(x, y, 3) else D0
+        sk.fill_all(part, hem, grain=0.03)
+    return sk.img
+
+
+# ----------------------------------------------------------------------------
 # Gear: 3D accessories on a shared sheet
 # ----------------------------------------------------------------------------
 
@@ -928,6 +1104,9 @@ GEAR = [
     G("pistol_tip", "right_arm", (-1.5, 15.5, -1.2), (1, 1, 1), "emitter", "pistol", grow=0.1),
     G("baton", "right_arm", (-1.5, 9.0, -8.5), (1, 1, 7), "baton", "baton"),
     G("baton_tip", "right_arm", (-2, 8.5, -9.5), (2, 2, 1), "spark", "baton", grow=-0.2),
+    # Betty Palmer
+    G("bouffant", "head", (-4, -10.2, -4.3), (8, 2, 8), "bouffant", "decorator", grow=0.4),
+    G("skirt", "body", (-5, 11, -3), (10, 6, 6), "skirt", "decorator", grow=(-0.2, 0, -0.2)),
 ]
 GEAR_SPEC = {"name": "gear", "tex_w": 64, "parts": [{"name": g["name"], "boxes": [g["box"]]} for g in GEAR]}
 
@@ -1013,6 +1192,22 @@ def gear_texel(mat, face, i, j, w, h):
         return (34, 34, 40) if (j % 3) else (60, 60, 70)
     if mat == "spark":
         return (190, 230, 255)
+    if mat == "bouffant":
+        hb, hs, hl = BLONDE
+        if face == "east" and j == h - 1 and i in (5, 6):
+            return CHERRY[0]  # a little bow
+        n = noise(i, j, 70 + ord(face[0]) + len(face))
+        return hl if n > 0.25 else (hs if n < -0.3 else hb)
+    if mat == "skirt":
+        if face == "bottom":
+            return DRESS[2]
+        if face == "north" and 2 <= i <= w - 3:
+            if j == h - 1:
+                return APRON[1] if i % 2 else APRON[0]  # ruffled apron hem
+            return APRON[0]
+        if j == h - 1:
+            return DRESS[1]
+        return DOT if dotted(i, j, 1) else DRESS[0]
     return (255, 0, 255)
 
 
@@ -1194,6 +1389,7 @@ EGGS = {
     "cooper_spawn_egg": ((196, 164, 112), (120, 78, 44)),
     "guard_spawn_egg": ((206, 42, 48), (244, 244, 238)),
     "scientist_spawn_egg": ((246, 246, 242), (60, 196, 188)),
+    "decorator_spawn_egg": ((246, 178, 198), (252, 246, 248)),
 }
 
 
@@ -1206,6 +1402,7 @@ ITEM_NAMES = {
     "cooper_spawn_egg": ("Dr. Cooper Spawn Egg", "Яйцо призыва доктора Купера"),
     "guard_spawn_egg": ("Expedition Guard Spawn Egg", "Яйцо призыва охранника экспедиции"),
     "scientist_spawn_egg": ("Expedition Scientist Spawn Egg", "Яйцо призыва учёного экспедиции"),
+    "decorator_spawn_egg": ("Showroom Decorator Spawn Egg", "Яйцо призыва продавщицы мебели"),
 }
 
 ENTITY_NAMES = {
@@ -1213,11 +1410,14 @@ ENTITY_NAMES = {
     ".cooper": ("Archaeologist", "Археолог"),
     ".guard": ("Expedition Guard", "Охранник экспедиции"),
     ".scientist": ("Expedition Scientist", "Учёный экспедиции"),
+    ".decorator": ("Interior Decorator", "Декоратор интерьеров"),
     ".trade_title": ("%s - Antiquities & Supplies", "%s - древности и снабжение"),
+    ".trade_title.decorator": ("%s — Atomic Home Showroom", "%s — салон «Атомный дом»"),
 }
 
 NAMES = {
     "cooper": [("Dr. Harold Cooper", "Доктор Гарольд Купер")],
+    "decorator": [("Betty Palmer", "Бетти Палмер")],
     "guard": [("Sgt. Rourke", "Сержант Рурк"), ("Pvt. Dawson", "Рядовой Доусон"), ("Cpl. Mendez", "Капрал Мендес"),
               ("Pvt. Kowalski", "Рядовой Ковальски"), ("Sgt. Brooks", "Сержант Брукс"), ("Pvt. O'Hara", "Рядовой О'Хара"),
               ("Cpl. Jefferson", "Капрал Джефферсон"), ("Pvt. Lindqvist", "Рядовой Линдквист")],
@@ -1397,6 +1597,44 @@ LINES = {
     "scientist.protest.1": ("Please! These instruments are delicate - and so am I.",
                             "Прошу вас! Приборы хрупкие - и я тоже."),
     "scientist.protest.2": ("I shall be noting this in my report.", "Я отмечу это в своём отчёте."),
+    # ---- Betty Palmer, Atomic Home Showroom ----
+    "decorator.greet.0": ("Every modern family deserves a home of TOMORROW! Have a look around, dear!",
+                          "Каждая современная семья заслуживает дом ЗАВТРАШНЕГО дня! Осмотритесь, дорогуша!"),
+    "decorator.greet.1": ("Welcome to the Atomic Home Showroom! Space-age living at down-to-Earth prices!",
+                          "Добро пожаловать в салон «Атомный дом»! Жизнь космической эры по земным ценам!"),
+    "decorator.greet.2": ("Is that a bare steel cabin I see in your eyes? Let's fix that, sweetie!",
+                          "Неужели у вас голая стальная каюта? Сейчас мы это исправим, милочка!"),
+    "decorator.greet.3": ("Chrome! Turquoise! Boomerangs! Everything a rocket-age home could want!",
+                          "Хром! Бирюза! Бумеранги! Всё, о чём мечтает дом ракетной эры!"),
+    "decorator.greet.4": ("Our egg chair is the talk of three planets - try it, go on!",
+                          "О нашем кресле-яйце говорят на трёх планетах - присядьте, не стесняйтесь!"),
+    "decorator.greet.5": ("Credits accepted, smiles guaranteed! What can Betty find for you today?",
+                          "Принимаем кредиты, улыбки гарантируем! Что Бетти подберёт вам сегодня?"),
+    "decorator.idle.0": ("Ooh, that sputnik chandelier just sparkles, doesn't it?",
+                         "Ах, как сверкает эта люстра-спутник, правда?"),
+    "decorator.idle.1": ("A vending machine in every galley - that's the American way, out here too!",
+                         "Автомат с газировкой на каждом камбузе - вот наш образ жизни, и здесь тоже!"),
+    "decorator.idle.2": ("Dust in zero-g gets EVERYWHERE. Thank goodness for my feather duster.",
+                         "Пыль в невесомости проникает ПОВСЮДУ. Слава богу, у меня есть метёлочка."),
+    "decorator.idle.3": ("Turquoise is THE colour of the season. Of every season, honestly.",
+                         "Бирюзовый - цвет сезона. Да любого сезона, если честно."),
+    "decorator.idle.4": ("Mr. Cooper keeps asking me for a display case for his idols. Brr!",
+                         "Мистер Купер всё просит у меня витрину для своих идолов. Бр-р!"),
+    "decorator.idle.5": ("Picture it: a googie sofa, a tube radio, and Earth rising in the porthole. Dreamy!",
+                         "Представьте: диван в стиле гуги, ламповое радио и Земля, восходящая в иллюминаторе. Мечта!"),
+    "decorator.thanks.0": ("Wonderful choice! It'll look simply atomic in your place!",
+                           "Чудесный выбор! У вас это будет смотреться просто атомно!"),
+    "decorator.thanks.1": ("Thank you kindly - come back soon, we restock every day!",
+                           "Большое спасибо - заходите ещё, у нас новый завоз каждый день!"),
+    "decorator.thanks.2": ("Sold! Mind the corners on the way through the airlock, dear.",
+                           "Продано! Аккуратнее с углами в шлюзе, дорогуша."),
+    "decorator.thanks.3": ("Another happy homemaker of tomorrow!", "Ещё одна счастливая хозяйка дома будущего!"),
+    "decorator.protest.0": ("Well, I never! Hands off the merchandise - and off me!",
+                            "Ну знаете! Руки прочь от товара - и от меня!"),
+    "decorator.protest.1": ("Goodness! Is that any way to treat a lady in a showroom?",
+                            "Боже мой! Разве так обращаются с дамой в салоне?"),
+    "decorator.protest.2": ("I'll have you know these pearls are real - and so is my temper!",
+                            "Да будет вам известно, жемчуг настоящий - и характер тоже!"),
 }
 
 EN, RU = {}, {}
@@ -1421,6 +1659,7 @@ def skins():
         out[f"guard_{v}"] = guard(v)
     for v in range(VARIANTS["scientist"]):
         out[f"scientist_{v}"] = scientist(v)
+    out["decorator_0"] = decorator()
     return out
 
 

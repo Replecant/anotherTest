@@ -154,6 +154,8 @@ public final class ModFurniture {
     public static final DeferredBlock<FurnitureBlock> POSTER_SUIT_CHECK = poster("poster_suit_check");
     public static final DeferredBlock<FurnitureBlock> POSTER_HOMESTEAD = poster("poster_homestead");
     public static final DeferredBlock<FurnitureBlock> POSTER_FREEDOM = poster("poster_freedom");
+    public static final DeferredBlock<FurnitureBlock> POSTER_RANGERS = poster("poster_rangers");
+    public static final DeferredBlock<FurnitureBlock> POSTER_VENUS_BRIEFING = poster("poster_venus_briefing");
 
     public static final DeferredBlock<DoorBlock> STATION_DOOR = block("station_door", p -> new DoorBlock(BlockSetType.COPPER, p),
             p -> p.mapColor(MapColor.SNOW).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion().pushReaction(PushReaction.DESTROY));

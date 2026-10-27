@@ -766,5 +766,7 @@
   "chat.retrocosmos.npc.decorator.thanks.3": "Another happy homemaker of tomorrow!",
   "chat.retrocosmos.npc.decorator.protest.0": "Well, I never! Hands off the merchandise - and off me!",
   "chat.retrocosmos.npc.decorator.protest.1": "Goodness! Is that any way to treat a lady in a showroom?",
-  "chat.retrocosmos.npc.decorator.protest.2": "I'll have you know these pearls are real - and so is my temper!"
+  "chat.retrocosmos.npc.decorator.protest.2": "I'll have you know these pearls are real - and so is my temper!",
+  "block.retrocosmos.poster_rangers": "Poster \"The Galaxy Needs You!\"",
+  "block.retrocosmos.poster_venus_briefing": "Briefing Board \"Venus\""
 }

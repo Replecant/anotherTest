@@ -766,5 +766,7 @@
   "chat.retrocosmos.npc.decorator.thanks.3": "Ещё одна счастливая хозяйка дома будущего!",
   "chat.retrocosmos.npc.decorator.protest.0": "Ну знаете! Руки прочь от товара - и от меня!",
   "chat.retrocosmos.npc.decorator.protest.1": "Боже мой! Разве так обращаются с дамой в салоне?",
-  "chat.retrocosmos.npc.decorator.protest.2": "Да будет вам известно, жемчуг настоящий - и характер тоже!"
+  "chat.retrocosmos.npc.decorator.protest.2": "Да будет вам известно, жемчуг настоящий - и характер тоже!",
+  "block.retrocosmos.poster_rangers": "Плакат «Ты нужен Галактике!»",
+  "block.retrocosmos.poster_venus_briefing": "Доска брифинга «Венера»"
 }

@@ -4,7 +4,8 @@ import os
 from furniture import add_to_tag
 from gen_resources import DATA, MOD, loot_self, shaped, write_json
 
-POSTERS = ["poster_liftoff", "poster_vesper", "poster_space_pop", "poster_suit_check", "poster_homestead", "poster_freedom"]
+POSTERS = ["poster_liftoff", "poster_vesper", "poster_space_pop", "poster_suit_check", "poster_homestead", "poster_freedom",
+           "poster_rangers", "poster_venus_briefing"]
 TALL = ["vending_machine", "crew_locker", "station_door", "airlock_door"] + POSTERS
 NEW = ["crew_locker", "cargo_crate", "supply_cabinet", "retro_workbench", "galley_stove", "lab_sink", "tape_archive",
        "station_door", "airlock_door"] + POSTERS
@@ -85,7 +86,8 @@ def generate():
         "airlock_door": (["TT", "TG", "TT"], {"T": T, "G": "minecraft:glass_pane"}, 3),
     })
     dyes = {"poster_liftoff": "minecraft:red_dye", "poster_vesper": "minecraft:orange_dye", "poster_space_pop": "minecraft:pink_dye",
-            "poster_suit_check": "minecraft:yellow_dye", "poster_homestead": "minecraft:blue_dye", "poster_freedom": "minecraft:cyan_dye"}
+            "poster_suit_check": "minecraft:yellow_dye", "poster_homestead": "minecraft:blue_dye", "poster_freedom": "minecraft:cyan_dye",
+            "poster_rangers": "minecraft:lime_dye", "poster_venus_briefing": "minecraft:brown_dye"}
     for poster, dye in dyes.items():
         recipes[poster] = (["P", "D", "P"], {"P": "minecraft:paper", "D": dye}, 1)
     for name, (pattern, key, count) in recipes.items():
@@ -127,6 +129,8 @@ EN = {
     "block.retrocosmos.poster_suit_check": "Poster \"Check Your Suit\"",
     "block.retrocosmos.poster_homestead": "Poster \"Home Sweet Home\"",
     "block.retrocosmos.poster_freedom": "Poster \"Freedom Station\"",
+    "block.retrocosmos.poster_rangers": "Poster \"The Galaxy Needs You!\"",
+    "block.retrocosmos.poster_venus_briefing": "Briefing Board \"Venus\"",
 }
 RU = {
     "itemGroup.retrocosmos.station": "Ретрокосмос: Космическая станция",
@@ -163,4 +167,6 @@ RU = {
     "block.retrocosmos.poster_suit_check": "Плакат «Проверь скафандр»",
     "block.retrocosmos.poster_homestead": "Плакат «Дом, милый дом»",
     "block.retrocosmos.poster_freedom": "Плакат «Станция „Свобода“»",
+    "block.retrocosmos.poster_rangers": "Плакат «Ты нужен Галактике!»",
+    "block.retrocosmos.poster_venus_briefing": "Доска брифинга «Венера»",
 }

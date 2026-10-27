@@ -319,7 +319,10 @@ V_ALTAR = rc("venusian_altar")            # no properties
 V_PILLAR = rc("venusian_pillar")          # axis
 ARTIFACTS = {V_URN, V_STELE, V_GLYPH, V_SUN_DISC, V_ALTAR, V_PILLAR}
 ON_PEDESTAL = {V_URN, V_GLYPH, V_SUN_DISC}
-POSTERS = (P_LIFTOFF, P_VESPER, P_SPACE_POP, P_SUIT_CHECK, P_HOMESTEAD, P_FREEDOM)
+P_RANGERS = rc("poster_rangers")          # "The Galaxy Needs You!" recruiting poster
+P_BRIEFING = rc("poster_venus_briefing")  # briefing board with Venus recon photos
+POSTERS = (P_LIFTOFF, P_VESPER, P_SPACE_POP, P_SUIT_CHECK, P_HOMESTEAD, P_FREEDOM, P_RANGERS, P_BRIEFING)
+BANNER = mc("blue_wall_banner")
 
 # Full opaque building cubes: what walls, floors and ceilings are made of (supports wall decor and lights).
 WALL_BLOCKS = {WHITE, LGRAY, GRAY, RED, YELLOW, BLACK, CYAN_TERRA, QUARTZ, SQUARTZ, BIRCH, SPRUCE, DARK_OAK, IRON_BLOCK,
@@ -335,13 +338,13 @@ DESK_SLABS = {SQUARTZ_SLAB, SPRUCE_SLAB, DARK_OAK_SLAB, QUARTZ_SLAB}
 # Items that belong on a desk/counter, never on the bare floor.
 ON_DESK = {RADAR_SCOPE, RADIO, LAMP, GLOBE, BREWING, POTTED_FERN, LANTERN}
 # Wall-mounted decor: facing points away from the wall, which must be a wall block.
-WALL_DECOR = {CONTROL_PANEL, STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN} | set(POSTERS)
+WALL_DECOR = {CONTROL_PANEL, STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN, BANNER} | set(POSTERS)
 # Hung from the ceiling: a wall block must be directly above.
 CEILING_HUNG = {CEILING_LIGHT, CHANDELIER}
 SEATS_FACING = {CAPTAIN_CHAIR, EGG_CHAIR, SOFA}
 CONTAINERS = {CHEST, BARREL, SUPPLY_CABINET, CARGO_CRATE, CREW_LOCKER}
 STORAGE_BLOCKS = {SUPPLY_CABINET, CARGO_CRATE, CREW_LOCKER}
-NO_COLLISION_DECOR = {STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN, CEILING_LIGHT} | set(POSTERS)
+NO_COLLISION_DECOR = {STAR_CHART, CLOCK, NEON, SCONCE, WALL_SIGN, CEILING_LIGHT, BANNER} | set(POSTERS)
 TALL = {CREW_LOCKER, VENDING} | set(POSTERS)
 DOORS = {IRON_DOOR, BIRCH_DOOR, STATION_DOOR, AIRLOCK_DOOR}
 BEDS = {bed_id(c) for c in COLORS} | {CREW_BUNK}
@@ -384,6 +387,7 @@ _V.update({
     LIGHTNING_ROD: {"facing": ALL6, "powered": BOOL, "waterlogged": BOOL},
     DAYLIGHT: {"inverted": BOOL, "power": tuple(str(i) for i in range(16))},
     STONECUTTER: {"facing": HORIZ},
+    BANNER: {"facing": HORIZ},
     JUKEBOX: {"has_record": BOOL},
     LECTERN: {"facing": HORIZ, "has_book": BOOL, "powered": BOOL},
     COMPOSTER: {"level": tuple(str(i) for i in range(9))},
@@ -652,6 +656,12 @@ def storage_nbt(items):
 
 
 chest_nbt = storage_nbt
+
+
+def banner_nbt(patterns):
+    """Banner block entity: patterns = [(pattern id, colour)]."""
+    return Compound({"id": Str("minecraft:banner"), "patterns": List(
+        [Compound({"color": Str(c), "pattern": Str(p)}) for p, c in patterns], TAG_COMPOUND)})
 
 
 def sign_nbt(lines):
@@ -1039,8 +1049,10 @@ BAND_ROOMS = [
      (-18, -36, -11, -29), "north", [(4, 1, "birch")]),
     ("bridge", "bridge", "command", "Bridge / Command center", ["- DECK A -", "BRIDGE", "COMMAND CENTER", ""],
      (-8, -36, 8, -29), "north", [(7, 3, "open")]),
+    ("rangers", "rangers", "command", "Space Rangers office",
+     ["SPACE RANGERS", "- RECRUITING -", "ENLIST HERE", "DECK A"], (11, -36, 17, -29), "north", [(3, 1, "open")]),
     ("radio", "radio", "command", "Radio room", ["DECK A", "RADIO ROOM", "COMMUNICATIONS", ""],
-     (11, -36, 26, -29), "north", [(7, 3, "open")]),
+     (20, -36, 26, -29), "north", [(3, 1, "open")]),
     # DECK B - science & engineering (east band, corridor to the west)
     ("machine_shop", "workshop", "tech", "Machine shop", ["DECK B", "MACHINE SHOP", "ENGINEERING", ""],
      (29, -36, 36, -21), "east", [(12, 3, "open")]),
@@ -1089,7 +1101,9 @@ REQUIRED = {
     "archaeology": {TAPE: 2, GLOBE: 1, STAR_CHART: 1, CARGO_CRATE: 1, CAPTAIN_CHAIR: 1, "artifact": 5, GLASS: 6,
                     CARTOGRAPHY: 1, LECTERN: 1},
     "workshop": {WORKBENCH: 1, SMITHING: 1, STONECUTTER: 1, STOVE: 1, SUPPLY_CABINET: 2},
-    "radio": {RADIO: 3, CONTROL_PANEL: 3, COMPUTER: 3, TAPE: 2},
+    "radio": {RADIO: 2, CONTROL_PANEL: 2, COMPUTER: 3, TAPE: 2},
+    "rangers": {RADIO: 1, STAR_CHART: 4, "locker": 2, BANNER: 1, P_RANGERS: 2, P_BRIEFING: 2, LIGHTNING_ROD: 3,
+                CAPTAIN_CHAIR: 1},
     "recreation": {TAPE: 6, JUKEBOX: 1, TABLE: 2, SOFA: 2, "poster": 1},
     "eva": {O2_RACK: 4, "locker": 13, SOFA: 2, P_SUIT_CHECK: 2},
     "supply": {CARGO_CRATE: 6},
@@ -1166,22 +1180,63 @@ class Furnisher:
         r.light(4, 4, CHANDELIER)
 
     def radio(self, r):
-        for k, u0 in enumerate((1, 5, 9, 13)):
+        """7 x 8 radio room next to the Rangers office: two operator stations on the hull wall."""
+        for k, u0 in enumerate((1, 4)):
             r.desk(u0, 7)
-            r.wall(u0, 7, 1, CONTROL_PANEL, "back", lit=k % 2 == 0)
-            r.desk(u0 + 1, 7, RADIO, lit=k % 2 == 0)
+            r.wall(u0, 7, 1, CONTROL_PANEL, "back", lit=k == 0)
+            r.desk(u0 + 1, 7, RADIO, lit=k == 0)
             r.stool(u0, 6)
-        r.window([3, 12], [1], "back", PORTHOLE)
-        for u in (7, 8):
-            r.fput(u, 3, 0, COMPUTER, "front", lit=u == 7)
-            r.fput(u, 4, 0, COMPUTER, "back", lit=u == 8)
-        for v in range(1, 6):
-            r.fput(15, v, 0, COMPUTER, "left", lit=v % 2 == 1)
+        r.window([3], [1], "back", PORTHOLE)
+        for v in range(1, 5):
+            r.fput(6, v, 0, COMPUTER, "left", lit=v % 2 == 1)
         for v in (2, 3, 4):                         # log tapes on the left wall
             r.fput(0, v, 0, TAPE, "right")
         r.wall(0, 3, 2, STAR_CHART, "left")
-        r.wall(8, 0, 2, CLOCK, "front")
-        r.lights_grid((4, 11), (2, 5))
+        r.wall(3, 0, 2, CLOCK, "front")
+        r.light(3, 2)
+        r.light(3, 5)
+
+    def rangers(self, r):
+        """Space Rangers recruiting and briefing office, 7 x 8, next to the bridge (door u = 3).
+        The ranger works behind his desk in front of a wall of star charts."""
+        st = self.st
+        # recruiting poster outside on the corridor wall, left of the door
+        c = r.at(1, -3, 1)
+        if st.get(r.at(1, -2, 1)) in WALL_BLOCKS and st.get(r.at(1, -2, 2)) in WALL_BLOCKS:
+            st.put(c, P_RANGERS, {"facing": r.wdir("front"), "half": "lower"})
+            st.put(r.at(1, -3, 2), P_RANGERS, {"facing": r.wdir("front"), "half": "upper"})
+        else:
+            st.error("rangers: no wall for the corridor poster")
+        # the ranger's desk: lamp, radio; his chair, a stool for the recruit
+        r.desk(2, 5, LAMP, mat=DARK_OAK)
+        r.desk(3, 5, mat=DARK_OAK)
+        r.desk(4, 5, RADIO, mat=DARK_OAK)
+        r.seat(4, 6, CAPTAIN_CHAIR, "front")
+        r.stool(3, 4)
+        # star-chart wall behind the desk and the Rangers' flag
+        for u in (1, 2, 3, 4):
+            r.wall(u, 7, 2, STAR_CHART, "back", lit=u % 2 == 0)
+        r.wall(1, 7, 1, STAR_CHART, "back", lit=False)
+        r.wall(4, 7, 1, STAR_CHART, "back", lit=False)
+        st.put(r.at(5, 7, 2), BANNER, {"facing": r.wdir("front")},
+               banner_nbt([("minecraft:stripe_middle", "white"), ("minecraft:circle", "red"),
+                           ("minecraft:border", "yellow")]))
+        # weapons case on the left wall: chrome-and-copper rifles on a plinth under a glass lid
+        for v in (1, 2, 3, 4):
+            r.block(0, v, 0, SQUARTZ)
+            r.put(0, v, 1, LIGHTNING_ROD, {"facing": "up", "powered": "false", "waterlogged": "false"})
+            r.block(0, v, 2, GLASS)
+        r.poster(0, 6, 1, P_RANGERS, "left")
+        # briefing board with Venus recon photos and notes, lockers on the right wall
+        r.poster(6, 3, 1, P_BRIEFING, "right")
+        r.sign(6, 2, 1, "right", ["VENUS", "SECTOR 7", "TEMPLE RUINS", "PHOTO 1958"])
+        r.sign(6, 4, 1, "right", ["TRIBE", "SIGHTED", "GRID B-4", "APPROACH SLOW"])
+        r.locker(6, 5, "left", [("minecraft:spyglass", 1)])
+        r.locker(6, 6, "left", [("minecraft:compass", 1)])
+        r.wall(3, 0, 2, CLOCK, "front")
+        r.carpet("blue", range(1, 6), range(1, 4))
+        r.light(3, 2)
+        r.light(2, 6)
 
     # corner rooms are trapezoids: the chamfered hull runs diagonally from (3, 0) to (10, 7)
     def observation(self, r):
@@ -2422,7 +2477,8 @@ def to_nbt(st):
 # NPC anchors (structure-local after normalisation): Dr. Cooper stands behind his desk, facing his visitors.
 def npc_anchors(st):
     out = []
-    for role, key, (u, v) in (("cooper", "archaeology", (3, 6)), ("decorator", "showroom", (5, 6))):
+    for role, key, (u, v) in (("cooper", "archaeology", (3, 6)), ("decorator", "showroom", (5, 6)),
+                              ("ranger", "rangers", (3, 6))):
         room = st.rooms[key]
         pos = room.at(u, v)
         yaw = {"south": 0, "west": 90, "north": 180, "east": 270}[room.wdir("front")]

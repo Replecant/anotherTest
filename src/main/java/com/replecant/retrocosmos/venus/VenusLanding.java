@@ -231,6 +231,9 @@ public final class VenusLanding {
                 }
                 min = Math.min(min, ground);
                 max = Math.max(max, ground);
+                if (max - min > ROUGH_SITE) {
+                    return max - min; // already too rough: spare the remaining noise samples
+                }
             }
         }
         return max - min;

@@ -201,6 +201,8 @@
   "command.retrocosmos.tp.home": "%s телепортирован домой на Землю",
   "command.retrocosmos.tp.no_station": "Станция «Свобода» недоступна",
   "command.retrocosmos.station.rebuilt": "Станция «Свобода» перестроена по текущему проекту",
+  "command.retrocosmos.venus.camp_moved": "Лагерь экспедиции на Венере перенесён: %s %s %s",
+  "command.retrocosmos.venus.no_camp": "Лагерь экспедиции на Венере ещё не построен",
   "gui.retrocosmos.map.status.station": "СТЫКОВКА - GO",
   "gui.retrocosmos.map.station_hint": "Станция без экипажа. Топливо и кислород в кладовой.",
   "gui.retrocosmos.map.dock": "СТЫКОВКА",

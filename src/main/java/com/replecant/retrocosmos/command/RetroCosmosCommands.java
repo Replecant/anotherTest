@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * /retrocosmos hud on|off                  - suit telemetry HUD
  * /retrocosmos tp station|earth|venus [player] - teleport to Freedom Station / to the player's home pad (level 2)
  * /retrocosmos station rebuild             - wipe and rebuild Freedom Station from the current design (level 2)
+ * /retrocosmos venus relocatecamp         - move the Venus expedition camp to a fresh dry, level site (level 2)
  * </pre>
  */
 public final class RetroCosmosCommands {
@@ -74,7 +75,11 @@ public final class RetroCosmosCommands {
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("rebuild").executes(RetroCosmosCommands::rebuildStation));
 
-        event.getDispatcher().register(Commands.literal("retrocosmos").then(oxygen).then(hud).then(tp).then(station));
+        LiteralArgumentBuilder<CommandSourceStack> venus = Commands.literal("venus")
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("relocatecamp").executes(RetroCosmosCommands::relocateCamp));
+
+        event.getDispatcher().register(Commands.literal("retrocosmos").then(oxygen).then(hud).then(tp).then(station).then(venus));
     }
 
     private static int setAirless(CommandContext<CommandSourceStack> ctx, ServerPlayer player, boolean airless) {
@@ -141,6 +146,25 @@ public final class RetroCosmosCommands {
             return 0;
         }
         ctx.getSource().sendSuccess(() -> Component.translatable("command.retrocosmos.station.rebuilt"), true);
+        return 1;
+    }
+
+    private static int relocateCamp(CommandContext<CommandSourceStack> ctx) {
+        ServerLevel venus = ctx.getSource().getServer().getLevel(Venus.DIMENSION);
+        BlockPos pad = venus == null ? null : VenusLanding.relocate(venus);
+        if (pad == null) {
+            ctx.getSource().sendFailure(Component.translatable("command.retrocosmos.venus.no_camp"));
+            return 0;
+        }
+        if (ctx.getSource().getEntity() instanceof ServerPlayer player && player.level() == venus) {
+            if (player.isPassenger()) {
+                player.stopRiding();
+            }
+            player.teleport(new TeleportTransition(venus, Vec3.atBottomCenterOf(pad.offset(0, 0, 2)), Vec3.ZERO,
+                    player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
+        }
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.retrocosmos.venus.camp_moved",
+                pad.getX(), pad.getY(), pad.getZ()), true);
         return 1;
     }
 

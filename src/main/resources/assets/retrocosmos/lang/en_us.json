@@ -201,6 +201,8 @@
   "command.retrocosmos.tp.home": "Teleported %s home to Earth",
   "command.retrocosmos.tp.no_station": "Freedom Station is unavailable",
   "command.retrocosmos.station.rebuilt": "Freedom Station rebuilt from the current design",
+  "command.retrocosmos.venus.camp_moved": "Venus expedition camp moved to %s %s %s",
+  "command.retrocosmos.venus.no_camp": "No Venus expedition camp has been built yet",
   "gui.retrocosmos.map.status.station": "DOCKING - GO",
   "gui.retrocosmos.map.station_hint": "Uncrewed station. Fuel and oxygen in the supply room.",
   "gui.retrocosmos.map.dock": "DOCK",

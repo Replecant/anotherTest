@@ -7,12 +7,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.replecant.retrocosmos.RetroCosmos;
 import com.replecant.retrocosmos.block.LaunchPadBlock;
+import com.replecant.retrocosmos.flight.RocketEntity;
 import com.replecant.retrocosmos.furniture.FurnitureBlock;
 import com.replecant.retrocosmos.npc.NpcAnchor;
 import com.replecant.retrocosmos.registry.ModBlocks;
 import com.replecant.retrocosmos.registry.ModFurniture;
 import com.replecant.retrocosmos.registry.ModItems;
 import java.io.Reader;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -35,6 +38,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * The expedition camp on Venus: a cleared patch of jungle with a 3x3 launch pad, a service tower, floodlights
@@ -113,7 +117,34 @@ public final class VenusLanding {
         return data.pad;
     }
 
+    /**
+     * Tears down the camp and builds it again on a fresh dry, level site (for camps that an older version put on a
+     * mountainside). Rockets parked at the old pad move to the new one. Returns the new pad, or null if no camp exists.
+     */
+    @Nullable
+    public static BlockPos relocate(ServerLevel level) {
+        CampData data = level.getDataStorage().computeIfAbsent(CampData.TYPE);
+        if (!data.built) {
+            return null;
+        }
+        BlockPos old = data.pad;
+        var rockets = level.getEntitiesOfClass(RocketEntity.class, new AABB(old).inflate(24, 40, 24));
+        clear(level, old, 24, -4, 40, e -> !(e instanceof RocketEntity));
+        BlockPos land = findLand(level);
+        data.pad = buildAt(level, land.getX(), land.getZ());
+        data.version = VERSION;
+        data.setDirty();
+        Vec3 parked = Vec3.atBottomCenterOf(data.pad);
+        rockets.forEach(rocket -> rocket.teleportTo(parked.x, parked.y, parked.z));
+        RetroCosmos.LOGGER.info("Retro Cosmos: Venus camp moved from {} to {}", old, data.pad);
+        return data.pad;
+    }
+
     private static void clear(ServerLevel level, BlockPos center, int radius, int down, int up) {
+        clear(level, center, radius, down, up, e -> true);
+    }
+
+    private static void clear(ServerLevel level, BlockPos center, int radius, int down, int up, Predicate<Entity> remove) {
         BlockState air = Blocks.AIR.defaultBlockState();
         for (BlockPos p : BlockPos.betweenClosed(center.offset(-radius, down, -radius), center.offset(radius, up, radius))) {
             if (!level.getBlockState(p).isAir()) {
@@ -121,16 +152,17 @@ public final class VenusLanding {
                 level.setBlock(p, air, QUIET);
             }
         }
-        level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(center).inflate(radius, up, radius),
-                e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+        level.getEntitiesOfClass(Entity.class, new AABB(center).inflate(radius, up, radius),
+                e -> !(e instanceof Player) && remove.test(e)).forEach(Entity::discard);
     }
 
     /**
-     * Venus is a third ocean: walk an outward spiral from the origin, asking the biome source (cheap, no chunk
-     * generation) for the first column that isn't open sea, preferably plains where the camp fits best.
+     * Venus is a third ocean: walk an outward spiral from the origin for a dry, level site, preferably plains where
+     * the camp fits best. Biomes come from the biome source and heights from the noise generator, so nothing has to
+     * be generated to judge a candidate.
      */
     private static BlockPos findLand(ServerLevel level) {
-        BlockPos firstLand = null;
+        BlockPos flat = null, rough = null, firstLand = null;
         for (int ring = 0; ring <= 64; ring++) {
             int r = ring * 32;
             int steps = Math.max(1, ring * 8);
@@ -140,21 +172,68 @@ public final class VenusLanding {
                 int z = (int) Math.round(Math.sin(angle) * r);
                 var biome = level.getUncachedNoiseBiome(x >> 2, level.getSeaLevel() >> 2, z >> 2);
                 String id = biome.unwrapKey().map(k -> k.identifier().getPath()).orElse("");
-                if (id.contains("sea") || id.contains("ocean") || structureNear(level, x, z)) {
+                if (id.contains("sea") || id.contains("ocean")) {
                     continue;
                 }
-                if (id.contains("plains")) {
-                    return new BlockPos(x, 0, z);
+                int spread = siteSpread(level, x, z);
+                if (spread > ROUGH_SITE || structureNear(level, x, z)) {
+                    if (firstLand == null && spread != Integer.MAX_VALUE) {
+                        firstLand = new BlockPos(x, 0, z);
+                    }
+                    continue;
                 }
-                if (firstLand == null) {
-                    firstLand = new BlockPos(x, 0, z);
+                BlockPos site = new BlockPos(x, 0, z);
+                if (spread <= FLAT_SITE) {
+                    if (id.contains("plains")) {
+                        return site;
+                    }
+                    if (flat == null) {
+                        flat = site;
+                    }
+                } else if (rough == null) {
+                    rough = site;
                 }
             }
-            if (firstLand != null && ring >= 8) {
-                return firstLand;
+            if (flat != null && ring >= 8) {
+                return flat;
+            }
+            if (rough != null && ring >= 32) {
+                return rough;
             }
         }
-        return firstLand != null ? firstLand : BlockPos.ZERO;
+        if (flat != null) {
+            return flat;
+        }
+        return rough != null ? rough : firstLand != null ? firstLand : BlockPos.ZERO;
+    }
+
+    /** Half-width of the area sampled when judging a camp site (the camp is 41 blocks across). */
+    private static final int SITE_RADIUS = 22;
+    /** Largest height difference across a site that the camp levels without carving a pit or a cliff. */
+    private static final int FLAT_SITE = 5;
+    /** Accepted only when no flat site turns up after a long search. */
+    private static final int ROUGH_SITE = 9;
+
+    /**
+     * Height difference of the natural ground across a candidate site, or {@code Integer.MAX_VALUE} when any sample
+     * is under water or below sea level. Mountainsides and valleys score high, so the camp is not dug into a hill.
+     */
+    private static int siteSpread(ServerLevel level, int x, int z) {
+        var generator = level.getChunkSource().getGenerator();
+        var random = level.getChunkSource().randomState();
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for (int dx = -SITE_RADIUS; dx <= SITE_RADIUS; dx += SITE_RADIUS / 2) {
+            for (int dz = -SITE_RADIUS; dz <= SITE_RADIUS; dz += SITE_RADIUS / 2) {
+                int ground = generator.getBaseHeight(x + dx, z + dz, Heightmap.Types.OCEAN_FLOOR_WG, level, random);
+                int surface = generator.getBaseHeight(x + dx, z + dz, Heightmap.Types.WORLD_SURFACE_WG, level, random);
+                if (surface > ground || ground <= level.getSeaLevel()) {
+                    return Integer.MAX_VALUE;
+                }
+                min = Math.min(min, ground);
+                max = Math.max(max, ground);
+            }
+        }
+        return max - min;
     }
 
     /** Chunks around a candidate site that must be free of ruins and tribal camps. */

@@ -1683,6 +1683,12 @@ def mutant_assets():
         return {"rolls": 1, "bonus_rolls": 0,
                 "entries": [{"type": "minecraft:item", "name": item, "functions": functions}]}
 
+    # now and then a Sapiens carries a few spare energy cartridges for its blaster
+    cartridges = rare("energy_cartridge", 0.18, 0.22, 0.04)
+    cartridges["entries"][0]["functions"] = [
+        {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 3}},
+        {"function": "minecraft:enchanted_count_increase", "enchantment": "minecraft:looting",
+         "count": {"type": "minecraft:uniform", "min": 0, "max": 1}}]
     write_json(os.path.join(DATA, "loot_table", "entities", "hominid_novus.json"), {
         "type": "minecraft:entity", "random_sequence": f"{MOD}:entities/hominid_novus",
         "pools": [common("minecraft:beef", 1, 3, smelt=True), common("minecraft:leather", 1, 2),
@@ -1690,7 +1696,7 @@ def mutant_assets():
     write_json(os.path.join(DATA, "loot_table", "entities", "hominus_sapiens.json"), {
         "type": "minecraft:entity", "random_sequence": f"{MOD}:entities/hominus_sapiens",
         "pools": [common("minecraft:redstone", 0, 2), rare("ray_blaster", 0.08, 0.1, 0.03),
-                  rare("brain_flask", 0.05, 0.07, 0.02)]})
+                  rare("brain_flask", 0.05, 0.07, 0.02), cartridges]})
     write_json(os.path.join(DATA, "damage_type", "blaster.json"),
                {"message_id": f"{MOD}.blaster", "exhaustion": 0.1, "scaling": "when_caused_by_living_non_player"})
     import furniture

@@ -634,31 +634,42 @@ def chest_loot():
     extra = [it(n, 6, 1, 4 if n == "atomic_scrap" else 1) for n in OPTIONAL_ITEMS if mod_item_exists(n)]
     core = [it("atomic_core", 3)] if mod_item_exists("atomic_core") else []
     blaster = [it("ray_blaster", 1)] if mod_item_exists("ray_blaster") else []
+    # spare energy cartridges for the ranger blaster: a pool of its own, from sometimes to always
+    has_ammo = mod_item_exists("energy_cartridge")
+
+    def ammo(chance_rolls, lo, hi, miss=0):
+        if not has_ammo:
+            return []
+        return [(chance_rolls, [it("energy_cartridge", 3, lo, hi)] + ([R_.empty(miss)] if miss else []))]
     base = [it("minecraft:iron_ingot", 14, 2, 6), it("minecraft:redstone", 14, 3, 9), it("minecraft:copper_ingot", 12, 2, 8),
             it("minecraft:iron_nugget", 10, 4, 12), it("minecraft:gold_nugget", 6, 2, 6), it("vacuum_tube", 6, 1, 3),
             it("aluminum_ingot", 6, 1, 4), it("minecraft:glass_bottle", 5, 1, 3), it("minecraft:bread", 5, 1, 3),
             it("minecraft:quartz", 5, 2, 6)] + extra
     R_.chest("chests/oinstein_outpost", [
         (R_.rolls(3, 6), base),
-        (R_.rolls(0, 1), [lab_notes(3), it("empty_fuel_canister", 3), it("rocket_fuel_canister", 1), R_.empty(4)])])
+        (R_.rolls(0, 1), [lab_notes(3), it("empty_fuel_canister", 3), it("rocket_fuel_canister", 1), R_.empty(4)])]
+        + ammo(1.0, 2, 6, miss=3))
     R_.chest("chests/oinstein_lab", [
         (R_.rolls(3, 6), base + [it("minecraft:redstone_block", 3), it("minecraft:experience_bottle", 6, 1, 4),
                                  it("guidance_computer", 1)] + core + [it("minecraft:potion", 4, extra=[
                                      {"function": "minecraft:set_potion", "id": "minecraft:strength"}])]),
         (1.0, [lab_notes(1)]),
-        (R_.rolls(0, 2), [it("glyph_tablet", 3), it("venusian_idol", 1), R_.empty(4)])])
+        (R_.rolls(0, 2), [it("glyph_tablet", 3), it("venusian_idol", 1), R_.empty(4)])]
+        + ammo(1.0, 3, 8, miss=2))
     R_.chest("chests/oinstein_armory", [
         (R_.rolls(4, 7), base + [it("minecraft:iron_block", 2), it("minecraft:diamond", 2, 1, 2),
                                  it("minecraft:golden_apple", 2), it("titanium_ingot", 5, 1, 4),
                                  it("minecraft:iron_chestplate", 2), it("minecraft:crossbow", 2),
                                  it("minecraft:arrow", 6, 4, 12)] + core),
-        (R_.rolls(0, 1), [lab_notes(2), it("ancient_amulet", 1), R_.empty(3)] + blaster)])
+        (R_.rolls(0, 1), [lab_notes(2), it("ancient_amulet", 1), R_.empty(3)] + blaster)]
+        + ammo(1.0, 6, 14))
     # the commander's locker of a capture camp (A), relay pylon (B) and field lab (C): the card is guaranteed
     for level, (card, _c, _d) in CLEARANCE.items():
         R_.chest(f"chests/oinstein_keycard_{level}", [
             (1.0, [it(card, 1)]),
             (R_.rolls(2, 4), base),
-            (R_.rolls(0, 1), [lab_notes(2), it("minecraft:experience_bottle", 2, 1, 3), R_.empty(3)])])
+            (R_.rolls(0, 1), [lab_notes(2), it("minecraft:experience_bottle", 2, 1, 3), R_.empty(3)])]
+            + ammo(1.0, 2, 5, miss=3))
     # the expedition's gear, taken off the prisoners: canisters, instruments, rations, their notes
     R_.chest("chests/oinstein_confiscated", [
         (R_.rolls(4, 7), [it("rocket_fuel_canister", 8, 1, 3), it("liquid_oxygen_canister", 8, 1, 3),
@@ -667,13 +678,15 @@ def chest_loot():
                           it("minecraft:map", 4), it("minecraft:bread", 8, 2, 6), it("minecraft:cooked_beef", 5, 1, 4),
                           it("minecraft:torch", 6, 4, 12), it("aluminum_ingot", 4, 1, 4), it("minecraft:paper", 5, 2, 8),
                           it("minecraft:glass_bottle", 4, 1, 3)]),
-        (R_.rolls(0, 1), [it("space_helmet", 2), it("space_boots", 2), R_.empty(4)])])
+        (R_.rolls(0, 1), [it("space_helmet", 2), it("space_boots", 2), R_.empty(4)])]
+        + ammo(1.0, 4, 10, miss=2))
     # the Director's own safe in the lower laboratory
     R_.chest("chests/oinstein_director", [
         (R_.rolls(4, 6), base + [it("minecraft:diamond", 4, 1, 3), it("minecraft:gold_ingot", 6, 2, 5),
                                  it("minecraft:golden_apple", 3), it("titanium_ingot", 5, 2, 5),
                                  it("minecraft:experience_bottle", 6, 2, 6)] + core),
-        (1.0, [lab_notes(1)] + blaster + [it("minecraft:enchanted_golden_apple", 1)])])
+        (1.0, [lab_notes(1)] + blaster + [it("minecraft:enchanted_golden_apple", 1)])]
+        + ammo(1.0, 8, 16))
 
 
 # =====================================================================================================================

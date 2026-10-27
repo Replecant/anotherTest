@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:keycard_alpha"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.rangers_jailbreak.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.rangers_jailbreak.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {},
+  "parent": "retrocosmos:stage2/rangers_last_words"
+}

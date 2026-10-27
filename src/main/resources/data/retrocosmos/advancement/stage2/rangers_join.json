@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:ranger_blaster"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.rangers_join.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.rangers_join.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {},
+  "parent": "retrocosmos:stage2/freedom_station"
+}

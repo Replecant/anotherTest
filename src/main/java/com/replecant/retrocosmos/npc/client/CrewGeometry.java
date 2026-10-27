@@ -32,7 +32,10 @@ public final class CrewGeometry {
             Map.entry("baton", "baton"),
             Map.entry("baton_tip", "baton"),
             Map.entry("bouffant", "decorator"),
-            Map.entry("skirt", "decorator"));
+            Map.entry("skirt", "decorator"),
+            Map.entry("ranger_holster", "ranger"),
+            Map.entry("ranger_grip", "ranger"),
+            Map.entry("pith_brim", "liaison"));
 
     private CrewGeometry() {}
 
@@ -54,38 +57,44 @@ public final class CrewGeometry {
         PartDefinition left_leg = root.addOrReplaceChild("left_leg", CubeListBuilder.create(), PartPose.offset(1.9F, 12.0F, 0.0F));
         head.addOrReplaceChild("fedora_brim", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0F, -0.5F, -6.5F, 12.0F, 1.0F, 13.0F, new CubeDeformation(0.0F, -0.3F, 0.0F)),
                 PartPose.offsetAndRotation(0.0F, -5.0F, 0.0F, 0.06F, 0.0F, 0.0F));
-        body.addOrReplaceChild("satchel", CubeListBuilder.create().texOffs(0, 36).addBox(4.1F, 8.0F, -2.0F, 2.0F, 4.0F, 4.0F, new CubeDeformation(0.0F)),
+        body.addOrReplaceChild("satchel", CubeListBuilder.create().texOffs(0, 48).addBox(4.1F, 8.0F, -2.0F, 2.0F, 4.0F, 4.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        head.addOrReplaceChild("helmet_visor", CubeListBuilder.create().texOffs(24, 36).addBox(-4.5F, -7.6F, -5.0F, 9.0F, 2.0F, 1.0F, new CubeDeformation(0.0F, 0.0F, -0.2F)),
+        head.addOrReplaceChild("helmet_visor", CubeListBuilder.create().texOffs(32, 48).addBox(-4.5F, -7.6F, -5.0F, 9.0F, 2.0F, 1.0F, new CubeDeformation(0.0F, 0.0F, -0.2F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        head.addOrReplaceChild("helmet_crest", CubeListBuilder.create().texOffs(0, 26).addBox(-1.0F, -9.2F, -4.4F, 2.0F, 1.0F, 9.0F, new CubeDeformation(-0.15F, 0.0F, 0.0F)),
+        head.addOrReplaceChild("helmet_crest", CubeListBuilder.create().texOffs(0, 38).addBox(-1.0F, -9.2F, -4.4F, 2.0F, 1.0F, 9.0F, new CubeDeformation(-0.15F, 0.0F, 0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        body.addOrReplaceChild("radio_pack", CubeListBuilder.create().texOffs(26, 26).addBox(-3.0F, 1.5F, 2.3F, 6.0F, 6.0F, 2.0F, new CubeDeformation(0.0F)),
+        body.addOrReplaceChild("radio_pack", CubeListBuilder.create().texOffs(26, 38).addBox(-3.0F, 1.5F, 2.3F, 6.0F, 6.0F, 2.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        body.addOrReplaceChild("antenna", CubeListBuilder.create().texOffs(22, 26).addBox(1.5F, -6.5F, 3.0F, 1.0F, 8.0F, 1.0F, new CubeDeformation(-0.3F, 0.0F, -0.3F)),
+        body.addOrReplaceChild("antenna", CubeListBuilder.create().texOffs(22, 38).addBox(1.5F, -6.5F, 3.0F, 1.0F, 8.0F, 1.0F, new CubeDeformation(-0.3F, 0.0F, -0.3F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        body.addOrReplaceChild("antenna_tip", CubeListBuilder.create().texOffs(10, 44).addBox(1.5F, -7.5F, 3.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(-0.1F)),
+        body.addOrReplaceChild("antenna_tip", CubeListBuilder.create().texOffs(22, 56).addBox(1.5F, -7.5F, 3.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(-0.1F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_leg.addOrReplaceChild("holster", CubeListBuilder.create().texOffs(16, 36).addBox(-3.4F, 0.6F, -1.5F, 1.0F, 4.0F, 3.0F, new CubeDeformation(0.0F)),
+        right_leg.addOrReplaceChild("holster", CubeListBuilder.create().texOffs(16, 48).addBox(-3.4F, 0.6F, -1.5F, 1.0F, 4.0F, 3.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_leg.addOrReplaceChild("holster_grip", CubeListBuilder.create().texOffs(6, 44).addBox(-3.4F, -1.2F, 0.2F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F)),
+        right_leg.addOrReplaceChild("holster_grip", CubeListBuilder.create().texOffs(14, 56).addBox(-3.4F, -1.2F, 0.2F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_arm.addOrReplaceChild("pistol_barrel", CubeListBuilder.create().texOffs(12, 36).addBox(-1.5F, 8.5F, -1.2F, 1.0F, 7.0F, 1.0F, new CubeDeformation(0.0F)),
+        right_arm.addOrReplaceChild("pistol_barrel", CubeListBuilder.create().texOffs(12, 48).addBox(-1.5F, 8.5F, -1.2F, 1.0F, 7.0F, 1.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_arm.addOrReplaceChild("pistol_fins", CubeListBuilder.create().texOffs(44, 36).addBox(-2.0F, 11.5F, -1.7F, 2.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)),
+        right_arm.addOrReplaceChild("pistol_fins", CubeListBuilder.create().texOffs(52, 48).addBox(-2.0F, 11.5F, -1.7F, 2.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_arm.addOrReplaceChild("pistol_fins2", CubeListBuilder.create().texOffs(52, 36).addBox(-2.0F, 13.0F, -1.7F, 2.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)),
+        right_arm.addOrReplaceChild("pistol_fins2", CubeListBuilder.create().texOffs(0, 56).addBox(-2.0F, 13.0F, -1.7F, 2.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_arm.addOrReplaceChild("pistol_tip", CubeListBuilder.create().texOffs(14, 44).addBox(-1.5F, 15.5F, -1.2F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.1F)),
+        right_arm.addOrReplaceChild("pistol_tip", CubeListBuilder.create().texOffs(26, 56).addBox(-1.5F, 15.5F, -1.2F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.1F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_arm.addOrReplaceChild("baton", CubeListBuilder.create().texOffs(42, 26).addBox(-1.5F, 9.0F, -8.5F, 1.0F, 1.0F, 7.0F, new CubeDeformation(0.0F)),
+        right_arm.addOrReplaceChild("baton", CubeListBuilder.create().texOffs(42, 38).addBox(-1.5F, 9.0F, -8.5F, 1.0F, 1.0F, 7.0F, new CubeDeformation(0.0F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        right_arm.addOrReplaceChild("baton_tip", CubeListBuilder.create().texOffs(0, 44).addBox(-2.0F, 8.5F, -9.5F, 2.0F, 2.0F, 1.0F, new CubeDeformation(-0.2F)),
+        right_arm.addOrReplaceChild("baton_tip", CubeListBuilder.create().texOffs(8, 56).addBox(-2.0F, 8.5F, -9.5F, 2.0F, 2.0F, 1.0F, new CubeDeformation(-0.2F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        head.addOrReplaceChild("bouffant", CubeListBuilder.create().texOffs(32, 14).addBox(-4.0F, -10.2F, -4.3F, 8.0F, 2.0F, 8.0F, new CubeDeformation(0.4F)),
+        head.addOrReplaceChild("bouffant", CubeListBuilder.create().texOffs(32, 26).addBox(-4.0F, -10.2F, -4.3F, 8.0F, 2.0F, 8.0F, new CubeDeformation(0.4F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
-        body.addOrReplaceChild("skirt", CubeListBuilder.create().texOffs(0, 14).addBox(-5.0F, 11.0F, -3.0F, 10.0F, 6.0F, 6.0F, new CubeDeformation(-0.2F, 0.0F, -0.2F)),
+        body.addOrReplaceChild("skirt", CubeListBuilder.create().texOffs(0, 26).addBox(-5.0F, 11.0F, -3.0F, 10.0F, 6.0F, 6.0F, new CubeDeformation(-0.2F, 0.0F, -0.2F)),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        right_leg.addOrReplaceChild("ranger_holster", CubeListBuilder.create().texOffs(24, 48).addBox(-3.4F, 0.6F, -1.5F, 1.0F, 4.0F, 3.0F, new CubeDeformation(0.0F)),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        right_leg.addOrReplaceChild("ranger_grip", CubeListBuilder.create().texOffs(18, 56).addBox(-3.4F, -1.2F, 0.2F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F)),
+                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F));
+        head.addOrReplaceChild("pith_brim", CubeListBuilder.create().texOffs(0, 14).addBox(-5.5F, -0.5F, -5.5F, 11.0F, 1.0F, 11.0F, new CubeDeformation(0.0F, -0.3F, 0.0F)),
+                PartPose.offsetAndRotation(0.0F, -5.6F, 0.0F, 0.0F, 0.0F, 0.0F));
         return LayerDefinition.create(mesh, 64, 64);
     }
 }

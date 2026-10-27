@@ -24,7 +24,8 @@ public class CrewWanderGoal extends Goal {
             case COOPER -> 0.45;
             case GUARD -> 0.5;
             case SCIENTIST -> 0.55;
-            case DECORATOR -> 0.45;
+            case DECORATOR, RANGER -> 0.45;
+            case LIAISON, DOCTOR -> 0.5;
         };
     }
 
@@ -33,7 +34,8 @@ public class CrewWanderGoal extends Goal {
             case COOPER -> 160 + member.getRandom().nextInt(300);
             case GUARD -> 100 + member.getRandom().nextInt(260);
             case SCIENTIST -> 120 + member.getRandom().nextInt(240);
-            case DECORATOR -> 140 + member.getRandom().nextInt(260);
+            case DECORATOR, RANGER -> 140 + member.getRandom().nextInt(260);
+            case LIAISON, DOCTOR -> 120 + member.getRandom().nextInt(240);
         };
     }
 

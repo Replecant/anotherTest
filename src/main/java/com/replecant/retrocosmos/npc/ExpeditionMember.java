@@ -104,6 +104,17 @@ public class ExpeditionMember extends AbstractVillager {
     /** "playerUUID|item id" of every relic type a player has brought to Dr. Cooper. */
     private final Set<String> delivered = new LinkedHashSet<>();
     private int lastLine = -1;
+    /** Locked in a cell of Dr. Oinstein's prisoner camp. */
+    private boolean captive;
+    /** Dr. Ross after the raid: lying wounded, on his last breath. */
+    private boolean dying;
+    /** Ticks until a dying member slips away (counting only once started), -1 = not yet. */
+    private int lastBreath = -1;
+    /** Ticks until a freed captive, walking home, is out of sight and gone; 0 = not leaving. */
+    private int leaving;
+    private int pleaCooldown = 80;
+    private static final java.util.Map<java.util.UUID, Long> NEXT_PLEA = new java.util.HashMap<>();
+    private static final java.util.Map<java.util.UUID, Integer> LAST_PLEA = new java.util.HashMap<>();
     /** Probe/debug counters. */
     int shotsFired;
     int workSessions;
@@ -140,11 +151,11 @@ public class ExpeditionMember extends AbstractVillager {
         targetSelector.addGoal(1, new HurtByTargetGoal(this, Player.class, Tribesman.class, ExpeditionMember.class) {
             @Override
             public boolean canUse() {
-                return role() == CrewRole.GUARD && super.canUse();
+                return role() == CrewRole.GUARD && !captive && leaving <= 0 && super.canUse();
             }
         });
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, false,
-                (target, level) -> role() == CrewRole.GUARD && isThreat(target) && nearPost(target)));
+                (target, level) -> role() == CrewRole.GUARD && !captive && leaving <= 0 && isThreat(target) && nearPost(target)));
     }
 
     /** Hostile things the guards shoot and the scientists run from: monsters, raptors, angry neutrals. */
@@ -227,13 +238,26 @@ public class ExpeditionMember extends AbstractVillager {
     }
 
     private static int nameCount(CrewRole role, int variant) {
-        return CrewLines.names(role == CrewRole.SCIENTIST ? role.key + "." + variant : role.key);
+        return CrewLines.names(namedByLook(role) ? role.key + "." + variant : role.key);
     }
 
     private String nameKey() {
         CrewRole role = role();
-        String group = role == CrewRole.SCIENTIST ? role.key + "." + variant() : role.key;
+        String group = namedByLook(role) ? role.key + "." + variant() : role.key;
         return "npc.retrocosmos.name." + group + "." + Mth.clamp(nameIndex, 0, Math.max(0, nameCount(role, variant()) - 1));
+    }
+
+    /** Roles whose names belong to a particular look (scientists, the two doctors). */
+    private static boolean namedByLook(CrewRole role) {
+        return role == CrewRole.SCIENTIST || role == CrewRole.DOCTOR;
+    }
+
+    /** Puts a particular person in this body: look {@code variant}, name number {@code name} of that look. */
+    public void forceIdentity(int variant, int name) {
+        entityData.set(DATA_VARIANT, Mth.clamp(variant, 0, role().variants - 1));
+        nameIndex = Math.max(0, name);
+        setCustomName(personalName());
+        setCustomNameVisible(false);
     }
 
     /** "Sgt. Rourke". */
@@ -336,6 +360,9 @@ public class ExpeditionMember extends AbstractVillager {
         if (!delivered.isEmpty()) {
             output.store("Delivered", Codec.STRING.listOf(), new ArrayList<>(delivered));
         }
+        output.putBoolean("Captive", captive);
+        output.putBoolean("Dying", dying);
+        output.putInt("Leaving", leaving);
     }
 
     @Override
@@ -353,6 +380,12 @@ public class ExpeditionMember extends AbstractVillager {
         tradesVersion = input.getIntOr("LedgerVersion", 0);
         delivered.clear();
         input.read("Delivered", Codec.STRING.listOf()).ifPresent(delivered::addAll);
+        captive = input.getBooleanOr("Captive", false);
+        dying = input.getBooleanOr("Dying", false);
+        leaving = input.getIntOr("Leaving", 0);
+        if (dying) {
+            setPose(net.minecraft.world.entity.Pose.SLEEPING);
+        }
         applyRoleStats();
         if (role().isMerchant() && tradesVersion != ledgerVersion(role())) {
             offers = null;  // the ledger changed (new relics, blueprints, furniture...): fresh offers
@@ -365,6 +398,7 @@ public class ExpeditionMember extends AbstractVillager {
         return switch (role) {
             case COOPER -> CooperTrades.VERSION;
             case DECORATOR -> DecoratorTrades.VERSION;
+            case RANGER -> RangerTrades.VERSION;
             default -> 0;
         };
     }
@@ -375,7 +409,7 @@ public class ExpeditionMember extends AbstractVillager {
 
     /** Busy with something more important than strolling or tinkering. */
     public boolean isBusy() {
-        return getTarget() != null || isTrading() || saluteTicks > 0 || fleeing;
+        return getTarget() != null || isTrading() || saluteTicks > 0 || fleeing || captive || dying || leaving > 0;
     }
 
     void setFleeing(boolean fleeing) {
@@ -512,9 +546,208 @@ public class ExpeditionMember extends AbstractVillager {
         }
     }
 
+    // ------------------------------------------------------------------
+    // Captives, the dying, the freed
+    // ------------------------------------------------------------------
+
+    public boolean isCaptive() {
+        return captive;
+    }
+
+    public void setCaptive(boolean captive) {
+        this.captive = captive;
+        if (captive) {
+            setHomeTo(blockPosition(), 1);
+        }
+    }
+
+    public boolean isDying() {
+        return dying;
+    }
+
+    /** Lies down, wounded, and stays put (Dr. Ross after the raid). */
+    public void setDying(boolean dying) {
+        this.dying = dying;
+        setNoAi(dying);
+        setPose(dying ? net.minecraft.world.entity.Pose.SLEEPING : net.minecraft.world.entity.Pose.STANDING);
+    }
+
+    /** The end: a few more breaths, then he is gone (see {@link #customServerAiStep}). */
+    public void breatheLast() {
+        if (lastBreath < 0) {
+            lastBreath = 60;
+        }
+    }
+
+    public boolean isLeaving() {
+        return leaving > 0;
+    }
+
+    /** Off home: walk away from here and vanish once out of sight. */
+    public void leave() {
+        captive = false;
+        leaving = 20 * 30;
+        clearHome();
+    }
+
+    @Override
+    public net.minecraft.world.entity.EntityDimensions getDefaultDimensions(net.minecraft.world.entity.Pose pose) {
+        if (pose == net.minecraft.world.entity.Pose.SLEEPING) {
+            return net.minecraft.world.entity.EntityDimensions.fixed(1.0F, 0.45F);  // lying: still easy to click
+        }
+        return super.getDefaultDimensions(pose);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (dying && level() instanceof ServerLevel level) {
+            dyingStep(level);
+        }
+    }
+
+    private void dyingStep(ServerLevel level) {
+        if (getPose() != net.minecraft.world.entity.Pose.SLEEPING) {
+            setPose(net.minecraft.world.entity.Pose.SLEEPING);
+        }
+        if (lastBreath < 0) {
+            if (tickCount % 50 == 0) {
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR, getX(), getY() + 0.4, getZ(), 1, 0.2, 0.1, 0.2, 0.0);
+            }
+            return;
+        }
+        if (--lastBreath <= 0) {
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, getX(), getY() + 0.3, getZ(), 24, 0.4, 0.3, 0.4, 0.04);
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, getX(), getY() + 0.3, getZ(), 12, 0.4, 0.2, 0.4, 0.02);
+            playSound(SoundEvents.BEACON_DEACTIVATE, 0.6F, 0.7F);
+            com.replecant.retrocosmos.npc.quest.CampRaid.onDoctorPassed(level, this);
+            discard();
+        } else if (lastBreath % 10 == 0) {
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, getX(), getY() + 0.5, getZ(), 2, 0.2, 0.2, 0.2, 0.01);
+        }
+    }
+
+    private void captiveStep(ServerLevel level) {
+        setTarget(null);
+        getNavigation().stop();
+        endWork();
+        if (!hasHome()) {
+            setHomeTo(blockPosition(), 1);
+        }
+        Player near = level.getNearestPlayer(this, 8.0);
+        if (near == null || near.isSpectator()) {
+            return;
+        }
+        if (tickCount % 20 == 0 && tryFreeBy(level, near)) {
+            return;
+        }
+        if (--pleaCooldown <= 0) {
+            pleaCooldown = 60 + random.nextInt(60);
+            plead(level, near);
+        }
+    }
+
+    /** Frees this captive if {@code player} is close and the cell between them is open; returns whether it did. */
+    public boolean tryFreeBy(ServerLevel level, Player player) {
+        if (captive && distanceToSqr(player) < 7.0 * 7.0 && (cellOpen() || canReach(player))) {
+            free(level, player);
+            return true;
+        }
+        return false;
+    }
+
+    /** An open door, gate or hatch right by this captive: the cell door has been opened. */
+    private boolean cellOpen() {
+        BlockPos at = blockPosition();
+        for (BlockPos p : BlockPos.betweenClosed(at.offset(-3, -1, -3), at.offset(3, 2, 3))) {
+            if (p.distSqr(at) > 9.0) {
+                continue;
+            }
+            var state = level().getBlockState(p);
+            if ((state.getBlock() instanceof net.minecraft.world.level.block.DoorBlock
+                    || state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock
+                    || state.getBlock() instanceof net.minecraft.world.level.block.TrapDoorBlock)
+                    && state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN)
+                    && state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Can this captive walk to the player - i.e. is the cell open? */
+    private boolean canReach(Player player) {
+        net.minecraft.world.level.pathfinder.Path path = getNavigation().createPath(player, 1);
+        return path != null && path.canReach();
+    }
+
+    /**
+     * A plea from the cells - shared by all captives, so a player hears at most one every 40-60 seconds, only from
+     * one that can see them, and never the same line twice running.
+     */
+    private void plead(ServerLevel level, Player player) {
+        long now = level.getGameTime();
+        java.util.UUID id = player.getUUID();
+        if (now < NEXT_PLEA.getOrDefault(id, 0L) || !hasLineOfSight(player)) {
+            return;
+        }
+        NEXT_PLEA.put(id, now + 800 + random.nextInt(400));
+        int n = Math.max(1, CrewLines.count("captive.plea"));
+        int last = LAST_PLEA.getOrDefault(id, -1);
+        int line = random.nextInt(n);
+        if (n > 1 && line == last) {
+            line = (line + 1) % n;
+        }
+        LAST_PLEA.put(id, line);
+        say(player, "chat.retrocosmos.npc.captive.plea." + line);
+    }
+
+    /** The cell is open: thanks, and (for Dr. Vale) the quest goes on; everyone else heads home. */
+    public void free(ServerLevel level, Player player) {
+        if (!captive) {
+            return;
+        }
+        captive = false;
+        clearHome();
+        playSound(SoundEvents.PLAYER_LEVELUP, 0.5F, 1.4F);
+        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, getX(), getY() + 1.6, getZ(), 8, 0.4, 0.4, 0.4, 0.0);
+        if (!com.replecant.retrocosmos.npc.quest.QuestEvents.onCaptiveFreed(level, this, player)) {
+            say(player, line("captive.freed"));
+            leave();
+        }
+    }
+
+    private void leavingStep(ServerLevel level) {
+        if (--leaving <= 0 || (leaving < 20 * 25 && level.getNearestPlayer(this, 24.0) == null)) {
+            level.sendParticles(ParticleTypes.POOF, getX(), getY() + 0.8, getZ(), 6, 0.3, 0.5, 0.3, 0.01);
+            discard();
+            return;
+        }
+        if (getNavigation().isDone() && tickCount % 20 == 0) {
+            Player near = level.getNearestPlayer(this, 32.0);
+            net.minecraft.world.phys.Vec3 away = near != null
+                    ? net.minecraft.world.entity.ai.util.DefaultRandomPos.getPosAway(this, 20, 6, near.position())
+                    : net.minecraft.world.entity.ai.util.DefaultRandomPos.getPos(this, 20, 6);
+            if (away != null) {
+                getNavigation().moveTo(away.x, away.y, away.z, 0.7);
+            }
+        }
+    }
+
     @Override
     protected void customServerAiStep(ServerLevel level) {
         super.customServerAiStep(level);
+        if (captive) {
+            captiveStep(level);
+        } else if (leaving > 0) {
+            leavingStep(level);
+            if (isRemoved()) {
+                return;
+            }
+        }
+        if (role() == CrewRole.RANGER && tickCount % 200 == 7) {
+            com.replecant.retrocosmos.npc.quest.QuestEvents.rangerAt(level, this);
+        }
         if (!assigned) {
             setRole(CrewRole.SCIENTIST);
         }
@@ -540,7 +773,7 @@ public class ExpeditionMember extends AbstractVillager {
             if (saluting != null) {
                 getLookControl().setLookAt(saluting);
             }
-        } else if (getTarget() != null || fleeing) {
+        } else if (getTarget() != null || fleeing || captive || dying || leaving > 0) {
             action = ACT_NONE;
         } else if (action == ACT_NONE && role() != CrewRole.SCIENTIST && getNavigation().isDone() && !isTrading()) {
             action = ACT_AT_EASE;  // hands clasped behind the back
@@ -643,7 +876,29 @@ public class ExpeditionMember extends AbstractVillager {
         if (level().isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp && !player.isShiftKeyDown()
+                && com.replecant.retrocosmos.npc.quest.QuestDialogues.open(sp, this)) {
+            getNavigation().stop();
+            getLookControl().setLookAt(player);
+            return InteractionResult.SUCCESS;
+        }
         long now = level().getGameTime();
+        if (captive || dying || leaving > 0) {
+            if (now - lastSpoke >= 30) {
+                lastSpoke = now;
+                if (captive && level() instanceof ServerLevel server && canReach(player)) {
+                    free(server, player);
+                } else {
+                    say(player, line(captive ? "captive.plea" : dying ? "doctor.dying" : "captive.freed"));
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if (role() == CrewRole.RANGER && !com.replecant.retrocosmos.npc.quest.Quest.stage(player)
+                .atLeast(com.replecant.retrocosmos.npc.quest.QuestStage.GO_TO_VENUS)) {
+            say(player, line("ranger.idle"));  // no requisitions for civilians: join first (a plain click)
+            return InteractionResult.SUCCESS;
+        }
         if (role().isMerchant()) {
             if (isTrading()) {
                 return InteractionResult.SUCCESS;
@@ -672,8 +927,10 @@ public class ExpeditionMember extends AbstractVillager {
                     saluteTicks = 30;
                     saluting = player;
                 }
+            } else if (CrewLines.count(role().key + ".lore") > 0) {
+                say(player, line(role().key + ".lore"));
             } else {
-                say(player, line("scientist.lore"));
+                say(player, line(role().key + ".idle"));
             }
         }
         return InteractionResult.SUCCESS;
@@ -692,6 +949,8 @@ public class ExpeditionMember extends AbstractVillager {
             offers.addAll(CooperTrades.create());
         } else if (role() == CrewRole.DECORATOR) {
             offers.addAll(DecoratorTrades.create());
+        } else if (role() == CrewRole.RANGER) {
+            offers.addAll(RangerTrades.create());
         }
     }
 
@@ -709,9 +968,9 @@ public class ExpeditionMember extends AbstractVillager {
         if (player == null) {
             return;
         }
-        if (role() == CrewRole.DECORATOR) {
-            if (random.nextInt(3) == 0) {
-                say(player, line("decorator.thanks"));
+        if (role() != CrewRole.COOPER) {
+            if (random.nextInt(3) == 0 && CrewLines.count(role().key + ".thanks") > 0) {
+                say(player, line(role().key + ".thanks"));
             }
             return;
         }
@@ -770,7 +1029,7 @@ public class ExpeditionMember extends AbstractVillager {
             protest(player);
             return false;
         }
-        if (attacker instanceof ExpeditionMember || role().isMerchant()) {
+        if (attacker instanceof ExpeditionMember || role().isMerchant() || captive || dying || leaving > 0) {
             return false;  // no friendly fire; and nothing on Freedom Station is going to hurt the Doctor or Betty
         }
         if (attacker instanceof LivingEntity living && !(attacker instanceof Tribesman)) {

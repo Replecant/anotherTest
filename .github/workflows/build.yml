@@ -52,6 +52,20 @@ jobs:
           grep "STATION SMOKE" server.log || true
           grep -q "STATION SMOKE OK" server.log || { echo "::error::Freedom Station smoke test failed"; exit 1; }
 
+      - name: Ruins worldgen probe (probe-ruins only)
+        if: always() && steps.build.outcome == 'success' && github.ref == 'refs/heads/probe-ruins'
+        env:
+          RUIN_PROBE: "1"
+        run: |
+          mkdir -p run && echo "eula=true" > run/eula.txt
+          : > ruins.log
+          for SEED in venus 4242 oinstein; do
+            printf "level-name=probe_$SEED\nonline-mode=false\nlevel-seed=$SEED\nspawn-protection=0\nmax-tick-time=-1\npause-when-empty-seconds=0\n" > run/server.properties
+            echo "===== SEED $SEED" >> ruins.log
+            timeout 900 ./gradlew runServer -Pneo_version=${{ steps.neo.outputs.version }} >> ruins.log 2>&1 || true
+          done
+          mkdir -p /tmp/logs && cp ruins.log /tmp/logs/ || true; gzip -kf /tmp/logs/ruins.log || true
+
       - name: API probe (probe branch only)
         if: always() && startsWith(github.ref, 'refs/heads/probe')
         run: |

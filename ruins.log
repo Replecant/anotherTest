@@ -1,0 +1,517 @@
+===== SEED venus
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :prepareServerRun
+
+> Task :runServer
+2026-10-27T08:29:24.635562249Z main WARN Advanced terminal features are not available in this environment
+[08:29:24] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 119ms
+[08:29:24] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[08:29:24] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/run
+[08:29:24] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 19ms
+[08:29:24] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[08:29:24] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[08:29:24] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[08:29:24] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[08:29:24] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[08:29:24] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/classes/java/main:retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/resources/main from env
+[08:29:25] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[08:29:25] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		NeoForge 21.11.48 (neoforge)
+		Retro Cosmos 0.1.0 (retrocosmos)
+[08:29:25] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[08:29:25] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[08:29:25] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[08:29:25] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+ - retrocosmos (composite(folder(/home/runner/work/anotherTest/anotherTest/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/build/resources/main)))
+[08:29:25] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 25ms
+[08:29:27] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[08:29:33] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:29:33] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:29:33] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[08:29:33] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[08:29:33] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:29:33] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [waypoint, modify, waypoint, color, reset] and [waypoint, modify, waypoint, color, color] with inputs: [reset]
+[08:29:33] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[08:29:33] [modloading-worker-0/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: countdown initiated. Stage 1 - preparation.
+[08:29:33] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[08:29:35] [main/INFO] [minecraft/Main]: No existing world data, creating new world
+[08:29:36] [main/INFO] [minecraft/RecipeManager]: Loaded 1617 recipes
+[08:29:36] [main/INFO] [minecraft/AdvancementTree]: Loaded 1610 advancements
+[08:29:36] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[08:29:36] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.11
+[08:29:36] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[08:29:36] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[08:29:36] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[08:29:36] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[08:29:36] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[08:29:36] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[08:29:36] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[08:29:36] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[08:29:37] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "probe_venus"
+[08:29:37] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[08:29:42] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[08:29:42] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[08:29:42] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 4819 ms
+[08:29:42] [Server thread/INFO] [minecraft/DedicatedServer]: Done (5.190s)! For help, type "help"
+[08:29:42] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_complex at BlockPos{x=816, y=0, z=448} box=BoundingBox{minX=816, minY=85, minZ=353, maxX=911, maxY=118, maxZ=448} rot=COUNTERCLOCKWISE_90 surface water columns 69/9216 plants 0 on non-ground 0 {}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_complex BlockPos{x=864, y=102, z=401} lecterns(with book) 3 readers 3 containers {oinstein_armory=2, oinstein_lab=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=6, ~wall:oinstein_poster_insignia=8, ~wall:oinstein_poster_restricted=4}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB piece retrocosmos:oinstein/oinstein_lower_lab box=BoundingBox{minX=819, minY=54, minZ=380, maxX=881, maxY=84, maxZ=453} rot=COUNTERCLOCKWISE_90 templatePos=BlockPos{x=819, y=54, z=453} markers={oinstein_boss_anchor=BlockPos{x=840, y=56, z=435}} anchor block=retrocosmos:oinstein_boss_anchor be=net.minecraft.world.level.block.entity.BlockEntityType@5a0d73f7 start piece box=BoundingBox{minX=816, minY=85, minZ=353, maxX=911, maxY=118, maxZ=448}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB arena 40 x 40 x 16 high (scan at BlockPos{x=824, y=64, z=438})
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB shell: flood 30129 cells, template air 29543, foreign air 0, fluids 0, open above 8, leaks out of the box 0 {}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB inside the shell: plants 0, non-air in template air 1 {oinstein_boss_anchor=1}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_lower_lab BlockPos{x=850, y=69, z=417} lecterns(with book) 1 readers 0 containers {oinstein_director=1, ~wall:control_panel=21, ~wall:oinstein_poster_better_ape=2, ~wall:oinstein_poster_insignia=2, ~wall:oinstein_poster_restricted=2}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_lower_lab at start (lab box only): {atomic_automaton=1, atomic_sentry=1, hominid_novus=1, hominus_sapiens=2, tribesman=7}
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER A at BlockPos{x=816, y=88, z=406} facing west guards BlockPos{x=818, y=88, z=404}: powered barrier blocks 48 -> empty hand 48 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 48 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_alpha
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER B at BlockPos{x=855, y=88, z=407} facing west guards BlockPos{x=856, y=88, z=405}: powered barrier blocks 80 -> empty hand 80 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 80 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_beta
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER C at BlockPos{x=876, y=88, z=404} facing west guards BlockPos{x=877, y=88, z=403}: powered barrier blocks 42 -> empty hand 42 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 42 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_gamma
+[08:29:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READERS found [A, B, C]
+[08:29:51] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_capture_camp at BlockPos{x=-480, y=0, z=384} box=BoundingBox{minX=-480, minY=80, minZ=384, maxX=-456, maxY=93, maxZ=407} rot=NONE surface water columns 0/600 plants 8 on non-ground 0 {}
+[08:29:51] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_capture_camp BlockPos{x=-468, y=87, z=396} lecterns(with book) 1 readers 0 containers {oinstein_keycard_a=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=2}
+[08:29:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_capture_camp at BlockPos{x=3168, y=0, z=-4032} box=BoundingBox{minX=3168, minY=94, minZ=-4056, maxX=3191, maxY=107, maxZ=-4032} rot=COUNTERCLOCKWISE_90 surface water columns 0/600 plants 17 on non-ground 0 {}
+[08:29:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_capture_camp BlockPos{x=3180, y=101, z=-4044} lecterns(with book) 1 readers 0 containers {oinstein_keycard_a=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=2}
+[08:29:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_field_lab at BlockPos{x=-528, y=0, z=1136} box=BoundingBox{minX=-547, minY=68, minZ=1136, maxX=-528, maxY=78, maxZ=1152} rot=CLOCKWISE_90 surface water columns 0/340 plants 28 on non-ground 0 {}
+[08:29:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_field_lab BlockPos{x=-537, y=73, z=1144} lecterns(with book) 1 readers 0 containers {oinstein_keycard_c=1, oinstein_lab=1, ~wall:oinstein_poster_insignia=2}
+[08:29:59] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_field_lab at BlockPos{x=2208, y=0, z=-768} box=BoundingBox{minX=2192, minY=76, minZ=-787, maxX=2208, maxY=86, maxZ=-768} rot=CLOCKWISE_180 surface water columns 0/340 plants 32 on non-ground 0 {}
+[08:29:59] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_field_lab BlockPos{x=2200, y=81, z=-777} lecterns(with book) 1 readers 0 containers {oinstein_keycard_c=1, oinstein_lab=1, ~wall:oinstein_poster_insignia=2}
+[08:30:04] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_relay_pylon at BlockPos{x=-3536, y=0, z=3664} box=BoundingBox{minX=-3552, minY=67, minZ=3664, maxX=-3536, maxY=94, maxZ=3680} rot=CLOCKWISE_90 surface water columns 0/289 plants 0 on non-ground 0 {}
+[08:30:04] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_relay_pylon BlockPos{x=-3544, y=81, z=3672} lecterns(with book) 0 readers 0 containers {oinstein_keycard_b=1, oinstein_outpost=1}
+[08:30:06] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_relay_pylon at BlockPos{x=2256, y=0, z=-3984} box=BoundingBox{minX=2256, minY=72, minZ=-4000, maxX=2272, maxY=99, maxZ=-3984} rot=COUNTERCLOCKWISE_90 surface water columns 0/289 plants 0 on non-ground 0 {}
+[08:30:06] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_relay_pylon BlockPos{x=2264, y=86, z=-3992} lecterns(with book) 0 readers 0 containers {oinstein_keycard_b=1, oinstein_outpost=1}
+[08:30:08] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_checkpoint at BlockPos{x=-432, y=0, z=2064} box=BoundingBox{minX=-444, minY=124, minZ=2064, maxX=-432, maxY=132, maxZ=2078} rot=CLOCKWISE_90 surface water columns 0/195 plants 0 on non-ground 0 {}
+[08:30:08] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_checkpoint BlockPos{x=-438, y=128, z=2071} lecterns(with book) 1 readers 0 containers {oinstein_outpost=1}
+[08:30:10] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_checkpoint at BlockPos{x=1104, y=0, z=-1568} box=BoundingBox{minX=1104, minY=66, minZ=-1582, maxX=1116, maxY=74, maxZ=-1568} rot=COUNTERCLOCKWISE_90 surface water columns 0/195 plants 1 on non-ground 0 {}
+[08:30:10] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_checkpoint BlockPos{x=1110, y=70, z=-1575} lecterns(with book) 1 readers 0 containers {oinstein_outpost=1}
+[08:30:13] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_pyramid at BlockPos{x=-848, y=0, z=1264} box=BoundingBox{minX=-848, minY=104, minZ=1238, maxX=-818, maxY=130, maxZ=1264} rot=COUNTERCLOCKWISE_90 surface water columns 0/837 plants 90 on non-ground 0 {}
+[08:30:15] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_pyramid at BlockPos{x=2560, y=0, z=-3776} box=BoundingBox{minX=2560, minY=85, minZ=-3776, maxX=2586, maxY=111, maxZ=-3746} rot=NONE surface water columns 0/837 plants 90 on non-ground 0 {}
+[08:30:17] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ziggurat at BlockPos{x=80, y=0, z=-1424} box=BoundingBox{minX=36, minY=71, minZ=-1464, maxX=80, maxY=104, maxZ=-1424} rot=CLOCKWISE_180 surface water columns 0/1845 plants 197 on non-ground 0 {}
+[08:30:17] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ziggurat at BlockPos{x=80, y=0, z=-1424} box=BoundingBox{minX=36, minY=71, minZ=-1464, maxX=80, maxY=104, maxZ=-1424} rot=CLOCKWISE_180 surface water columns 0/1845 plants 197 on non-ground 0 {}
+[08:30:30] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ruined_village at BlockPos{x=1648, y=0, z=272} box=BoundingBox{minX=1628, minY=73, minZ=252, maxX=1648, maxY=78, maxZ=272} rot=CLOCKWISE_180 surface water columns 0/441 plants 97 on non-ground 3 {air=2, venus_fire_lily=1}
+[08:30:31] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ruined_village at BlockPos{x=1648, y=0, z=272} box=BoundingBox{minX=1628, minY=73, minZ=252, maxX=1648, maxY=78, maxZ=272} rot=CLOCKWISE_180 surface water columns 0/441 plants 97 on non-ground 3 {air=2, venus_fire_lily=1}
+[08:30:32] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_shrine at BlockPos{x=304, y=0, z=672} box=BoundingBox{minX=304, minY=69, minZ=672, maxX=312, maxY=77, maxZ=682} rot=NONE surface water columns 0/99 plants 16 on non-ground 2 {venusian_temple_bricks=2}
+[08:30:34] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_shrine at BlockPos{x=2144, y=0, z=-1616} box=BoundingBox{minX=2144, minY=62, minZ=-1624, maxX=2154, maxY=70, maxZ=-1616} rot=COUNTERCLOCKWISE_90 surface water columns 0/99 plants 20 on non-ground 4 {venusian_carved_stone=1, venusian_cracked_temple_bricks=1, venusian_temple_bricks=2}
+[08:30:35] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT tribal_camp at BlockPos{x=48, y=0, z=416} box=BoundingBox{minX=22, minY=80, minZ=416, maxX=48, maxY=91, maxZ=442} rot=CLOCKWISE_90 surface water columns 0/729 plants 22 on non-ground 8 {dirt_path=2, packed_mud=3, venus_planks=3}
+[08:30:37] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT tribal_camp at BlockPos{x=1664, y=0, z=-3008} box=BoundingBox{minX=1638, minY=66, minZ=-3008, maxX=1664, maxY=77, maxZ=-2982} rot=CLOCKWISE_90 surface water columns 0/729 plants 22 on non-ground 8 {dirt_path=2, packed_mud=3, venus_planks=3}
+[08:30:51] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Oinstein prison camp built at BlockPos{x=400, y=65, z=6} (origin BlockPos{x=380, y=64, z=-14}, relief 3; site search 11621 ms, building 1999 ms)
+[08:30:51] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON at BlockPos{x=400, y=65, z=6} (400 blocks from BlockPos{x=0, y=64, z=0}, 13660 ms): blocks 4033, problems 0 {}, water 0, loose items 0, mobs {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}, prisoners 6 [scientist guard scientist doctor(vale) guard scientist] next to their door 6, cells opened by their lever 6/6
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Oinstein prison camp built at BlockPos{x=3080, y=65, z=-1817} (origin BlockPos{x=3060, y=64, z=-1837}, relief 3; site search 3961 ms, building 1777 ms)
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON at BlockPos{x=3080, y=65, z=-1817} (199 blocks from BlockPos{x=3000, y=64, z=-2000}, 5754 ms): blocks 4033, problems 0 {}, water 0, loose items 0, mobs {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}, prisoners 6 [scientist guard scientist doctor(vale) guard scientist] next to their door 6, cells opened by their lever 6/6
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_complex monster list at BlockPos{x=864, y=102, z=401}: [atomic_sentry atomic_automaton hominid_novus hominus_sapiens ] novus natural rule pass 0/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=-468, y=82, z=396}: [tyrannosaurus ] novus natural rule pass 0/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=3180, y=96, z=-4044}: [tyrannosaurus ] novus natural rule pass 0/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=-537, y=74, z=1144}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 106/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=2200, y=82, z=-777}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 103/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=-3544, y=94, z=3672}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 90/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=2264, y=99, z=-3992}: [tyrannosaurus ] novus natural rule pass 110/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=-438, y=126, z=2071}: [tyrannosaurus ] novus natural rule pass 101/400
+[08:30:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=1110, y=68, z=-1575}: [venus_creeper deinosuchus ] novus natural rule pass 108/400
+[08:31:02] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 5025ms or 100 ticks behind
+[08:31:12] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 200 at 1793089872191
+[08:31:22] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 400 at 1793089882190
+[08:31:32] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 600 at 1793089892193
+[08:31:42] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 800 at 1793089902191
+[08:31:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 1000 at 1793089912190
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 1200 at 1793089922193
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON garrison after reload at BlockPos{x=380, y=64, z=-14}: {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON garrison after reload at BlockPos{x=3060, y=64, z=-1837}: {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_complex after 1 min at BlockPos{x=864, y=102, z=401}: {atomic_automaton=3, atomic_sentry=5, hominid_novus=4, hominus_sapiens=2, tribesman=11}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_capture_camp after 1 min at BlockPos{x=-468, y=87, z=396}: {atomic_sentry=1, hominid_novus=2, tribesman=4}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_capture_camp after 1 min at BlockPos{x=3180, y=101, z=-4044}: {atomic_sentry=1, hominid_novus=2, tribesman=4}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_field_lab after 1 min at BlockPos{x=-537, y=73, z=1144}: {hominus_sapiens=1, tribesman=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_field_lab after 1 min at BlockPos{x=2200, y=81, z=-777}: {hominus_sapiens=1, tribesman=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_relay_pylon after 1 min at BlockPos{x=-3544, y=81, z=3672}: {atomic_automaton=1, atomic_sentry=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_relay_pylon after 1 min at BlockPos{x=2264, y=86, z=-3992}: {atomic_automaton=1, atomic_sentry=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_checkpoint after 1 min at BlockPos{x=-438, y=128, z=2071}: {atomic_sentry=1, hominid_novus=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_checkpoint after 1 min at BlockPos{x=1110, y=70, z=-1575}: {atomic_sentry=1, hominid_novus=1}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_lower_lab after 1 min (lab box only): {atomic_automaton=1, atomic_sentry=1, hominid_novus=1, hominus_sapiens=2, tribesman=8}
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_complex monster list at BlockPos{x=864, y=102, z=401}: [atomic_sentry atomic_automaton hominid_novus hominus_sapiens ] novus natural rule pass 0/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=-468, y=82, z=396}: [tyrannosaurus ] novus natural rule pass 0/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=3180, y=96, z=-4044}: [tyrannosaurus ] novus natural rule pass 0/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=-537, y=74, z=1144}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 112/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=2200, y=82, z=-777}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 113/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=-3544, y=94, z=3672}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 89/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=2264, y=99, z=-3992}: [tyrannosaurus ] novus natural rule pass 94/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=-438, y=126, z=2071}: [tyrannosaurus ] novus natural rule pass 96/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=1110, y=68, z=-1575}: [venus_creeper deinosuchus ] novus natural rule pass 108/400
+[08:32:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PROBE DONE
+[08:32:02] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[08:32:02] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[08:32:02] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_venus]'/minecraft:overworld
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_venus]'/minecraft:the_nether
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_venus]'/retrocosmos:freedom_station
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_venus]'/minecraft:the_end
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_venus]'/retrocosmos:venus
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (probe_venus): All chunks are saved
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (freedom_station): All chunks are saved
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (venus): All chunks are saved
+[08:32:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[08:32:09] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Closing FML Loader 582bcf4b
+[08:32:09] [main/INFO] [ne.ne.fm.ModLoader/]: Clearing ModLoader
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1793089763738.json
+
+BUILD SUCCESSFUL in 2m 47s
+6 actionable tasks: 2 executed, 4 up-to-date
+===== SEED 4242
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :prepareServerRun UP-TO-DATE
+
+> Task :runServer
+2026-10-27T08:32:11.921932544Z main WARN Advanced terminal features are not available in this environment
+[08:32:12] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 130ms
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/run
+[08:32:12] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 22ms
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[08:32:12] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[08:32:12] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[08:32:12] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/classes/java/main:retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/resources/main from env
+[08:32:12] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[08:32:12] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		NeoForge 21.11.48 (neoforge)
+		Retro Cosmos 0.1.0 (retrocosmos)
+[08:32:12] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[08:32:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[08:32:13] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+ - retrocosmos (composite(folder(/home/runner/work/anotherTest/anotherTest/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/build/resources/main)))
+[08:32:13] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 27ms
+[08:32:14] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[08:32:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:32:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:32:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[08:32:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[08:32:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:32:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [waypoint, modify, waypoint, color, reset] and [waypoint, modify, waypoint, color, color] with inputs: [reset]
+[08:32:20] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[08:32:20] [modloading-worker-0/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: countdown initiated. Stage 1 - preparation.
+[08:32:21] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[08:32:23] [main/INFO] [minecraft/Main]: No existing world data, creating new world
+[08:32:24] [main/INFO] [minecraft/RecipeManager]: Loaded 1617 recipes
+[08:32:24] [main/INFO] [minecraft/AdvancementTree]: Loaded 1610 advancements
+[08:32:24] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[08:32:24] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.11
+[08:32:24] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[08:32:24] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[08:32:24] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[08:32:24] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[08:32:24] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[08:32:24] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[08:32:24] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[08:32:24] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[08:32:24] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "probe_4242"
+[08:32:25] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[08:32:29] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[08:32:29] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[08:32:29] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 4251 ms
+[08:32:29] [Server thread/INFO] [minecraft/DedicatedServer]: Done (4.716s)! For help, type "help"
+[08:32:29] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_complex at BlockPos{x=512, y=0, z=288} box=BoundingBox{minX=433, minY=62, minZ=225, maxX=528, maxY=95, maxZ=320} rot=CLOCKWISE_180 surface water columns 69/9216 plants 0 on non-ground 0 {}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_complex BlockPos{x=481, y=79, z=273} lecterns(with book) 3 readers 3 containers {oinstein_armory=2, oinstein_lab=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=6, ~wall:oinstein_poster_insignia=8, ~wall:oinstein_poster_restricted=4}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB piece retrocosmos:oinstein/oinstein_lower_lab box=BoundingBox{minX=460, minY=31, minZ=255, maxX=533, maxY=61, maxZ=317} rot=CLOCKWISE_180 templatePos=BlockPos{x=533, y=31, z=317} markers={oinstein_boss_anchor=BlockPos{x=515, y=33, z=296}} anchor block=retrocosmos:oinstein_boss_anchor be=net.minecraft.world.level.block.entity.BlockEntityType@7578d7c start piece box=BoundingBox{minX=433, minY=62, minZ=225, maxX=528, maxY=95, maxZ=320}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB arena 40 x 40 x 16 high (scan at BlockPos{x=518, y=41, z=312})
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB shell: flood 30129 cells, template air 29543, foreign air 0, fluids 0, open above 8, leaks out of the box 0 {}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB inside the shell: plants 0, non-air in template air 1 {oinstein_boss_anchor=1}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_lower_lab BlockPos{x=497, y=46, z=286} lecterns(with book) 1 readers 0 containers {oinstein_director=1, ~wall:control_panel=21, ~wall:oinstein_poster_better_ape=2, ~wall:oinstein_poster_insignia=2, ~wall:oinstein_poster_restricted=2}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_lower_lab at start (lab box only): {atomic_automaton=1, atomic_sentry=1, hominid_novus=1, hominus_sapiens=2, tribesman=8}
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER A at BlockPos{x=486, y=65, z=320} facing south guards BlockPos{x=484, y=65, z=318}: powered barrier blocks 48 -> empty hand 48 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 48 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_alpha
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER B at BlockPos{x=487, y=65, z=281} facing south guards BlockPos{x=485, y=65, z=280}: powered barrier blocks 80 -> empty hand 80 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 80 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_beta
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER C at BlockPos{x=484, y=65, z=260} facing south guards BlockPos{x=483, y=65, z=259}: powered barrier blocks 42 -> empty hand 42 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 42 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_gamma
+[08:32:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READERS found [A, B, C]
+[08:32:40] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_capture_camp at BlockPos{x=48, y=0, z=1152} box=BoundingBox{minX=25, minY=62, minZ=1152, maxX=48, maxY=75, maxZ=1176} rot=CLOCKWISE_90 surface water columns 0/600 plants 19 on non-ground 0 {}
+[08:32:40] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_capture_camp BlockPos{x=37, y=69, z=1164} lecterns(with book) 1 readers 0 containers {oinstein_keycard_a=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=2}
+[08:32:43] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_capture_camp at BlockPos{x=2736, y=0, z=-1440} box=BoundingBox{minX=2736, minY=66, minZ=-1464, maxX=2759, maxY=79, maxZ=-1440} rot=COUNTERCLOCKWISE_90 surface water columns 0/600 plants 16 on non-ground 0 {}
+[08:32:43] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_capture_camp BlockPos{x=2748, y=73, z=-1452} lecterns(with book) 1 readers 0 containers {oinstein_keycard_a=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=2}
+[08:32:46] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_field_lab at BlockPos{x=-2240, y=0, z=1088} box=BoundingBox{minX=-2240, minY=108, minZ=1072, maxX=-2221, maxY=118, maxZ=1088} rot=COUNTERCLOCKWISE_90 surface water columns 0/340 plants 51 on non-ground 0 {}
+[08:32:46] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_field_lab BlockPos{x=-2230, y=113, z=1080} lecterns(with book) 1 readers 0 containers {oinstein_keycard_c=1, oinstein_lab=1, ~wall:oinstein_poster_insignia=2}
+[08:32:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_field_lab at BlockPos{x=2864, y=0, z=-3360} box=BoundingBox{minX=2848, minY=92, minZ=-3379, maxX=2864, maxY=102, maxZ=-3360} rot=CLOCKWISE_180 surface water columns 0/340 plants 6 on non-ground 0 {}
+[08:32:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_field_lab BlockPos{x=2856, y=97, z=-3369} lecterns(with book) 1 readers 0 containers {oinstein_keycard_c=1, oinstein_lab=1, ~wall:oinstein_poster_insignia=2}
+[08:32:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_relay_pylon at BlockPos{x=1344, y=0, z=-576} box=BoundingBox{minX=1344, minY=64, minZ=-576, maxX=1360, maxY=91, maxZ=-560} rot=NONE surface water columns 0/289 plants 5 on non-ground 0 {}
+[08:32:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_relay_pylon BlockPos{x=1352, y=78, z=-568} lecterns(with book) 0 readers 0 containers {oinstein_keycard_b=1, oinstein_outpost=1}
+[08:32:53] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_relay_pylon at BlockPos{x=1344, y=0, z=-576} box=BoundingBox{minX=1344, minY=64, minZ=-576, maxX=1360, maxY=91, maxZ=-560} rot=NONE surface water columns 0/289 plants 5 on non-ground 0 {}
+[08:32:53] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_relay_pylon BlockPos{x=1352, y=78, z=-568} lecterns(with book) 0 readers 0 containers {oinstein_keycard_b=1, oinstein_outpost=1}
+[08:32:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_checkpoint at BlockPos{x=2192, y=0, z=-1312} box=BoundingBox{minX=2192, minY=69, minZ=-1312, maxX=2206, maxY=77, maxZ=-1300} rot=NONE surface water columns 0/195 plants 0 on non-ground 0 {}
+[08:32:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_checkpoint BlockPos{x=2199, y=73, z=-1306} lecterns(with book) 1 readers 0 containers {oinstein_outpost=1}
+[08:32:55] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_checkpoint at BlockPos{x=2192, y=0, z=-1312} box=BoundingBox{minX=2192, minY=69, minZ=-1312, maxX=2206, maxY=77, maxZ=-1300} rot=NONE surface water columns 0/195 plants 0 on non-ground 0 {}
+[08:32:55] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_checkpoint BlockPos{x=2199, y=73, z=-1306} lecterns(with book) 1 readers 0 containers {oinstein_outpost=1}
+[08:32:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_pyramid at BlockPos{x=1424, y=0, z=416} box=BoundingBox{minX=1424, minY=71, minZ=390, maxX=1454, maxY=97, maxZ=416} rot=COUNTERCLOCKWISE_90 surface water columns 0/837 plants 100 on non-ground 0 {}
+[08:33:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_pyramid at BlockPos{x=1376, y=0, z=-1776} box=BoundingBox{minX=1376, minY=62, minZ=-1802, maxX=1406, maxY=88, maxZ=-1776} rot=COUNTERCLOCKWISE_90 surface water columns 0/837 plants 92 on non-ground 0 {}
+[08:33:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ziggurat at BlockPos{x=-1200, y=0, z=-1136} box=BoundingBox{minX=-1240, minY=64, minZ=-1136, maxX=-1200, maxY=97, maxZ=-1092} rot=CLOCKWISE_90 surface water columns 0/1845 plants 195 on non-ground 0 {}
+[08:33:05] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ziggurat at BlockPos{x=864, y=0, z=-4048} box=BoundingBox{minX=864, minY=67, minZ=-4092, maxX=904, maxY=100, maxZ=-4048} rot=COUNTERCLOCKWISE_90 surface water columns 0/1845 plants 199 on non-ground 0 {}
+[08:33:28] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ruined_village at BlockPos{x=2880, y=0, z=2896} box=BoundingBox{minX=2860, minY=79, minZ=2896, maxX=2880, maxY=84, maxZ=2916} rot=CLOCKWISE_90 surface water columns 0/441 plants 132 on non-ground 0 {}
+[08:33:37] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ruined_village at BlockPos{x=2320, y=0, z=-3216} box=BoundingBox{minX=2320, minY=73, minZ=-3236, maxX=2340, maxY=78, maxZ=-3216} rot=COUNTERCLOCKWISE_90 surface water columns 0/441 plants 113 on non-ground 0 {}
+[08:33:38] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_shrine at BlockPos{x=80, y=0, z=128} box=BoundingBox{minX=80, minY=96, minZ=128, maxX=92, maxY=101, maxZ=140} rot=NONE surface water columns 0/169 plants 75 on non-ground 0 {}
+[08:33:40] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_shrine at BlockPos{x=1920, y=0, z=-1600} box=BoundingBox{minX=1912, minY=70, minZ=-1600, maxX=1920, maxY=80, maxZ=-1592} rot=CLOCKWISE_90 surface water columns 0/81 plants 18 on non-ground 0 {}
+[08:33:42] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT tribal_camp at BlockPos{x=848, y=0, z=-608} box=BoundingBox{minX=822, minY=97, minZ=-608, maxX=848, maxY=108, maxZ=-582} rot=CLOCKWISE_90 surface water columns 0/729 plants 20 on non-ground 6 {dirt_path=2, packed_mud=2, venus_planks=2}
+[08:33:43] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT tribal_camp at BlockPos{x=2864, y=0, z=-2960} box=BoundingBox{minX=2838, minY=72, minZ=-2960, maxX=2864, maxY=83, maxZ=-2934} rot=CLOCKWISE_90 surface water columns 0/729 plants 23 on non-ground 8 {dirt_path=2, packed_mud=3, venus_planks=3}
+[08:33:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Oinstein prison camp built at BlockPos{x=-145, y=65, z=-172} (origin BlockPos{x=-165, y=64, z=-192}, relief 3; site search 6414 ms, building 1772 ms)
+[08:33:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON at BlockPos{x=-145, y=65, z=-172} (224 blocks from BlockPos{x=0, y=64, z=0}, 8224 ms): blocks 4033, problems 0 {}, water 0, loose items 0, mobs {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}, prisoners 6 [scientist guard scientist doctor(vale) guard scientist] next to their door 6, cells opened by their lever 6/6
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Oinstein prison camp built at BlockPos{x=3139, y=65, z=-1823} (origin BlockPos{x=3119, y=64, z=-1843}, relief 5; site search 3729 ms, building 1635 ms)
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON at BlockPos{x=3139, y=65, z=-1823} (225 blocks from BlockPos{x=3000, y=64, z=-2000}, 5381 ms): blocks 4033, problems 0 {}, water 0, loose items 0, mobs {atomic_automaton=1, atomic_sentry=2, compsognathus=3, hominid_novus=2, hominus_sapiens=1}, prisoners 6 [scientist guard scientist doctor(vale) guard scientist] next to their door 6, cells opened by their lever 6/6
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_complex monster list at BlockPos{x=481, y=79, z=273}: [atomic_sentry atomic_automaton hominid_novus hominus_sapiens ] novus natural rule pass 0/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=37, y=64, z=1164}: [tyrannosaurus ] novus natural rule pass 0/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=2748, y=68, z=-1452}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 0/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=-2230, y=114, z=1080}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 95/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=2856, y=98, z=-3369}: [tyrannosaurus ] novus natural rule pass 95/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=1352, y=91, z=-568}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 86/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=1352, y=91, z=-568}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 106/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=2199, y=71, z=-1306}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 91/400
+[08:33:57] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=2199, y=71, z=-1306}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 94/400
+[08:34:03] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 6202ms or 124 ticks behind
+[08:34:13] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 200 at 1793090053649
+[08:34:23] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 400 at 1793090063648
+[08:34:33] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 600 at 1793090073648
+[08:34:43] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 800 at 1793090083648
+[08:34:53] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 1000 at 1793090093649
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 1200 at 1793090103649
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON garrison after reload at BlockPos{x=-165, y=64, z=-192}: {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON garrison after reload at BlockPos{x=3119, y=64, z=-1843}: {atomic_automaton=1, atomic_sentry=2, compsognathus=3, hominid_novus=2, hominus_sapiens=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_complex after 1 min at BlockPos{x=481, y=79, z=273}: {atomic_automaton=3, atomic_sentry=5, hominid_novus=4, hominus_sapiens=2, tribesman=11}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_capture_camp after 1 min at BlockPos{x=37, y=69, z=1164}: {atomic_sentry=1, hominid_novus=2, tribesman=4}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_capture_camp after 1 min at BlockPos{x=2748, y=73, z=-1452}: {atomic_sentry=1, hominid_novus=2, tribesman=4}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_field_lab after 1 min at BlockPos{x=-2230, y=113, z=1080}: {hominid_novus=1, hominus_sapiens=1, tribesman=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_field_lab after 1 min at BlockPos{x=2856, y=97, z=-3369}: {hominid_novus=1, hominus_sapiens=1, tribesman=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_relay_pylon after 1 min at BlockPos{x=1352, y=78, z=-568}: {atomic_automaton=1, atomic_sentry=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_relay_pylon after 1 min at BlockPos{x=1352, y=78, z=-568}: {atomic_automaton=1, atomic_sentry=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_checkpoint after 1 min at BlockPos{x=2199, y=73, z=-1306}: {atomic_sentry=1, hominid_novus=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_checkpoint after 1 min at BlockPos{x=2199, y=73, z=-1306}: {atomic_sentry=1, hominid_novus=1}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_lower_lab after 1 min (lab box only): {atomic_automaton=1, atomic_sentry=1, hominid_novus=1, hominus_sapiens=2, tribesman=8}
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_complex monster list at BlockPos{x=481, y=79, z=273}: [atomic_sentry atomic_automaton hominid_novus hominus_sapiens ] novus natural rule pass 0/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=37, y=64, z=1164}: [tyrannosaurus ] novus natural rule pass 0/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=2748, y=68, z=-1452}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 0/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=-2230, y=114, z=1080}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 98/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=2856, y=98, z=-3369}: [tyrannosaurus ] novus natural rule pass 110/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=1352, y=91, z=-568}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 100/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=1352, y=91, z=-568}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 102/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=2199, y=71, z=-1306}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 99/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=2199, y=71, z=-1306}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 93/400
+[08:35:03] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PROBE DONE
+[08:35:03] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[08:35:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[08:35:03] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/minecraft:overworld
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/retrocosmos:venus
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/retrocosmos:freedom_station
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/minecraft:the_end
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/minecraft:the_nether
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (probe_4242): All chunks are saved
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (venus): All chunks are saved
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (freedom_station): All chunks are saved
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[08:35:10] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Closing FML Loader 4f90a5e1
+[08:35:10] [main/INFO] [ne.ne.fm.ModLoader/]: Clearing ModLoader
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1793089931039.json
+
+BUILD SUCCESSFUL in 3m
+6 actionable tasks: 1 executed, 5 up-to-date
+===== SEED oinstein
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :prepareServerRun UP-TO-DATE
+
+> Task :runServer
+2026-10-27T08:35:12.135496684Z main WARN Advanced terminal features are not available in this environment
+[08:35:12] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 153ms
+[08:35:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[08:35:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/run
+[08:35:12] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 19ms
+[08:35:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[08:35:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[08:35:12] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[08:35:12] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[08:35:12] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[08:35:12] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/classes/java/main:retrocosmos%%/home/runner/work/anotherTest/anotherTest/build/resources/main from env
+[08:35:12] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[08:35:12] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		NeoForge 21.11.48 (neoforge)
+		Retro Cosmos 0.1.0 (retrocosmos)
+[08:35:13] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[08:35:13] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[08:35:13] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[08:35:13] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+ - retrocosmos (composite(folder(/home/runner/work/anotherTest/anotherTest/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/build/resources/main)))
+[08:35:13] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 31ms
+[08:35:14] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[08:35:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:35:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:35:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[08:35:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[08:35:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[08:35:20] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [waypoint, modify, waypoint, color, reset] and [waypoint, modify, waypoint, color, color] with inputs: [reset]
+[08:35:20] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[08:35:20] [modloading-worker-0/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: countdown initiated. Stage 1 - preparation.
+[08:35:21] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[08:35:22] [main/INFO] [minecraft/Main]: No existing world data, creating new world
+[08:35:24] [main/INFO] [minecraft/RecipeManager]: Loaded 1617 recipes
+[08:35:24] [main/INFO] [minecraft/AdvancementTree]: Loaded 1610 advancements
+[08:35:24] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[08:35:24] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.11
+[08:35:24] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[08:35:24] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[08:35:24] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[08:35:24] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[08:35:24] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[08:35:24] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[08:35:24] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[08:35:24] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[08:35:24] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "probe_oinstein"
+[08:35:24] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[08:35:29] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[08:35:29] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[08:35:29] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 5007 ms
+[08:35:29] [Server thread/INFO] [minecraft/DedicatedServer]: Done (5.446s)! For help, type "help"
+[08:35:29] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_complex at BlockPos{x=768, y=0, z=48} box=BoundingBox{minX=768, minY=75, minZ=64, maxX=863, maxY=108, maxZ=159} rot=NONE surface water columns 69/9216 plants 0 on non-ground 0 {}
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_complex BlockPos{x=816, y=92, z=112} lecterns(with book) 3 readers 3 containers {oinstein_armory=2, oinstein_lab=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=6, ~wall:oinstein_poster_insignia=8, ~wall:oinstein_poster_restricted=4}
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB piece retrocosmos:oinstein/oinstein_lower_lab box=BoundingBox{minX=763, minY=44, minZ=67, maxX=836, maxY=74, maxZ=129} rot=NONE templatePos=BlockPos{x=763, y=44, z=67} markers={oinstein_boss_anchor=BlockPos{x=781, y=46, z=88}} anchor block=retrocosmos:oinstein_boss_anchor be=net.minecraft.world.level.block.entity.BlockEntityType@70e820de start piece box=BoundingBox{minX=768, minY=75, minZ=64, maxX=863, maxY=108, maxZ=159}
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB arena 40 x 40 x 16 high (scan at BlockPos{x=778, y=54, z=72})
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB shell: flood 30129 cells, template air 29543, foreign air 0, fluids 0, open above 8, leaks out of the box 0 {}
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LAB inside the shell: plants 0, non-air in template air 1 {oinstein_boss_anchor=1}
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_lower_lab BlockPos{x=800, y=59, z=98} lecterns(with book) 1 readers 0 containers {oinstein_director=1, ~wall:control_panel=21, ~wall:oinstein_poster_better_ape=2, ~wall:oinstein_poster_insignia=2, ~wall:oinstein_poster_restricted=2}
+[08:35:36] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_lower_lab at start (lab box only): {atomic_automaton=1, atomic_sentry=1, hominid_novus=1, hominus_sapiens=2, tribesman=7}
+[08:35:37] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER A at BlockPos{x=810, y=78, z=64} facing north guards BlockPos{x=812, y=78, z=66}: powered barrier blocks 48 -> empty hand 48 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 48 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_alpha
+[08:35:37] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER B at BlockPos{x=809, y=78, z=103} facing north guards BlockPos{x=811, y=78, z=104}: powered barrier blocks 80 -> empty hand 80 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 80 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_beta
+[08:35:37] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READER C at BlockPos{x=812, y=78, z=124} facing north guards BlockPos{x=813, y=78, z=125}: powered barrier blocks 42 -> empty hand 42 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]]) -> wrong card 42 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], denied) -> right card 0 (Success[swingSource=CLIENT, itemContext=ItemContext[wasItemInteraction=true, heldItemTransformedTo=null]], granted); card kept: 1 retrocosmos:keycard_gamma
+[08:35:37] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN READERS found [A, B, C]
+[08:35:40] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_capture_camp at BlockPos{x=1344, y=0, z=-496} box=BoundingBox{minX=1320, minY=71, minZ=-519, maxX=1344, maxY=84, maxZ=-496} rot=CLOCKWISE_180 surface water columns 0/600 plants 8 on non-ground 0 {}
+[08:35:40] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_capture_camp BlockPos{x=1332, y=78, z=-507} lecterns(with book) 1 readers 0 containers {oinstein_keycard_a=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=2}
+[08:35:42] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_capture_camp at BlockPos{x=2688, y=0, z=-2672} box=BoundingBox{minX=2688, minY=65, minZ=-2696, maxX=2711, maxY=78, maxZ=-2672} rot=COUNTERCLOCKWISE_90 surface water columns 0/600 plants 15 on non-ground 0 {}
+[08:35:42] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_capture_camp BlockPos{x=2700, y=72, z=-2684} lecterns(with book) 1 readers 0 containers {oinstein_keycard_a=1, oinstein_outpost=2, ~wall:oinstein_poster_better_ape=2}
+[08:35:45] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_field_lab at BlockPos{x=-720, y=0, z=1008} box=BoundingBox{minX=-739, minY=76, minZ=1008, maxX=-720, maxY=86, maxZ=1024} rot=CLOCKWISE_90 surface water columns 0/340 plants 4 on non-ground 0 {}
+[08:35:45] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_field_lab BlockPos{x=-729, y=81, z=1016} lecterns(with book) 1 readers 0 containers {oinstein_keycard_c=1, oinstein_lab=1, ~wall:oinstein_poster_insignia=2}
+[08:35:47] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_field_lab at BlockPos{x=2064, y=0, z=-1760} box=BoundingBox{minX=2048, minY=97, minZ=-1779, maxX=2064, maxY=107, maxZ=-1760} rot=CLOCKWISE_180 surface water columns 0/340 plants 31 on non-ground 0 {}
+[08:35:47] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_field_lab BlockPos{x=2056, y=102, z=-1769} lecterns(with book) 1 readers 0 containers {oinstein_keycard_c=1, oinstein_lab=1, ~wall:oinstein_poster_insignia=2}
+[08:35:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_relay_pylon at BlockPos{x=-1360, y=0, z=-1456} box=BoundingBox{minX=-1360, minY=65, minZ=-1472, maxX=-1344, maxY=92, maxZ=-1456} rot=COUNTERCLOCKWISE_90 surface water columns 0/289 plants 0 on non-ground 0 {}
+[08:35:49] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_relay_pylon BlockPos{x=-1352, y=79, z=-1464} lecterns(with book) 0 readers 0 containers {oinstein_keycard_b=1, oinstein_outpost=1}
+[08:35:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_relay_pylon at BlockPos{x=3920, y=0, z=-2576} box=BoundingBox{minX=3904, minY=86, minZ=-2576, maxX=3920, maxY=113, maxZ=-2560} rot=CLOCKWISE_90 surface water columns 0/289 plants 0 on non-ground 0 {}
+[08:35:52] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_relay_pylon BlockPos{x=3912, y=100, z=-2568} lecterns(with book) 0 readers 0 containers {oinstein_keycard_b=1, oinstein_outpost=1}
+[08:35:53] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_checkpoint at BlockPos{x=1040, y=0, z=1184} box=BoundingBox{minX=1040, minY=67, minZ=1184, maxX=1054, maxY=75, maxZ=1196} rot=NONE surface water columns 0/195 plants 0 on non-ground 0 {}
+[08:35:53] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_checkpoint BlockPos{x=1047, y=71, z=1190} lecterns(with book) 1 readers 0 containers {oinstein_outpost=1}
+[08:35:55] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT oinstein_checkpoint at BlockPos{x=3152, y=0, z=-3392} box=BoundingBox{minX=3152, minY=76, minZ=-3392, maxX=3166, maxY=84, maxZ=-3380} rot=NONE surface water columns 0/195 plants 0 on non-ground 0 {}
+[08:35:55] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN LOOT oinstein_checkpoint BlockPos{x=3159, y=80, z=-3386} lecterns(with book) 1 readers 0 containers {oinstein_outpost=1}
+[08:35:58] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_pyramid at BlockPos{x=128, y=0, z=1072} box=BoundingBox{minX=98, minY=120, minZ=1072, maxX=128, maxY=146, maxZ=1098} rot=CLOCKWISE_90 surface water columns 0/837 plants 85 on non-ground 0 {}
+[08:36:00] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_pyramid at BlockPos{x=1120, y=0, z=-1536} box=BoundingBox{minX=1094, minY=67, minZ=-1566, maxX=1120, maxY=93, maxZ=-1536} rot=CLOCKWISE_180 surface water columns 0/837 plants 101 on non-ground 0 {}
+[08:36:02] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ziggurat at BlockPos{x=-2544, y=0, z=-704} box=BoundingBox{minX=-2584, minY=115, minZ=-704, maxX=-2544, maxY=148, maxZ=-660} rot=CLOCKWISE_90 surface water columns 0/1845 plants 181 on non-ground 0 {}
+[08:36:08] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ziggurat at BlockPos{x=3632, y=0, z=-4176} box=BoundingBox{minX=3588, minY=68, minZ=-4216, maxX=3632, maxY=101, maxZ=-4176} rot=CLOCKWISE_180 surface water columns 0/1845 plants 188 on non-ground 0 {}
+[08:36:15] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ruined_village at BlockPos{x=1696, y=0, z=-880} box=BoundingBox{minX=1676, minY=64, minZ=-880, maxX=1696, maxY=69, maxZ=-860} rot=CLOCKWISE_90 surface water columns 0/441 plants 123 on non-ground 0 {}
+[08:36:23] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_ruined_village at BlockPos{x=2304, y=0, z=-1776} box=BoundingBox{minX=2304, minY=95, minZ=-1796, maxX=2324, maxY=100, maxZ=-1776} rot=COUNTERCLOCKWISE_90 surface water columns 0/441 plants 80 on non-ground 0 {}
+[08:36:24] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_shrine at BlockPos{x=-592, y=0, z=912} box=BoundingBox{minX=-592, minY=94, minZ=912, maxX=-584, maxY=104, maxZ=920} rot=NONE surface water columns 0/81 plants 24 on non-ground 2 {venusian_carved_stone=2}
+[08:36:26] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT venusian_shrine at BlockPos{x=2608, y=0, z=-2368} box=BoundingBox{minX=2598, minY=67, minZ=-2368, maxX=2608, maxY=75, maxZ=-2360} rot=CLOCKWISE_90 surface water columns 0/99 plants 17 on non-ground 6 {venus_leaves=1, venusian_carved_stone_stairs=1, venusian_cracked_temple_bricks=1, venusian_mossy_temple_bricks=1, venusian_temple_bricks=2}
+[08:36:27] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT tribal_camp at BlockPos{x=256, y=0, z=1056} box=BoundingBox{minX=230, minY=101, minZ=1056, maxX=256, maxY=112, maxZ=1082} rot=CLOCKWISE_90 surface water columns 0/729 plants 20 on non-ground 7 {dirt_path=2, packed_mud=2, venus_planks=3}
+[08:36:29] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN AUDIT tribal_camp at BlockPos{x=2704, y=0, z=-2464} box=BoundingBox{minX=2704, minY=64, minZ=-2490, maxX=2730, maxY=75, maxZ=-2464} rot=COUNTERCLOCKWISE_90 surface water columns 0/729 plants 24 on non-ground 5 {dirt_path=2, venus_planks=3}
+[08:36:44] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Oinstein prison camp built at BlockPos{x=632, y=65, z=404} (origin BlockPos{x=612, y=64, z=384}, relief 3; site search 13033 ms, building 1904 ms)
+[08:36:44] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON at BlockPos{x=632, y=65, z=404} (750 blocks from BlockPos{x=0, y=64, z=0}, 14977 ms): blocks 4033, problems 0 {}, water 0, loose items 0, mobs {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1, pteranodon=1}, prisoners 6 [scientist guard scientist doctor(vale) guard scientist] next to their door 6, cells opened by their lever 6/6
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: Retro Cosmos: Oinstein prison camp built at BlockPos{x=2704, y=65, z=-2047} (origin BlockPos{x=2684, y=64, z=-2067}, relief 5; site search 8633 ms, building 1738 ms)
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON at BlockPos{x=2704, y=65, z=-2047} (299 blocks from BlockPos{x=3000, y=64, z=-2000}, 10387 ms): blocks 4033, problems 0 {}, water 0, loose items 0, mobs {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}, prisoners 6 [scientist guard scientist doctor(vale) guard scientist] next to their door 6, cells opened by their lever 6/6
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_complex monster list at BlockPos{x=816, y=92, z=112}: [atomic_sentry atomic_automaton hominid_novus hominus_sapiens ] novus natural rule pass 0/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=1332, y=73, z=-507}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 0/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=2700, y=67, z=-2684}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 0/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=-729, y=82, z=1016}: [tyrannosaurus ] novus natural rule pass 99/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=2056, y=103, z=-1769}: [tyrannosaurus ] novus natural rule pass 92/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=-1352, y=92, z=-1464}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 98/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=3912, y=113, z=-2568}: [tyrannosaurus ] novus natural rule pass 90/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=1047, y=69, z=1190}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 88/400
+[08:36:54] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=3159, y=78, z=-3386}: [venus_creeper deinosuchus ] novus natural rule pass 101/400
+[08:36:59] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 4429ms or 88 ticks behind
+[08:37:09] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 200 at 1793090229157
+[08:37:19] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 400 at 1793090239157
+[08:37:29] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 600 at 1793090249156
+[08:37:39] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 800 at 1793090259158
+[08:37:46] [Server thread/WARN] [minecraft/MinecraftServer]: Can't keep up! Is the server overloaded? Running 2174ms or 43 ticks behind
+[08:37:51] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 1000 at 1793090271311
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN TICK 1200 at 1793090281308
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON garrison after reload at BlockPos{x=612, y=64, z=384}: {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PRISON garrison after reload at BlockPos{x=2684, y=64, z=-2067}: {atomic_automaton=1, atomic_sentry=2, hominid_novus=2, hominus_sapiens=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_complex after 1 min at BlockPos{x=816, y=92, z=112}: {atomic_automaton=3, atomic_sentry=5, hominid_novus=4, hominus_sapiens=2, tribesman=11}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_capture_camp after 1 min at BlockPos{x=1332, y=78, z=-507}: {atomic_sentry=1, hominid_novus=2, tribesman=4}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_capture_camp after 1 min at BlockPos{x=2700, y=72, z=-2684}: {atomic_sentry=1, hominid_novus=2, tribesman=4}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_field_lab after 1 min at BlockPos{x=-729, y=81, z=1016}: {hominid_novus=1, hominus_sapiens=1, tribesman=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_field_lab after 1 min at BlockPos{x=2056, y=102, z=-1769}: {hominid_novus=1, hominus_sapiens=1, tribesman=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_relay_pylon after 1 min at BlockPos{x=-1352, y=79, z=-1464}: {atomic_automaton=1, atomic_sentry=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_relay_pylon after 1 min at BlockPos{x=3912, y=100, z=-2568}: {atomic_automaton=1, atomic_sentry=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_checkpoint after 1 min at BlockPos{x=1047, y=71, z=1190}: {atomic_sentry=1, hominid_novus=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_checkpoint after 1 min at BlockPos{x=3159, y=80, z=-3386}: {atomic_sentry=1, hominid_novus=1}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN CENSUS oinstein_lower_lab after 1 min (lab box only): {atomic_automaton=1, atomic_sentry=1, hominid_novus=1, hominus_sapiens=2, tribesman=8}
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_complex monster list at BlockPos{x=816, y=92, z=112}: [atomic_sentry atomic_automaton hominid_novus hominus_sapiens ] novus natural rule pass 0/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=1332, y=73, z=-507}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 0/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_capture_camp monster list at BlockPos{x=2700, y=67, z=-2684}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 0/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=-729, y=82, z=1016}: [tyrannosaurus ] novus natural rule pass 108/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_field_lab monster list at BlockPos{x=2056, y=103, z=-1769}: [tyrannosaurus ] novus natural rule pass 94/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=-1352, y=92, z=-1464}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 118/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_relay_pylon monster list at BlockPos{x=3912, y=113, z=-2568}: [tyrannosaurus ] novus natural rule pass 90/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=1047, y=69, z=1190}: [raptor venus_creeper tyrannosaurus ] novus natural rule pass 97/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN SPAWNS oinstein_checkpoint monster list at BlockPos{x=3159, y=78, z=-3386}: [venus_creeper deinosuchus ] novus natural rule pass 89/400
+[08:38:01] [Server thread/INFO] [co.re.re.RetroCosmos/]: RUIN PROBE DONE
+[08:38:01] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[08:38:01] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[08:38:01] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[08:38:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_oinstein]'/minecraft:overworld
+[08:38:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_oinstein]'/minecraft:the_end
+[08:38:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_oinstein]'/minecraft:the_nether
+[08:38:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_oinstein]'/retrocosmos:freedom_station
+[08:38:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_oinstein]'/retrocosmos:venus
+[08:38:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (probe_oinstein): All chunks are saved
+[08:38:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:38:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:38:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (freedom_station): All chunks are saved
+[08:38:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (venus): All chunks are saved
+[08:38:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[08:38:09] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Closing FML Loader 7f2f1733
+[08:38:09] [main/INFO] [ne.ne.fm.ModLoader/]: Clearing ModLoader
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1793090111270.json
+
+BUILD SUCCESSFUL in 2m 59s
+6 actionable tasks: 1 executed, 5 up-to-date

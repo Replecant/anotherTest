@@ -603,6 +603,8 @@
   "item.retrocosmos.ranger_blaster": "Ranger Blaster",
   "item.retrocosmos.ranger_blaster.desc": "Uses one Energy Cartridge per shot",
   "item.retrocosmos.ranger_blaster.empty": "Click! No energy cartridges.",
+  "item.retrocosmos.ranger_blaster.overheat": "OVERHEATED! Cooling down...",
+  "item.retrocosmos.ranger_blaster.heat_desc": "Overheats after %s rapid shots",
   "item.retrocosmos.energy_cartridge": "Energy Cartridge",
   "item.retrocosmos.professor_id": "Professor Oinstein's ID Card",
   "item.retrocosmos.professor_id.lore.0": "Oinstein Institute of Applied Evolution",

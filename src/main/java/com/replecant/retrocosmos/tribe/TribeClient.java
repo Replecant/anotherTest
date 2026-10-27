@@ -11,6 +11,8 @@ import com.replecant.retrocosmos.tribe.client.NovusModel;
 import com.replecant.retrocosmos.tribe.client.SapiensModel;
 import com.replecant.retrocosmos.tribe.client.TribeGeometry;
 import com.replecant.retrocosmos.tribe.client.TribesmanRenderer;
+import com.replecant.retrocosmos.tribe.ranger.RangerBlasterItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.Identifier;
@@ -37,6 +39,10 @@ public final class TribeClient {
     private TribeClient() {}
 
     public static void init(IEventBus modEventBus) {
+        RangerBlasterItem.clientClock = () -> {
+            var level = Minecraft.getInstance().level;
+            return level == null ? 0L : level.getGameTime();
+        };
         modEventBus.addListener(TribeClient::registerLayers);
         modEventBus.addListener(TribeClient::registerRenderers);
     }

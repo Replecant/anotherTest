@@ -239,6 +239,8 @@ for _k, (_en, _ru) in {
     "ranger_blaster": ("Ranger Blaster", "Бластер рейнджера"),
     "ranger_blaster.desc": ("Uses one Energy Cartridge per shot", "Расходует один энергокартридж на выстрел"),
     "ranger_blaster.empty": ("Click! No energy cartridges.", "Щёлк! Нет энергокартриджей."),
+    "ranger_blaster.overheat": ("OVERHEATED! Cooling down...", "ПЕРЕГРЕВ! Охлаждение..."),
+    "ranger_blaster.heat_desc": ("Overheats after %s rapid shots", "Перегревается после %s выстрелов подряд"),
     "energy_cartridge": ("Energy Cartridge", "Энергокартридж"),
     "professor_id": ("Professor Oinstein's ID Card", "Удостоверение профессора Ойнштайна"),
     "professor_id.lore.0": ("Oinstein Institute of Applied Evolution", "Институт прикладной эволюции Ойнштайна"),

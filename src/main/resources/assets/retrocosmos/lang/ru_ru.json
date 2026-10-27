@@ -603,6 +603,8 @@
   "item.retrocosmos.ranger_blaster": "Бластер рейнджера",
   "item.retrocosmos.ranger_blaster.desc": "Расходует один энергокартридж на выстрел",
   "item.retrocosmos.ranger_blaster.empty": "Щёлк! Нет энергокартриджей.",
+  "item.retrocosmos.ranger_blaster.overheat": "ПЕРЕГРЕВ! Охлаждение...",
+  "item.retrocosmos.ranger_blaster.heat_desc": "Перегревается после %s выстрелов подряд",
   "item.retrocosmos.energy_cartridge": "Энергокартридж",
   "item.retrocosmos.professor_id": "Удостоверение профессора Ойнштайна",
   "item.retrocosmos.professor_id.lore.0": "Институт прикладной эволюции Ойнштайна",

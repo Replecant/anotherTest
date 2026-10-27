@@ -46,7 +46,8 @@ public class CrewFleeGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (member.role() == CrewRole.GUARD || member.tickCount % 5 != 0 || member.isTrading()) {
+        if (member.role() == CrewRole.GUARD || member.tickCount % 5 != 0 || member.isTrading() || member.isCaptive()
+                || member.isDying() || member.isLeaving()) {
             return false;
         }
         threat = findThreat();

@@ -37,6 +37,8 @@ public class CrewModel extends HumanoidModel<CrewRenderState> {
             case "cooper" -> s.role == CrewRole.COOPER.ordinal();
             case "guard" -> s.role == CrewRole.GUARD.ordinal();
             case "decorator" -> s.role == CrewRole.DECORATOR.ordinal();
+            case "ranger" -> s.role == CrewRole.RANGER.ordinal();
+            case "liaison" -> s.role == CrewRole.LIAISON.ordinal();
             case "holstered" -> s.role == CrewRole.GUARD.ordinal() && s.weapon != ExpeditionMember.WEAPON_PISTOL;
             case "pistol" -> s.role == CrewRole.GUARD.ordinal() && s.weapon == ExpeditionMember.WEAPON_PISTOL;
             case "baton" -> s.role == CrewRole.GUARD.ordinal() && s.weapon == ExpeditionMember.WEAPON_BATON;

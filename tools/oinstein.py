@@ -659,6 +659,15 @@ def chest_loot():
             (1.0, [it(card, 1)]),
             (R_.rolls(2, 4), base),
             (R_.rolls(0, 1), [lab_notes(2), it("minecraft:experience_bottle", 2, 1, 3), R_.empty(3)])])
+    # the expedition's gear, taken off the prisoners: canisters, instruments, rations, their notes
+    R_.chest("chests/oinstein_confiscated", [
+        (R_.rolls(4, 7), [it("rocket_fuel_canister", 8, 1, 3), it("liquid_oxygen_canister", 8, 1, 3),
+                          it("empty_fuel_canister", 6, 1, 3), it("vacuum_tube", 6, 1, 4), it("guidance_computer", 2),
+                          it("minecraft:spyglass", 4), it("minecraft:compass", 5), it("minecraft:clock", 5),
+                          it("minecraft:map", 4), it("minecraft:bread", 8, 2, 6), it("minecraft:cooked_beef", 5, 1, 4),
+                          it("minecraft:torch", 6, 4, 12), it("aluminum_ingot", 4, 1, 4), it("minecraft:paper", 5, 2, 8),
+                          it("minecraft:glass_bottle", 4, 1, 3)]),
+        (R_.rolls(0, 1), [it("space_helmet", 2), it("space_boots", 2), R_.empty(4)])])
     # the Director's own safe in the lower laboratory
     R_.chest("chests/oinstein_director", [
         (R_.rolls(4, 6), base + [it("minecraft:diamond", 4, 1, 3), it("minecraft:gold_ingot", 6, 2, 5),
@@ -882,7 +891,7 @@ SOLID_EXTRA = {M(n) for n in ("gray_concrete", "light_gray_concrete", "white_con
                               "yellow_concrete", "red_concrete", "iron_block", "glass", "tinted_glass", "sea_lantern",
                               "redstone_lamp", "redstone_block", "smooth_stone", "hay_block", "coarse_dirt",
                               "polished_andesite", "lime_stained_glass", "black_stained_glass", "red_stained_glass",
-                              "bookshelf", "blast_furnace", "packed_mud", "cut_copper")} | {
+                              "bookshelf", "blast_furnace", "packed_mud", "cut_copper", "mud_bricks")} | {
     P(n) for n in (RSTEEL, HSTEEL, "floor_grate", "hull_panel", "hull_panel_striped", "aluminum_block", "titanium_block",
                    "cargo_crate", "reactor_core", "computer_bank", "tape_archive")} | {M("smooth_stone_slab")}
 FULL.update(SOLID_EXTRA)
@@ -899,10 +908,11 @@ def connect_panes(s):
 
 
 WALL_HUNG = {M("pale_oak_wall_sign"), M("dark_oak_wall_sign"), M("red_wall_banner"), M("ladder")} | {P(p) for p in POSTERS} | {
-    P("control_panel"), P("wall_sconce"), P("poster_freedom"), P(READER)}
+    P("control_panel"), P("wall_sconce"), P("poster_freedom"), P(READER), M("lever")}
 NEEDS_FLOOR = {M("rail"), M("lectern"), M("campfire"), M("red_banner"), M("lantern"), P(JAR), P(TESLA), M("chest"),
                M("barrel"), P("computer_bank"), P("lab_sink"), P("tape_archive"), P("crew_bunk"), P("crew_locker"),
-               P("radar_scope"), M("lightning_rod"), M("end_rod"), M("cauldron"), M(f"{'red'}_bed")}
+               P("radar_scope"), M("lightning_rod"), M("end_rod"), M("cauldron"), M(f"{'red'}_bed"), M("iron_door"),
+               P("captain_chair"), P("diner_stool"), P("oxygen_tank_rack"), P("supply_cabinet")}
 
 
 def audit(s):
@@ -976,6 +986,8 @@ R_.VANILLA.update({
     M("lever"): {"face": ("floor", "wall", "ceiling"), "facing": _H, "powered": _B},
     M("dark_oak_fence_gate"): {"facing": _H, "in_wall": _B, "open": _B, "powered": _B},
     M("structure_block"): {"mode": ("save", "load", "corner", "data")},
+    M("iron_door"): {"facing": _H, "half": ("upper", "lower"), "hinge": ("left", "right"), "open": _B, "powered": _B},
+    M("mud_bricks"): {},
     M("polished_blackstone_stairs"): R_.STAIR_SCHEMA,
 })
 
@@ -1666,6 +1678,7 @@ def generate():
     for path, fn in TEMPLATES.items():
         total += write_template(finish(fn()), path)
     worldgen()
+    write_prison_anchors()
     print(f"oinstein: generated {len(TEMPLATES)} templates, {total} blocks; spawn overrides for "
           f"{sorted(m.split(':')[1] for m in registered_entities()) or 'none'}")
 
@@ -2574,5 +2587,202 @@ def lab_reach(s):
 
 TEMPLATES[f"oinstein/{LAB}"] = build_lower_lab
 
+R_.EN.update(EN)
+R_.RU.update(RU)
+
+
+# =====================================================================================================================
+# The prisoner camp of the captured Earth expedition (placed at runtime by OinsteinPrisonCamp.java, not worldgen)
+# =====================================================================================================================
+# Template "oinstein/oinstein_prison_camp" (41 x 41, y 0 = the solid ground layer of the levelled site, like the
+# expedition camp) and its anchors data/retrocosmos/venus_camp/prison_camp.json: size, ground_y, centre, the
+# captives (role, name, pos, yaw, cell_door, lever) and the garrison (informational - the mobs are in the template).
+PRISON = "oinstein_prison_camp"
+PRISON_ANCHORS = os.path.join(DATA, "venus_camp", "prison_camp.json")
+PRISON_INFO = {}
+# cells: (west x of the 4 x 4 cell, north row?) -> (role, name); the two empty cells stay open-doored rubbish holes
+PRISON_CELLS = {(11, True): ("scientist", None), (16, True): ("guard", None), (21, True): ("doctor", "vale"),
+                (26, True): None, (11, False): None, (16, False): ("scientist", None), (21, False): ("guard", None),
+                (26, False): ("scientist", None)}
+
+
+def iron_door(x, y, z, s, facing, hinge="left"):
+    s.set(x, y, z, V("iron_door", facing=facing, half="lower", hinge=hinge, open=False, powered=False))
+    s.set(x, y + 1, z, V("iron_door", facing=facing, half="upper", hinge=hinge, open=False, powered=False))
+
+
+def prison_cell_block(s, captives):
+    """Eight barred 4 x 4 cells either side of a corridor; each cell door is an iron door worked by a lever on the
+    post beside it (corridor side) - pull it and the prisoner walks free."""
+    x0, x1, z0, z1, top = 9, 31, 8, 21, 4
+    s.fill(x0, 0, z0, x1, 0, z1, CON)
+    s.box(x0, 1, z0, x1, top, z1, CON, roof=RSTEEL_S)
+    hazard_band(s, x0, z0, x1, z1, 1)
+    for z in range(9, 21):
+        for x in range(10, 31):
+            s.set(x, 0, z, LCON if (x + z) % 2 else CON)
+    for px in (10, 15, 20, 25, 30):                     # partitions and the solid posts at the bar lines
+        for (za, zb) in ((9, 13), (16, 20)):
+            s.fill(px, 1, za, px, top, zb, CON)
+    for cx in (11, 16, 21, 26):
+        for north in (True, False):
+            bar_z, inner = (13, (9, 12)) if north else (16, (17, 20))
+            lever_z = 14 if north else 15
+            for x in range(cx, cx + 4):
+                s.fill(x, 1, bar_z, x, top, bar_z, bars())
+            iron_door(cx, 1, bar_z, s, "north" if north else "south")
+            s.set(cx - 1, 2, lever_z, V("lever", face="wall", facing="south" if north else "north", powered=False))
+            # inside: a straw bed and a bucket of a cell; the prisoner by the door
+            bz = inner[0] if north else inner[1]
+            s.set(cx + 3, 1, bz, V("hay_block", axis="x"))
+            who = PRISON_CELLS[(cx, north)]
+            if who:
+                role, name = who
+                pz = 12 if north else 17
+                captives.append({"role": role, "name": name, "pos": (cx + 1, 1, pz), "yaw": 0 if north else 180,
+                                 "cell_door": (cx, 1, bar_z), "lever": (cx - 1, 2, lever_z)})
+    for z in (14, 15):                                  # the corridor: open at the east end
+        s.fill(x1, 1, z, x1, 2, z, S_AIR)
+    s.protect_box(x1 - 1, 1, 14, x1 + 1, 2, 15)
+    for x in (12, 17, 22, 27):
+        s.set(x, top, 14, light_on())
+    for x in range(11, 30, 4):                         # barred slits high in the outer walls
+        s.set(x, 3, z0, bars())
+        s.set(x, 3, z1, bars())
+    s.set(x1 + 1, 3, 13, sign("east", ["prison_1", "prison_2", "prison_3", "prison_4"]))
+    s.set(x1 + 1, 3, 16, wall_banner("east"))
+    for x in (12, 20, 28):
+        poster(s, x, 1, z1 + 1, ("oinstein_poster_better_ape", "oinstein_poster_insignia", "oinstein_poster_restricted")
+               [(x // 8) % 3], "south")
+
+
+def build_prison_camp():
+    """Dr. Oinstein's prisoner camp for the captured Earth expedition: a fenced compound with barbed wire, two
+    watchtowers with sentries and searchlights, the cell block (8 cells, 6 prisoners, Dr. Vale in a middle one),
+    the interrogation hut, the guards' barracks and the depot of the expedition's confiscated gear."""
+    N = 41
+    s = Base(PRISON, (N, 16, N), seed=8501, ground=0)
+    rnd = s.rnd
+    s.fill(0, 0, 0, N - 1, 0, N - 1, PACKED)
+    for x in range(N):
+        for z in range(N):
+            if rnd.random() < 0.25:
+                s.set(x, 0, z, V("mud_bricks") if rnd.random() < 0.3 else CON)
+    for z in range(22, N):                              # the road from the gate
+        for x in (19, 20, 21):
+            s.set(x, 0, z, CON if x == 20 else LCON)
+    # ------------------------------------------------ the fence: bars, posts, barbed wire on top, the gate
+    lo, hi = 1, N - 2
+    for i in range(lo, hi + 1):
+        for (x, z, axis) in ((i, lo, "x"), (i, hi, "x"), (lo, i, "z"), (hi, i, "z")):
+            s.fill(x, 1, z, x, 3, z, bars())
+            s.set(x, 4, z, chain(axis))
+            if i % 4 == 1:
+                s.fill(x, 1, z, x, 4, z, RSTEEL_S)
+                s.set(x, 5, z, chain("y"))
+    gx = N // 2
+    s.fill(gx - 1, 1, hi, gx + 1, 4, hi, S_AIR)
+    for x in (gx - 2, gx + 2):
+        s.fill(x, 1, hi, x, 5, hi, HSTEEL_S)
+    s.fill(gx - 1, 4, hi, gx + 1, 5, hi, HSTEEL_S)
+    for x in range(gx - 1, gx + 2):
+        s.set(x, 1, hi, V("dark_oak_fence_gate", facing="south", in_wall=False, open=False, powered=False))
+    s.set(gx, 4, hi + 1, sign("south", SIGN_RESTRICTED))
+    s.set(gx - 3, 2, hi + 1, wall_banner("south"))
+    s.set(gx + 3, 2, hi + 1, wall_banner("south"))
+    for x in (gx - 3, gx + 3):
+        s.fill(x, 1, hi, x, 4, hi, RSTEEL_S)
+    s.protect_box(gx - 1, 1, hi - 1, gx + 1, 3, hi + 1)
+    # ------------------------------------------------ watchtowers in the north corners (sentries, searchlights)
+    watchtower(s, 2, 2, 8)
+    watchtower(s, hi - 5, 2, 8)
+    # ------------------------------------------------ the cell block
+    captives = []
+    prison_cell_block(s, captives)
+    # ------------------------------------------------ the interrogation hut (south-west)
+    s.fill(3, 0, 25, 11, 0, 33, CON)
+    s.box(3, 1, 25, 11, 3, 33, CON, roof=RSTEEL_S)
+    s.fill(11, 1, 29, 11, 2, 29, S_AIR)
+    s.protect_box(10, 1, 29, 12, 2, 29)
+    s.set(6, 1, 29, st("captain_chair", facing="east"))             # the prisoner's chair under the lamp
+    s.set(8, 1, 29, DOUBLE_SLAB)
+    s.set(8, 1, 30, DOUBLE_SLAB)
+    s.set(8, 2, 30, st("rocket_table_lamp", facing="west", lit=True))
+    s.set(8, 2, 29, st("tape_archive", facing="west"))
+    s.set(9, 1, 29, st("diner_stool"))
+    s.set(6, 3, 29, light_on())
+    s.set(4, 1, 26, st("tape_archive", facing="south"))
+    s.set(4, 1, 32, chest_state("east", "chests/oinstein_outpost"))
+    poster(s, 4, 1, 29, "oinstein_poster_restricted", "east")
+    s.set(12, 2, 31, sign("east", ["interrogation_1", "interrogation_2", "interrogation_3", "interrogation_4"],
+                          color="black", glow=False))
+    s.mob(9, 1, 31, SAPIENS)
+    # ------------------------------------------------ the guards' barracks (south-east)
+    s.fill(29, 0, 25, 37, 0, 34, CON)
+    s.box(29, 1, 25, 37, 3, 34, CON, roof=RSTEEL_S)
+    hazard_band(s, 29, 25, 37, 34, 1)
+    s.fill(29, 1, 29, 29, 2, 29, S_AIR)
+    s.protect_box(28, 1, 29, 30, 2, 29)
+    for z in (26, 28, 31, 33):
+        s.set(36, 1, z, V("red_bed", facing="east", occupied=False, part="head"))
+        s.set(35, 1, z, V("red_bed", facing="east", occupied=False, part="foot"))
+    s.set(30, 1, 33, lectern("east", "oinstein_orders"))
+    s.set(30, 1, 26, st("supply_cabinet", facing="east"))
+    s.set(33, 3, 29, light_on())
+    s.set(33, 1, 30, barrel_state("chests/oinstein_outpost"))
+    poster(s, 32, 1, 34 - 1, "oinstein_poster_better_ape", "north")
+    # ------------------------------------------------ the depot of the expedition's confiscated gear
+    for (x, z) in ((14, 25), (25, 25), (14, 31), (25, 31)):
+        s.fill(x, 1, z, x, 3, z, RSTEEL_S)
+    s.fill(14, 4, 25, 25, 4, 31, RSTEEL_S)
+    s.fill(15, 0, 26, 24, 0, 30, CON)
+    for (x, z, h) in ((15, 26, 2), (16, 26, 1), (15, 27, 1), (23, 26, 2), (24, 26, 1), (24, 27, 3), (24, 30, 1)):
+        s.fill(x, 1, z, x, h, z, st("cargo_crate"))
+    s.set(17, 1, 26, chest_state("south", "chests/oinstein_confiscated"))
+    s.set(22, 1, 26, chest_state("south", "chests/oinstein_confiscated"))
+    s.set(16, 1, 30, barrel_state("chests/oinstein_outpost"))
+    s.set(15, 1, 30, st("oxygen_tank_rack", facing="east"))
+    s.set(23, 1, 30, st("radar_scope", facing="north", lit=False))
+    s.set(19, 3, 28, light_on())
+    s.set(14, 2, 24, sign("north", ["confiscated_1", "confiscated_2", "confiscated_3", "confiscated_4"],
+                          color="black", glow=False))
+    # ------------------------------------------------ the yard: lamp posts, banners, the garrison
+    for (x, z) in ((8, 23), (32, 23), (12, 36), (28, 36), (20, 5)):
+        s.fill(x, 1, z, x, 4, z, V("lightning_rod", facing="up", powered=False, waterlogged=False))
+        s.set(x, 5, z, LANTERN_SEA)
+    s.set(16, 1, 23, standing_banner(8))
+    s.set(24, 1, 23, standing_banner(8))
+    s.mob(gx, 1, hi - 3, NOVUS)                     # at the gate
+    s.mob(13, 1, 14, NOVUS)                         # in the cell corridor
+    s.mob(27, 1, 23, AUTOMATON)                     # the yard
+    guards = [(p, str(n["id"])) for p, n in s.entities]
+    PRISON_INFO.update(captives=captives, guards=guards, size=(s.W, s.H, s.D))
+    return s
+
+
+def write_prison_anchors():
+    info = PRISON_INFO
+    write_json(PRISON_ANCHORS, {
+        "template": f"{MOD}:oinstein/{PRISON}", "size": list(info["size"]), "ground_y": 0,
+        "center": [info["size"][0] // 2, 1, info["size"][2] // 2],
+        "captives": [{"kind": "expedition_captive", "role": c["role"], **({"name": c["name"]} if c["name"] else {}),
+                      "pos": list(c["pos"]), "yaw": c["yaw"], "cell_door": list(c["cell_door"]), "lever": list(c["lever"])}
+                     for c in info["captives"]],
+        "guards": [{"type": t, "pos": list(p)} for p, t in info["guards"]]})
+
+
+TEMPLATES[f"oinstein/{PRISON}"] = build_prison_camp
+EN.update({"sign.retrocosmos.prison_1": "DETENTION", "sign.retrocosmos.prison_2": "BLOCK E",
+           "sign.retrocosmos.prison_3": "EARTH SPECIMENS", "sign.retrocosmos.prison_4": "DO NOT FEED",
+           "sign.retrocosmos.interrogation_1": "INTERVIEW", "sign.retrocosmos.interrogation_2": "ROOM",
+           "sign.retrocosmos.interrogation_3": "QUESTIONS ARE", "sign.retrocosmos.interrogation_4": "OUR BUSINESS",
+           "sign.retrocosmos.confiscated_1": "CONFISCATED", "sign.retrocosmos.confiscated_2": "EARTH GEAR",
+           "sign.retrocosmos.confiscated_3": "PROPERTY OF", "sign.retrocosmos.confiscated_4": "THE INSTITUTE"})
+RU.update({"sign.retrocosmos.prison_1": "ИЗОЛЯТОР", "sign.retrocosmos.prison_2": "БЛОК Е",
+           "sign.retrocosmos.prison_3": "ЗЕМНЫЕ ОБРАЗЦЫ", "sign.retrocosmos.prison_4": "НЕ КОРМИТЬ",
+           "sign.retrocosmos.interrogation_1": "КОМНАТА", "sign.retrocosmos.interrogation_2": "ДЛЯ БЕСЕД",
+           "sign.retrocosmos.interrogation_3": "ВОПРОСЫ ЗАДАЁМ", "sign.retrocosmos.interrogation_4": "МЫ",
+           "sign.retrocosmos.confiscated_1": "КОНФИСКОВАНО", "sign.retrocosmos.confiscated_2": "ЗЕМНОЕ",
+           "sign.retrocosmos.confiscated_3": "ИМУЩЕСТВО -", "sign.retrocosmos.confiscated_4": "СОБСТВЕННОСТЬ ИНСТ."})
 R_.EN.update(EN)
 R_.RU.update(RU)

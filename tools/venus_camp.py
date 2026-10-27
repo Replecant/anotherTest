@@ -66,6 +66,8 @@ S.VANILLA_PROPS.update({
     LADDER: {"facing": S.HORIZ, "waterlogged": _B},
     BANNER: {"facing": S.HORIZ},
     mc("campfire"): {"facing": S.HORIZ, "lit": _B, "signal_fire": _B, "waterlogged": _B},
+    mc("decorated_pot"): {"facing": S.HORIZ, "cracked": _B, "waterlogged": _B},
+    mc("skeleton_skull"): {"rotation": tuple(str(i) for i in range(16)), "powered": _B},
 })
 
 # full opaque cubes that carry wall decor, lights, posters and count as walls
@@ -94,6 +96,7 @@ class Camp:
         self.errors = []
         self.npcs = []          # (role, pos, yaw, home)
         self.zones = {}         # name -> (x0, z0, x1, z1) for previews / report
+        self.quest_points = {}  # name -> cell kept free for the quest system
         self.supply_cells = set()
 
     # -- primitives ---------------------------------------------------------------
@@ -242,6 +245,8 @@ class Camp:
         self.field_lab()
         self.specimen_pens()
         self.mess()
+        self.anthropology()
+        self.quest_spots()
         self.scenery()
         self.connections()
         return self
@@ -543,6 +548,44 @@ class Camp:
         self.sign((x0, 3, z0 - 1), "north", ["MESS", "", "", ""])
         self.zones["Mess"] = (x0, z0, x1, z1)
 
+    def anthropology(self):
+        """Dr. Margaret Hale's anthropology corner: an awning by the side road with a table of tribal artifacts,
+        the Venus map / photo board, a tape recorder, field notes and a radio."""
+        x0, x1, z0, z1 = -16, -12, -10, -7
+        for x in range(x0, x1 + 1):
+            for z in range(z0, z1 + 1):
+                self.put((x, GROUND, z), PLANKS)
+        for z in range(z0, z1 + 1):
+            for y in (1, 2, 3):
+                self.put((x0, y, z), PLANKS)                 # back wall
+        for z in (z0, z1):
+            for y in (1, 2, 3):
+                self.log((x1, y, z))
+        self.awning(x0, z0, x1, z1, 4, (W_LGRAY, W_WHITE))
+        # back wall: tape recorder, the board with recon photos and the Venus map, notes, a radio
+        self.fac((-15, 1, -10), S.TAPE, "east")
+        self.poster((-15, 1, -9), S.P_BRIEFING, "east")
+        self.fac((-15, 1, -8), S.LECTERN, "east", has_book="false", powered="false")
+        self.desk((-15, 1, -7), S.RADIO, "east", lit=False)
+        # the artifact table: a tribal pot, a skull, a Venusian urn
+        self.desk((-14, 1, -10))
+        self.place((-14, 2, -10), mc("decorated_pot"), {"facing": "east", "cracked": "false", "waterlogged": "false"})
+        self.desk((-14, 1, -9))
+        self.place((-14, 2, -9), mc("skeleton_skull"), {"rotation": "12", "powered": "false"})
+        self.desk((-14, 1, -8))
+        self.place((-14, 2, -8), S.V_URN)
+        self.stool((-13, 1, -8))
+        self.lantern_hanging((-13, 3, -9))
+        self.sign((x1 + 1, 3, z0), "east", ["ANTHROPOLOGY", "DR. M. HALE", "", ""])
+        self.npc("liaison", (-13, 1, -9), "west")
+        self.zones["Anthropology"] = (x0, z0, x1, z1)
+
+    def quest_spots(self):
+        """Cells the quest system uses: where the wounded Dr. Ross lies in the command tent (2 x 1 free floor) and
+        where the 'last words' lectern is placed, just outside the tent."""
+        self.quest_points["command_tent"] = (-12, 1, -1)
+        self.quest_points["lectern"] = (-8, 1, 2)
+
     def scenery(self):
         # side roads to every entrance (only where the ground is still bare soil)
         roads = [(x, -5) for x in range(-13, 14)] + [(-11, z) for z in range(-14, -5)] + [(13, z) for z in range(-12, -5)]
@@ -796,7 +839,15 @@ class CampChecker:
                 work = sum(1 for p, b in c.blocks.items() if b[0] in WORK_BLOCKS and math.dist(p, pos) <= 12)
                 if work < 3:
                     self.fail(f"scientist at {pos} has only {work} work blocks around")
-        if roles.get("guard", 0) != 3 or not 3 <= roles.get("scientist", 0) <= 4:
+        for name, q in c.quest_points.items():
+            x, y, z = q
+            cells = [q, (x + 1, y, z)] if name == "command_tent" else [q]
+            for cc in cells:
+                if not (c.free(cc) and c.free((cc[0], y + 1, cc[2])) and c.get((cc[0], y - 1, cc[2])) in STURDY):
+                    self.fail(f"quest point {name} at {cc} is not free floor")
+                if cc not in seen:
+                    self.fail(f"quest point {name} at {cc} cannot be reached")
+        if roles.get("guard", 0) != 3 or not 3 <= roles.get("scientist", 0) <= 4 or roles.get("liaison", 0) != 1:
             self.fail(f"npc roles {roles}")
         for p, (n, _, _) in c.blocks.items():
             if n in (S.CREW_LOCKER, S.SUPPLY_CABINET, S.CARGO_CRATE, S.STOVE, S.SINK, S.COMPUTER, S.WORKBENCH,
@@ -819,6 +870,7 @@ def anchors(camp):
         "ground_y": GROUND - oy,
         "pad_center": loc((PAD[0], GROUND, PAD[1])),
         "npcs": [{"role": role, "pos": loc(pos), "yaw": yaw, "home": loc(home)} for role, pos, yaw, home in camp.npcs],
+        "quest_points": {name: loc(p) for name, p in camp.quest_points.items()},
     }
 
 

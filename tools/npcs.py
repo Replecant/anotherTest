@@ -24,7 +24,7 @@ JAVA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src",
                         "com", "replecant", "retrocosmos", "npc", "client")
 
 ROLES = ("cooper", "guard", "scientist", "decorator")
-VARIANTS = {"cooper": 1, "guard": 4, "scientist": 4, "decorator": 1}
+VARIANTS = {"cooper": 1, "guard": 4, "scientist": 4, "decorator": 1, "ranger": 1, "liaison": 1, "doctor": 2}
 
 
 # ----------------------------------------------------------------------------
@@ -1077,6 +1077,364 @@ def decorator():
 
 
 # ----------------------------------------------------------------------------
+# The Space Rangers storyline: Captain Morrow, Dr. Hale, Dr. Ross and Dr. Vale
+# ----------------------------------------------------------------------------
+
+RANGER_GREY = ((92, 110, 136), (72, 88, 112), (54, 66, 86))
+FLIGHT_LEATHER = ((126, 80, 46), (98, 60, 32), (70, 42, 22))
+SHEEPSKIN = ((236, 224, 196), (210, 196, 166))
+TUNIC = ((244, 246, 244), (220, 224, 224), (188, 194, 196))
+NAVY = ((44, 54, 82), (32, 40, 62), (22, 28, 44))
+GREEN_CROSS = (58, 150, 84)
+BLOOD = (130, 22, 26)
+PITH = ((232, 222, 190), (206, 194, 160), (176, 162, 126))
+
+
+def ranger():
+    """Captain Jack Morrow: crew-cut, blue-grey ranger uniform, open leather flight jacket, star badge, high boots."""
+    sk = Skin(70)
+    tone = "tan"
+    s, sh, dk, lip = TONES[tone]
+    hair = ((70, 50, 34), (56, 40, 26))
+    head_base(sk, tone, hair, hair_rows_front=1, hairline_sides=2)
+    pal = {"h": hair[0], "S": s, "s": sh, "d": dk, "w": EYE_WHITE, "e": IRIS["blue"], "b": mul(hair[1], 0.85),
+           "l": mix(lip, sh, 0.5), "j": mix(s, dk, 0.35)}
+    face_grid(sk, [
+        "hhhhhhhh",
+        "SSSSSSSS",
+        "SSSSSSSS",
+        "SbbSSbbS",
+        "SwesSewS",
+        "SSSddSSS",
+        "SSsllsSS",
+        "jSSjjSSj",
+    ], pal)
+    ear(sk, tone)
+    # the crew-cut: a flat bristle on top, faded short at the sides
+    for face in ("right", "left", "back"):
+        for x in range(8):
+            sk.px("head", face, x, 2, mix(hair[0], s, 0.5) if face != "back" else hair[1])
+    sk.fill("hat", "top", lambda x, y, w, h: hair[0] if (x + y) % 3 else hair[1], grain=0.05)
+    for face in ("front", "right", "left", "back"):
+        for x in range(8):
+            if face != "front" or 1 <= x <= 6:
+                sk.px("hat", face, x, 0, hair[1] if x % 2 else hair[0])
+
+    G0, G1, G2 = RANGER_GREY
+    L0, L1, L2 = FLIGHT_LEATHER
+
+    def body(face, x, y, w, h):
+        if face == "top":
+            return SHEEPSKIN[0] if y < 2 or x in (0, 7) else L0
+        if face == "bottom":
+            return G1
+        if y >= 9:
+            return G0 if y < 11 else G1  # shirt and trousers below the jacket
+        if face == "front":
+            if x in (3, 4):
+                if y <= 1:
+                    return G0
+                return NAVY[0] if y < 8 else G1  # shirt and a navy tie
+            if y == 8:
+                return L2  # ribbed waistband
+            if x in (2, 5):
+                return L1  # zip edges
+            return L0
+        if y == 8:
+            return L2
+        if face == "back" and y <= 1:
+            return SHEEPSKIN[1]
+        return L0
+    sk.fill_all("body", body, grain=0.05)
+    for x, y in ((3, 0), (4, 0)):
+        sk.px("body", "front", x, y, G0)
+    # gold star badge on the left breast, ranger wings patch on the right
+    for x, y, c in ((5, 2, GOLD[0]), (6, 3, GOLD[0]), (5, 3, GOLD[0]), (4, 3, GOLD[1]), (5, 4, GOLD[1]), (6, 4, GOLD[1])):
+        sk.px("body", "front", x if x != 4 else 7, y, c)
+    sk.px("body", "front", 1, 3, CHROME[0])
+    sk.px("body", "front", 0, 3, CHROME[1])
+    # belt with a brass buckle under the jacket
+    for x in range(8):
+        sk.px("body", "front", x, 9, LEATHER[2] if x not in (3, 4) else GOLD[0])
+        sk.px("body", "back", x, 9, LEATHER[2])
+    for face in ("right", "left"):
+        for x in range(4):
+            sk.px("body", face, x, 9, LEATHER[2])
+    # jacket layer: sheepskin collar, the open leather fronts and the waistband stand proud
+    for x in (0, 1, 6, 7):
+        sk.px("jacket", "front", x, 0, SHEEPSKIN[0])
+        sk.px("jacket", "front", x, 1, SHEEPSKIN[1] if x in (1, 6) else L0)
+    for y in range(2, 9):
+        for x in (0, 1, 6, 7):
+            sk.px("jacket", "front", x, y, L2 if y == 8 else L0)
+    for face in ("back", "right", "left"):
+        w = 8 if face == "back" else 4
+        for x in range(w):
+            sk.px("jacket", face, x, 0, SHEEPSKIN[0])
+            sk.px("jacket", face, x, 8, L2)
+    for x, y in ((6, 3), (7, 3), (6, 4)):
+        sk.px("jacket", "front", x, y, GOLD[0])
+    # arms: leather sleeves with ribbed cuffs, a squadron patch, bare hands
+    for part in ("right_arm", "left_arm"):
+        limb(sk, part, [(9, FLIGHT_LEATHER), (10, (L2, L2)), (12, (s, sh))])
+        hands(sk, part, tone, rows=(10, 11))
+        o = outer_face(part)
+        for x, y, c in ((1, 2, RANGER_GREY[0]), (2, 2, RANGER_GREY[0]), (1, 3, GOLD[0]), (2, 3, RANGER_GREY[0])):
+            sk.px(part, o, x, y, c)
+    for part in ("right_sleeve", "left_sleeve"):
+        for face in ("front", "back", "right", "left"):
+            for x in range(4):
+                sk.px(part, face, x, 9, L2)
+    # legs: blue-grey trousers with a navy stripe, tall black boots
+    boots = ((40, 36, 38), (26, 24, 26))
+    for part in ("right_leg", "left_leg"):
+        limb(sk, part, [(7, RANGER_GREY), (12, boots)])
+        o = outer_face(part)
+        for y in range(7):
+            sk.px(part, o, 1, y, NAVY[0])
+            sk.px(part, o, 2, y, NAVY[0])
+        for x in range(4):
+            sk.px(part, "front", x, 11, (18, 16, 18))
+            for y in range(4):
+                sk.px(part, "bottom", x, y, (18, 16, 18))
+        sk.px(part, "front", 1, 7, (70, 66, 70))
+    for part in ("right_pants", "left_pants"):
+        for face in ("front", "back", "right", "left"):
+            for x in range(4):
+                sk.px(part, face, x, 7, boots[0])
+    return sk.img
+
+
+def liaison():
+    """Dr. Margaret Hale: pith helmet, dark ponytail, khaki field shirt with a red neckerchief, jodhpurs, boots."""
+    sk = Skin(80)
+    tone = "rosy"
+    s, sh, dk, lip = TONES[tone]
+    hair = ((84, 52, 34), (64, 38, 24), (112, 72, 46))
+    head_base(sk, tone, hair[:2], hair_rows_front=2)
+    pal = {"h": hair[0], "H": hair[2], "S": s, "s": sh, "d": dk, "w": EYE_WHITE, "e": IRIS["brown"], "b": hair[1],
+           "l": (184, 64, 70), "f": mix(s, (180, 110, 80), 0.25)}
+    face_grid(sk, [
+        "hhhhhhhh",
+        "hhHhhhhh",
+        "hSSSSSSh",
+        "SbbSSbbS",
+        "SwesSewS",
+        "SfSddSfS",
+        "SSSllSSS",
+        "sSSSSSSs",
+    ], pal)
+    ear(sk, tone)
+    # the pith helmet's dome on the hat layer (the brim is a gear part), a ponytail down the back
+    P0, P1, P2 = PITH
+    for face in ("front", "right", "left", "back"):
+        for x in range(8):
+            sk.px("hat", face, x, 0, P0)
+            sk.px("hat", face, x, 1, P1 if face != "front" else P0)
+            sk.px("hat", face, x, 2, (110, 84, 54))  # the band
+    sk.fill("hat", "top", lambda x, y, w, h: P0 if (x - 3.5) ** 2 + (y - 3.5) ** 2 > 3 else mix(P0, (255, 255, 255), 0.3), grain=0.03)
+    for y in range(3, 8):
+        for x in (3, 4):
+            sk.px("hat", "back", x, y, hair[0] if y < 7 else hair[1])
+    # field shirt
+    K0, K1, K2 = KHAKI
+
+    def shirt(face, x, y, w, h):
+        if face == "top":
+            return K0
+        if face == "bottom":
+            return TROUSER[1]
+        if y >= 10:
+            return TROUSER[0]
+        if y == 9:
+            return LEATHER[1]  # belt
+        if face == "front":
+            if x == 4 and 2 <= y <= 8:
+                return K1
+            if x in (1, 2, 5, 6) and y == 3:
+                return K2
+        return K0
+    sk.fill_all("body", shirt, grain=0.05)
+    for x, y, c in ((2, 0, CHERRY[0]), (3, 0, CHERRY[0]), (4, 0, CHERRY[0]), (5, 0, CHERRY[0]), (3, 1, CHERRY[1]),
+                    (4, 1, CHERRY[0]), (4, 2, CHERRY[1])):
+        sk.px("body", "front", x, y, c)
+    sk.px("body", "front", 4, 9, GOLD[0])
+    # a notebook in the breast pocket, a pencil behind it
+    sk.px("body", "front", 5, 4, (60, 90, 140))
+    sk.px("body", "front", 6, 4, (60, 90, 140))
+    sk.px("body", "front", 6, 3, (230, 196, 70))
+    for x in (1, 6):
+        sk.px("jacket", "front", x, 0, K1)
+    for x in range(8):
+        sk.px("jacket", "front", x, 9, LEATHER[1] if x != 4 else GOLD[0])
+    # map case on the hip
+    for y in (10, 11):
+        for x in (0, 1):
+            sk.px("jacket", "front", x, y, LEATHER[0])
+    # arms: rolled sleeves
+    for part in ("right_arm", "left_arm"):
+        limb(sk, part, [(5, KHAKI), (6, (mix(K0, CREAM[0], 0.35), K0)), (12, (s, sh))])
+        hands(sk, part, tone, rows=(10, 11))
+    for part in ("right_sleeve", "left_sleeve"):
+        for face in ("front", "back", "right", "left"):
+            for x in range(4):
+                sk.px(part, face, x, 5, mix(K0, CREAM[0], 0.35))
+    sk.px("left_arm", "front", 1, 9, CHROME[1])  # wristwatch
+    sk.px("left_arm", "left", 1, 9, CHROME[0])
+    # jodhpurs flared at the thigh, tall brown boots
+    for part in ("right_leg", "left_leg"):
+        limb(sk, part, [(6, TROUSER), (12, BOOT)])
+        for x in range(4):
+            sk.px(part, "front", x, 11, BOOT[2])
+            for y in range(4):
+                sk.px(part, "bottom", x, y, BOOT[2])
+    for part in ("right_pants", "left_pants"):
+        o = outer_face(part.replace("pants", "leg"))
+        for y in range(1, 5):
+            for x in range(4):
+                sk.px(part, o, x, y, TROUSER[0] if y < 4 else TROUSER[1])  # the flare
+        for face in ("front", "back", "right", "left"):
+            for x in range(4):
+                sk.px(part, face, x, 6, BOOT[1])
+    return sk.img
+
+
+def doctor(v):
+    """Look 0: Dr. Samuel Ross, the grey expedition physician (head mirror, stethoscope, a bandage after the raid).
+    Look 1: Dr. Norman Vale, three weeks in a cell (unshaven, a dirty coat over the expedition jumpsuit)."""
+    sk = Skin(90 + v)
+    if v == 0:
+        tone = "light"
+        s, sh, dk, lip = TONES[tone]
+        hair = ((176, 172, 166), (146, 142, 136))
+        head_base(sk, tone, hair, hair_rows_front=1, hairline_sides=3)
+        pal = {"h": hair[0], "S": s, "s": sh, "d": dk, "w": EYE_WHITE, "e": IRIS["gray"], "b": hair[1],
+               "m": (200, 196, 190), "l": mix(lip, sh, 0.4)}
+        face_grid(sk, [
+            "hhhhhhhh",
+            "hSSSSSSh",
+            "SSSSSSSS",
+            "SbbSSbbS",
+            "SwesSewS",
+            "SSSddSSS",
+            "SmmmmmmS",
+            "sSSllSSs",
+        ], pal)
+        ear(sk, tone)
+        glasses(sk, "wire", color=GLASS_FRAME["silver"])
+        # head mirror on its band, a bandage with a red stain round the crown
+        for face in ("front", "right", "left", "back"):
+            for x in range(8):
+                sk.px("hat", face, x, 1, TUNIC[0] if face != "front" or x not in (3, 4) else CHROME[0])
+        sk.px("hat", "front", 3, 0, CHROME[1])
+        sk.px("hat", "front", 4, 0, CHROME[0])
+        sk.px("hat", "front", 3, 2, CHROME[2])
+        sk.px("hat", "front", 4, 2, CHROME[1])
+        sk.px("hat", "right", 3, 1, BLOOD)
+        sk.px("hat", "right", 4, 1, mix(BLOOD, TUNIC[0], 0.4))
+    else:
+        tone = "warm"
+        s, sh, dk, lip = TONES[tone]
+        hair = ((40, 32, 28), (26, 20, 18))
+        head_base(sk, tone, hair, hair_rows_front=2)
+        stub = mix(s, (60, 50, 44), 0.35)
+        pal = {"h": hair[0], "S": s, "s": sh, "d": dk, "w": EYE_WHITE, "e": IRIS["brown"], "b": hair[1], "t": stub,
+               "l": mix(lip, stub, 0.3)}
+        face_grid(sk, [
+            "hhhhhhhh",
+            "hhShhhhh",
+            "hSSSSSSh",
+            "SbbSSbbS",
+            "SwesSewS",
+            "SSSddSSS",
+            "tttllttt",
+            "tttttttt",
+        ], pal)
+        ear(sk, tone)
+        glasses(sk, "wire", color=GLASS_FRAME["black"])
+        sk.px("head", "front", 2, 5, GLASS_FRAME["black"])  # a cracked lens
+        for x in (0, 2, 5, 7):  # untidy hair on the hat layer
+            sk.px("hat", "front", x, 0, hair[0])
+        sk.px("hat", "front", 1, 1, hair[0])
+        for face in ("right", "left", "back"):
+            for x in range(0, 8, 2):
+                sk.px("hat", face, x, 1, hair[0])
+    # the medical tunic (Ross) / grubby lab coat over the jumpsuit (Vale)
+    coat = TUNIC if v == 0 else (mix(TUNIC[0], (150, 140, 120), 0.25), mix(TUNIC[1], (130, 120, 100), 0.3), TUNIC[2])
+    C0, C1, C2 = coat
+
+    def body(face, x, y, w, h):
+        if face == "bottom":
+            return NAVY[1] if v == 0 else TURQ[1]
+        if face == "top":
+            return C0
+        if v == 0:
+            if face == "front" and x == 5 and 1 <= y <= 10:
+                return C1  # the side-buttoned tunic's seam
+            if face == "front" and x == 6 and y in (2, 5, 8):
+                return CHROME[1]
+            return C0 if y < 11 else C1
+        if face == "front" and x in (3, 4):
+            return TURQ[0] if y > 0 else C0
+        if face == "front" and y >= 10 and x in (1, 6) and (y + x) % 2:
+            return (0, 0, 0, 0) if False else C2  # a torn hem
+        return C0 if y < 11 else C1
+    sk.fill_all("body", body, grain=0.04)
+    if v == 0:
+        # stethoscope: tubes round the neck, the chest-piece
+        for x, y in ((1, 0), (1, 1), (2, 2), (2, 3), (6, 0), (6, 1), (5, 2)):
+            sk.px("body", "front", x, y, (60, 60, 66))
+        sk.px("body", "front", 3, 4, CHROME[0])
+        sk.px("body", "front", 6, 6, BLOOD)
+        sk.px("body", "front", 7, 7, mix(BLOOD, C0, 0.4))
+    else:
+        for x in (2, 5):
+            for y in range(0, 4):
+                sk.px("jacket", "front", x, y, C1)
+        for y in range(0, 12):
+            for x in (0, 1, 6, 7):
+                sk.px("jacket", "front", x, y, C2 if y == 11 and x % 2 else C0)
+        for face in ("back", "right", "left"):
+            w = 8 if face == "back" else 4
+            for x in range(w):
+                for y in range(12):
+                    sk.px("jacket", face, x, y, C0 if y < 11 else C1)
+        sk.px("jacket", "back", 5, 6, (140, 120, 90))  # grime
+        sk.px("jacket", "back", 2, 9, (140, 120, 90))
+    # arms: sleeves, a green-cross armband on the left, hands
+    for part in ("right_arm", "left_arm"):
+        limb(sk, part, [(9, coat), (12, (s, sh))])
+        hands(sk, part, tone, rows=(10, 11) if v == 0 else (9, 10, 11))
+    for face in ("front", "back", "right", "left"):
+        for x in range(4):
+            sk.px("left_arm", face, x, 2, C0 if face != "left" else C0)
+    for x, y in ((1, 2), (2, 2), (1, 1), (1, 3)):
+        sk.px("left_arm", "left", x, y, GREEN_CROSS)
+    sk.px("left_arm", "left", 0, 2, GREEN_CROSS)
+    # legs
+    trousers = NAVY if v == 0 else TURQ
+    for part in ("right_leg", "left_leg"):
+        limb(sk, part, [(10, trousers), (12, SHOE)])
+        for x in range(4):
+            for y in range(4):
+                sk.px(part, "bottom", x, y, SHOE[1])
+    if v == 1:
+        for part in ("right_pants", "left_pants"):
+            inner_col = 3 if part == "right_pants" else 0
+
+            def skirt(face, x, y, w, h, inner_col=inner_col, part=part):
+                if face in ("top", "bottom") or y > 3:
+                    return None
+                if face == "front" and x == inner_col:
+                    return None
+                if face == inner_face(part):
+                    return None
+                return C0 if y < 3 else C2
+            sk.fill_all(part, skirt, grain=0.04)
+    return sk.img
+
+
+# ----------------------------------------------------------------------------
 # Gear: 3D accessories on a shared sheet
 # ----------------------------------------------------------------------------
 
@@ -1107,6 +1465,11 @@ GEAR = [
     # Betty Palmer
     G("bouffant", "head", (-4, -10.2, -4.3), (8, 2, 8), "bouffant", "decorator", grow=0.4),
     G("skirt", "body", (-5, 11, -3), (10, 6, 6), "skirt", "decorator", grow=(-0.2, 0, -0.2)),
+    # Captain Morrow: a thigh holster with his blaster in it
+    G("ranger_holster", "right_leg", (-3.4, 0.6, -1.5), (1, 4, 3), "holster", "ranger"),
+    G("ranger_grip", "right_leg", (-3.4, -1.2, 0.2), (1, 2, 1), "grip", "ranger"),
+    # Dr. Hale: the pith helmet's brim
+    G("pith_brim", "head", (-5.5, -0.5, -5.5), (11, 1, 11), "pith", "liaison", pivot=(0, -5.6, 0), grow=(0, -0.3, 0)),
 ]
 GEAR_SPEC = {"name": "gear", "tex_w": 64, "parts": [{"name": g["name"], "boxes": [g["box"]]} for g in GEAR]}
 
@@ -1192,6 +1555,11 @@ def gear_texel(mat, face, i, j, w, h):
         return (34, 34, 40) if (j % 3) else (60, 60, 70)
     if mat == "spark":
         return (190, 230, 255)
+    if mat == "pith":
+        if face == "top":
+            edge = i == 0 or i == w - 1 or j == 0 or j == h - 1
+            return PITH[1] if edge else PITH[0]
+        return PITH[2]
     if mat == "bouffant":
         hb, hs, hl = BLONDE
         if face == "east" and j == h - 1 and i in (5, 6):
@@ -1390,6 +1758,8 @@ EGGS = {
     "guard_spawn_egg": ((206, 42, 48), (244, 244, 238)),
     "scientist_spawn_egg": ((246, 246, 242), (60, 196, 188)),
     "decorator_spawn_egg": ((246, 178, 198), (252, 246, 248)),
+    "ranger_spawn_egg": ((92, 110, 136), (236, 194, 84)),
+    "liaison_spawn_egg": ((192, 166, 118), (232, 222, 190)),
 }
 
 
@@ -1403,6 +1773,8 @@ ITEM_NAMES = {
     "guard_spawn_egg": ("Expedition Guard Spawn Egg", "Яйцо призыва охранника экспедиции"),
     "scientist_spawn_egg": ("Expedition Scientist Spawn Egg", "Яйцо призыва учёного экспедиции"),
     "decorator_spawn_egg": ("Showroom Decorator Spawn Egg", "Яйцо призыва продавщицы мебели"),
+    "ranger_spawn_egg": ("Space Ranger Spawn Egg", "Яйцо призыва космического рейнджера"),
+    "liaison_spawn_egg": ("Xeno-anthropologist Spawn Egg", "Яйцо призыва ксеноантрополога"),
 }
 
 ENTITY_NAMES = {
@@ -1413,11 +1785,19 @@ ENTITY_NAMES = {
     ".decorator": ("Interior Decorator", "Декоратор интерьеров"),
     ".trade_title": ("%s - Antiquities & Supplies", "%s - древности и снабжение"),
     ".trade_title.decorator": ("%s — Atomic Home Showroom", "%s — салон «Атомный дом»"),
+    ".ranger": ("Space Ranger", "Космический рейнджер"),
+    ".liaison": ("Xeno-anthropologist", "Ксеноантрополог"),
+    ".doctor": ("Expedition Physician", "Врач экспедиции"),
+    ".trade_title.ranger": ("%s — Space Rangers Quartermaster", "%s — интендантство Космических рейнджеров"),
 }
 
 NAMES = {
     "cooper": [("Dr. Harold Cooper", "Доктор Гарольд Купер")],
     "decorator": [("Betty Palmer", "Бетти Палмер")],
+    "ranger": [("Capt. Jack Morrow", "Капитан Джек Морроу")],
+    "liaison": [("Dr. Margaret Hale", "Д-р Маргарет Хейл")],
+    "doctor.0": [("Dr. Samuel Ross", "Д-р Сэмюэл Росс")],
+    "doctor.1": [("Dr. Norman Vale", "Д-р Норман Вейл")],
     "guard": [("Sgt. Rourke", "Сержант Рурк"), ("Pvt. Dawson", "Рядовой Доусон"), ("Cpl. Mendez", "Капрал Мендес"),
               ("Pvt. Kowalski", "Рядовой Ковальски"), ("Sgt. Brooks", "Сержант Брукс"), ("Pvt. O'Hara", "Рядовой О'Хара"),
               ("Cpl. Jefferson", "Капрал Джефферсон"), ("Pvt. Lindqvist", "Рядовой Линдквист")],
@@ -1637,6 +2017,265 @@ LINES = {
                             "Да будет вам известно, жемчуг настоящий - и характер тоже!"),
 }
 
+# ----------------------------------------------------------------------------
+# The Space Rangers storyline: dialogue, objectives, HUD, advancements
+# ----------------------------------------------------------------------------
+
+QUEST_LINES = {  # chat.retrocosmos.npc.<key>
+    "ranger.greet.0": ("Ranger! Supplies are on the house - well, nearly.", "Рейнджер! Снабжение за счёт заведения - ну, почти."),
+    "ranger.greet.1": ("Keep that blaster charged, son. Venus doesn't wait.", "Держи бластер заряженным, сынок. Венера не ждёт."),
+    "ranger.greet.2": ("Need cartridges? The Rangers look after their own.", "Нужны патроны? Рейнджеры своих не бросают."),
+    "ranger.greet.3": ("At ease. What can the Quartermaster do for you?", "Вольно. Чем может помочь интендантство?"),
+    "ranger.idle.0": ("The Space Rangers - keeping the frontier safe since nineteen fifty-two!",
+                      "Космические рейнджеры - на страже рубежей с пятьдесят второго года!"),
+    "ranger.idle.1": ("Strange signals from Venus again. Someone's up to no good down there.",
+                      "Опять странные сигналы с Венеры. Кто-то там затевает недоброе."),
+    "ranger.idle.2": ("A ranger's badge isn't given, it's earned.", "Значок рейнджера не дают - его заслуживают."),
+    "ranger.idle.3": ("Coffee, star charts and a clean blaster. That's a ranger's breakfast.",
+                      "Кофе, звёздные карты и чистый бластер. Завтрак рейнджера."),
+    "ranger.protest.0": ("Easy there, cadet! Save it for the bad guys.", "Полегче, кадет! Прибереги это для злодеев."),
+    "ranger.protest.1": ("Strike a ranger? That's a court-martial offence in three sectors.",
+                         "Ударить рейнджера? Это трибунал в трёх секторах."),
+    "ranger.protest.2": ("I've wrestled Martian sand-cats. You don't scare me.", "Я боролся с марсианскими песчаными кошками. Ты меня не напугаешь."),
+    "ranger.thanks.0": ("Fire straight and come home in one piece.", "Стреляй метко и возвращайся целым."),
+    "ranger.thanks.1": ("Signed, sealed, requisitioned.", "Подписано, скреплено, выдано."),
+    "ranger.thanks.2": ("Don't spend 'em all in one place, ranger.", "Не трать всё в одном месте, рейнджер."),
+    "liaison.idle.0": ("The tribe's speech has at least forty words for 'mud'. Fascinating.",
+                       "В языке племени не меньше сорока слов для «грязи». Поразительно."),
+    "liaison.idle.1": ("They paint their spears with amber resin. A sign of respect, I think.",
+                       "Копья они мажут янтарной смолой. Думаю, это знак уважения."),
+    "liaison.idle.2": ("The chief wears the biggest feathers. Politics are the same everywhere.",
+                       "У вождя самые большие перья. Политика везде одинакова."),
+    "liaison.idle.3": ("Note: offering cooked meat - good. Offering a pocket mirror - VERY good.",
+                       "Заметка: жареное мясо - хорошо. Карманное зеркальце - ОЧЕНЬ хорошо."),
+    "liaison.lore.0": ("The hominids call us 'sky-men'. They think our rockets are thunder birds.",
+                       "Гоминиды зовут нас «небесными людьми». Наши ракеты для них - громовые птицы."),
+    "liaison.lore.1": ("Bring the tribesfolk Earth goods and they'll trade fairly. Mostly.",
+                       "Принесите соплеменникам земные товары - и торговля будет честной. В основном."),
+    "liaison.lore.2": ("Their elder is always the one with the grandest headdress - the chief.",
+                       "Старейшина у них - всегда тот, у кого самый пышный убор, то есть вождь."),
+    "liaison.lore.3": ("Some tribesfolk have vanished lately. The others won't speak of it.",
+                       "В последнее время пропадают соплеменники. Остальные об этом молчат."),
+    "liaison.protest.0": ("Really! I study primitive behaviour - I don't need a demonstration.",
+                          "Ну знаете! Я изучаю первобытное поведение - демонстрация не нужна."),
+    "liaison.protest.1": ("That is NOT how first contact works.", "Первый контакт так НЕ делается."),
+    "liaison.protest.2": ("I'll be writing that up, you know.", "Я это запишу, имейте в виду."),
+    "doctor.idle.0": ("Take two glowcap teas and call me in the morning.", "Выпейте два чая из светогриба и позвоните мне утром."),
+    "doctor.idle.1": ("Sterile? On Venus? I do what I can.", "Стерильность? На Венере? Делаю что могу."),
+    "doctor.idle.2": ("Raptor bites heal slowly. Raptor-proof trousers would help.", "Укусы рапторов заживают долго. Помогли бы брюки против рапторов."),
+    "doctor.lore.0": ("Three weeks in that cell. I'd shake your hand a hundred times if I could.",
+                      "Три недели в той камере. Я бы пожал вам руку сто раз, если бы мог."),
+    "doctor.lore.1": ("Oinstein's serums turn hominids into brutes. We must stop him for good.",
+                      "Сыворотки Ойнштейна превращают гоминидов в чудовищ. Его надо остановить навсегда."),
+    "doctor.lore.2": ("Keep an eye on those atomic sentries. They never sleep.", "Следите за атомными часовыми. Они никогда не спят."),
+    "doctor.protest.0": ("Do no harm - that goes for you too!", "Не навреди - это и к вам относится!"),
+    "doctor.protest.1": ("I'm a doctor, not a target!", "Я врач, а не мишень!"),
+    "doctor.protest.2": ("That will need stitches - yours, if you keep that up.", "Это потребует швов - ваших, если продолжите."),
+    "doctor.dying.0": ("...water... the others... they took them...", "...воды... остальные... их забрали..."),
+    "doctor.dying.1": ("...can't... feel my legs...", "...не чувствую... ног..."),
+    "doctor.dying.2": ("...glass eyes... the man with glass eyes...", "...стеклянные глаза... человек со стеклянными глазами..."),
+    "captive.plea.0": ("Over here! For pity's sake, get us out of this cage!", "Сюда! Ради всего святого, вытащите нас из клетки!"),
+    "captive.plea.1": ("Quiet... the guards change at dusk. The door - find the door!", "Тише... охрана меняется на закате. Дверь - найдите дверь!"),
+    "captive.plea.2": ("Are you with the Rangers? Thank heavens!", "Вы из рейнджеров? Слава небесам!"),
+    "captive.plea.3": ("He's mad! Oinstein is stark raving mad!", "Он безумен! Ойнштейн совершенно безумен!"),
+    "captive.plea.4": ("Open the cell - there must be a lever somewhere!", "Откройте камеру - где-то должен быть рычаг!"),
+    "captive.freed.0": ("Free! I'm heading back to camp - see you there, ranger!", "Свобода! Иду в лагерь - увидимся там, рейнджер!"),
+    "captive.freed.1": ("Thank you! I won't forget this.", "Спасибо! Я этого не забуду."),
+    "captive.freed.2": ("Out of the frying pan... let's get home.", "Из огня да... домой, скорее домой."),
+    "captive.freed.3": ("Fresh air! Even Venus air smells sweet now.", "Свежий воздух! Даже воздух Венеры теперь сладок."),
+}
+
+QUEST_LANG = {
+    # role plates on the dialogue terminal
+    "npc.retrocosmos.title.ranger": ("Space Rangers", "Космические рейнджеры"),
+    "npc.retrocosmos.title.liaison": ("Xeno-anthropologist", "Ксеноантрополог"),
+    "npc.retrocosmos.title.doctor.0": ("Expedition physician", "Врач экспедиции"),
+    "npc.retrocosmos.title.doctor.1": ("Camp physician", "Врач лагеря"),
+    "npc.retrocosmos.title.elder": ("Elder of the tribe", "Старейшина племени"),
+    "npc.retrocosmos.title.note": ("Last words - a note on the lectern", "Последние слова - записка на кафедре"),
+    # dialogue
+    "dialogue.retrocosmos.ranger.recruit": (
+        "Captain Jack Morrow, Space Rangers. I've had my eye on you - a pilot who brought a rocket up here in one piece is "
+        "exactly the kind of guts the Rangers need.\nThe frontier is growing faster than the law can follow. Swear in, and "
+        "you'll get a ranger's blaster, a belt of energy cartridges and the finest assignment in the Solar System.\n"
+        "What do you say - will you join the Space Rangers?",
+        "Капитан Джек Морроу, Космические рейнджеры. Я давно к вам присматриваюсь - пилот, доставивший сюда ракету целой, - "
+        "это как раз та отвага, что нужна рейнджерам.\nРубежи растут быстрее, чем за ними поспевает закон. Принесите "
+        "присягу - и получите бластер рейнджера, пояс энергопатронов и лучшее задание в Солнечной системе.\n"
+        "Ну так что - вступите в Космические рейнджеры?"),
+    "dialogue.retrocosmos.ranger.declined": ("Suit yourself. The offer stands - the frontier isn't going anywhere.",
+                                             "Как знаете. Предложение в силе - рубежи никуда не денутся."),
+    "dialogue.retrocosmos.ranger.briefing": (
+        "Welcome aboard, Ranger! Here's your blaster and thirty-two cartridges - sign for them later.\nNow, your first "
+        "assignment. A new expedition has set up camp on Venus - a lost world of jungles and thunder-lizards. Their "
+        "xeno-anthropologist, Dr. Margaret Hale, reports contact with a tribe of hominids... and something else she "
+        "won't put in a telegram.\nFly down to the expedition camp and report to Dr. Hale. And Ranger - keep that blaster handy.",
+        "Добро пожаловать на борт, рейнджер! Вот бластер и тридцать два патрона - распишетесь потом.\nТеперь первое задание. "
+        "На Венере разбила лагерь новая экспедиция - затерянный мир джунглей и громовых ящеров. Их ксеноантрополог, "
+        "д-р Маргарет Хейл, докладывает о контакте с племенем гоминидов... и о чём-то ещё, о чём она не пишет в телеграммах.\n"
+        "Летите в лагерь экспедиции и доложитесь д-ру Хейл. И, рейнджер, - держите бластер под рукой."),
+    "dialogue.retrocosmos.ranger.waiting": (
+        "Back already? The Institute still stands, and Dr. Oinstein is still at large. Bring me proof he's finished - "
+        "his identity card would do nicely.",
+        "Уже вернулись? Институт стоит, а д-р Ойнштейн всё ещё на свободе. Принесите доказательство, что с ним покончено, - "
+        "его удостоверение подойдёт."),
+    "dialogue.retrocosmos.ranger.turn_in": (
+        "Is that... Professor Oinstein's identity card? Great galaxies! The Institute is taken and the expedition is safe!\n"
+        "Hand it over, Ranger - this goes straight to Headquarters. And you've more than earned your star.",
+        "Это... удостоверение профессора Ойнштейна? Великие галактики! Институт взят, экспедиция спасена!\n"
+        "Давайте его сюда, рейнджер, - оно уходит прямиком в штаб. А свою звезду вы более чем заслужили."),
+    "dialogue.retrocosmos.ranger.report": (
+        "Headquarters already has Oinstein's card - but they tell me you were in that fight too. Your report is accepted, "
+        "Ranger. Step forward and take your star.",
+        "Удостоверение Ойнштейна уже в штабе - но мне сказали, что вы тоже были в том бою. Ваш рапорт принят, рейнджер. "
+        "Шаг вперёд - получите свою звезду."),
+    "dialogue.retrocosmos.liaison.contact": (
+        "You're the ranger they sent? Thank goodness. Margaret Hale - I study the hominid tribe that lives in the jungle "
+        "around us.\nThey trade with us, they let me sketch their totems... but lately they're frightened. Hunters go out "
+        "and never come back, and they keep pointing at the sky and making a sound like a buzzing machine.\nPlease - find "
+        "their elder. He's the chief with the grandest headdress. If anyone will tell you what's happening, it's him.",
+        "Вы - тот рейнджер, которого прислали? Слава богу. Маргарет Хейл - я изучаю племя гоминидов, живущее в джунглях вокруг.\n"
+        "Они торгуют с нами, позволяют зарисовывать тотемы... но в последнее время они напуганы. Охотники уходят и не "
+        "возвращаются, а они указывают в небо и гудят, как машина.\nПрошу вас - найдите их старейшину. Это вождь с самым "
+        "пышным убором. Если кто-то и расскажет, что происходит, то он."),
+    "dialogue.retrocosmos.liaison.reminder": (
+        "The elder is the chief of the tribe - the one with the feathered crown. Their camp lies somewhere out in the "
+        "jungle; your compass will point the way. Be polite - and don't stare at the bones.",
+        "Старейшина - вождь племени, тот, что в короне из перьев. Их стойбище где-то в джунглях; компас укажет путь. "
+        "Будьте вежливы - и не разглядывайте кости."),
+    "dialogue.retrocosmos.liaison.returned": (
+        "Oh, it's you! We're home - all of us who made it. While you were away, Oinstein's brutes stormed the camp and "
+        "carried us off to a prison camp in the jungle. Rangers broke us out.\nDr. Vale wants to see you at once - he "
+        "overheard things in that place. Something about keycards and an Institute.",
+        "О, это вы! Мы дома - все, кто уцелел. Пока вас не было, громилы Ойнштейна взяли лагерь штурмом и утащили нас в "
+        "лагерь для пленных в джунглях. Рейнджеры нас вызволили.\nД-р Вейл хочет немедленно вас видеть - он кое-что "
+        "подслушал там. Что-то про ключ-карты и Институт."),
+    "dialogue.retrocosmos.elder.talk": (
+        "Ugh! Sky-man come. Sky-man friend of fire-hair woman. Good.\nBad sky-man come too. Bad sky-man with GLASS EYES. "
+        "Bad sky-man come in thunder-bird with no feathers. Take our people. Make our people BIG and ANGRY. They not "
+        "come back.\nYou strong sky-man. You stop glass-eyes man. Go tell your tribe in sky-camp. Hurry!",
+        "Угх! Небо-человек пришёл. Небо-человек друг огне-волосой женщины. Хорошо.\nПлохой небо-человек тоже приходит. "
+        "Плохой небо-человек со СТЕКЛЯННЫМИ ГЛАЗАМИ. Прилетает в громовой птице без перьев. Забирает наших. Делает наших "
+        "БОЛЬШИМИ и ЗЛЫМИ. Они не возвращаются.\nТы сильный небо-человек. Ты останови стекло-глаза. Иди скажи своему "
+        "племени в небо-лагере. Быстро!"),
+    "dialogue.retrocosmos.ross.last_words": (
+        "Ranger... you came... too late, I'm afraid. They came at dawn - the ape-men and a walking machine. They took "
+        "everyone... Hale, the guards, the scientists...\nI heard their leader... a man in round glasses... Oinstein. "
+        "They're keeping them in a camp... at %s. Coordinates... I wrote them down...\nSave them, Ranger. Promise me... "
+        "save them...",
+        "Рейнджер... вы пришли... боюсь, слишком поздно. Они напали на рассвете - обезьяно-люди и шагающая машина. Забрали "
+        "всех... Хейл, охрану, учёных...\nЯ слышал их главаря... человек в круглых очках... Ойнштейн. Их держат в лагере... "
+        "в %s. Координаты... я записал...\nСпасите их, рейнджер. Обещайте... спасите их..."),
+    "dialogue.retrocosmos.ross.last_words.lost": (
+        "Ranger... they took everyone... Oinstein's brutes... a camp, somewhere deep in the jungle... I couldn't see "
+        "where...\nSave them, Ranger...",
+        "Рейнджер... они забрали всех... громилы Ойнштейна... лагерь где-то глубоко в джунглях... я не видел где...\n"
+        "Спасите их, рейнджер..."),
+    "dialogue.retrocosmos.note.last_words": (
+        "\"To whoever finds this: the camp was raided at dawn by Oinstein's ape-men and a walking atomic machine. They have "
+        "taken the whole expedition to a prisoner camp at %s.\nI am hurt and will not see the morning. Get them out. "
+        "- Dr. S. Ross, expedition physician\"",
+        "«Тому, кто найдёт: на рассвете на лагерь напали обезьяно-люди Ойнштейна и шагающая атомная машина. Всю экспедицию "
+        "увели в лагерь для пленных в %s.\nЯ ранен и не доживу до утра. Вызволите их. - Д-р С. Росс, врач экспедиции»"),
+    "dialogue.retrocosmos.vale.briefing": (
+        "Norman Vale, camp physician - and very glad to see a ranger's badge. Listen carefully, there's no time.\n"
+        "Oinstein runs everything from his Institute at %s. The doors are sealed by keycard readers: clearance A for "
+        "the outer works, B and C deeper in. His men carry the cards.\nOne card we have already - I lifted it off a guard "
+        "while he slept. Take it: card A. Storm the Institute and finish this, Ranger!",
+        "Норман Вейл, врач лагеря, - и очень рад видеть значок рейнджера. Слушайте внимательно, времени нет.\n"
+        "Ойнштейн руководит всем из своего Института в %s. Двери запечатаны считывателями карт: допуск A для внешних "
+        "корпусов, B и C - глубже. Карты носят его люди.\nОдна карта у нас уже есть - я стащил её у спящего охранника. "
+        "Берите: карта A. Штурмуйте Институт и покончите с этим, рейнджер!"),
+    "dialogue.retrocosmos.vale.briefing.unknown": (
+        "Norman Vale, camp physician. Oinstein runs everything from his Institute in the volcanic highlands - a fortress "
+        "of riveted steel. The doors take keycards: A, then B, then C.\nOne card we have already - card A. Take it, "
+        "find the Institute and finish this!",
+        "Норман Вейл, врач лагеря. Ойнштейн руководит всем из Института в вулканическом нагорье - крепости из клёпаной "
+        "стали. Двери открываются картами: A, затем B, затем C.\nОдна карта у нас уже есть - карта A. Берите, найдите "
+        "Институт и покончите с этим!"),
+    "dialogue.retrocosmos.vale.card_again": (
+        "Lost the card? Good thing I took two off that sleepy guard. Here - card A. Don't lose this one.",
+        "Потеряли карту? Хорошо, что я стащил у сонного охранника две. Вот - карта A. Эту не теряйте."),
+    "dialogue.retrocosmos.vale.boss_done": (
+        "You haven't heard? The Institute has fallen - Oinstein's monster is dead! Report to Captain Morrow on Freedom "
+        "Station, Ranger. You're part of this victory too.",
+        "Вы не слышали? Институт пал - чудовище Ойнштейна мертво! Доложитесь капитану Морроу на станции «Свобода», "
+        "рейнджер. Это и ваша победа."),
+    "dialogue.retrocosmos.option.join": ("Sign me up!", "Записывайте!"),
+    "dialogue.retrocosmos.option.decline": ("Not today", "Не сегодня"),
+    "dialogue.retrocosmos.option.venus_ok": ("To Venus!", "На Венеру!"),
+    "dialogue.retrocosmos.option.turn_in": ("Hand over the card", "Отдать карту"),
+    "dialogue.retrocosmos.option.later": ("Later", "Позже"),
+    "dialogue.retrocosmos.option.report": ("Report for duty", "Явиться по форме"),
+    "dialogue.retrocosmos.option.ok": ("Understood", "Понятно"),
+    "dialogue.retrocosmos.option.find_elder": ("I'll find the elder", "Я найду старейшину"),
+    "dialogue.retrocosmos.option.to_vale": ("I'll see Dr. Vale", "Иду к д-ру Вейлу"),
+    "dialogue.retrocosmos.option.promise": ("I will stop him", "Я его остановлю"),
+    "dialogue.retrocosmos.option.rescue": ("I'll save them", "Я их спасу"),
+    "dialogue.retrocosmos.option.take_card": ("Take keycard A", "Взять карту A"),
+    "dialogue.retrocosmos.option.report_back": ("Back to the station", "Назад на станцию"),
+    "gui.retrocosmos.dialogue.skip": ("click to skip", "щелчок - пропустить"),
+    # objectives and the HUD
+    "quest.retrocosmos.objective.none": ("-", "-"),
+    "quest.retrocosmos.objective.go_to_venus": ("fly to the Venus expedition camp", "лететь в лагерь экспедиции на Венере"),
+    "quest.retrocosmos.objective.find_elder": ("find the elder of the tribe", "найти старейшину племени"),
+    "quest.retrocosmos.objective.report_to_camp": ("report back to the camp", "вернуться с докладом в лагерь"),
+    "quest.retrocosmos.objective.rescue_expedition": ("free the captured expedition", "освободить пленённую экспедицию"),
+    "quest.retrocosmos.objective.storm_institute": ("storm Oinstein's Institute", "штурмовать Институт Ойнштейна"),
+    "quest.retrocosmos.objective.return_to_ranger": ("bring the ID card to Capt. Morrow", "отнести удостоверение капитану Морроу"),
+    "quest.retrocosmos.objective.complete": ("-", "-"),
+    "gui.retrocosmos.quest.objective": ("OBJECTIVE: %s", "ЗАДАНИЕ: %s"),
+    "gui.retrocosmos.quest.distance": ("%s m", "%s м"),
+    "gui.retrocosmos.quest.here": ("right here", "вы на месте"),
+    "gui.retrocosmos.quest.dim.venus": ("on Venus", "на Венере"),
+    "gui.retrocosmos.quest.dim.orbit": ("in orbit", "на орбите"),
+    "gui.retrocosmos.quest.dim.earth": ("on Earth", "на Земле"),
+    "chat.retrocosmos.quest.new_objective": ("New objective: %s", "Новое задание: %s"),
+    "chat.retrocosmos.quest.camp_raided": ("Smoke over the treetops... the expedition camp has been raided!",
+                                           "Дым над кронами... лагерь экспедиции разгромлен!"),
+    "chat.retrocosmos.quest.camp_restored": ("The expedition is back home at the camp!", "Экспедиция снова дома, в лагере!"),
+    "chat.retrocosmos.quest.ruins_hint": ("The camp lies in ruins. Someone left a note on the lectern.",
+                                          "Лагерь в руинах. Кто-то оставил записку на кафедре."),
+    "chat.retrocosmos.quest.sworn_in": ("★ %s has been decorated with the Ranger Star - a true SPACE RANGER! ★",
+                                        "★ %s награждён Звездой рейнджера - настоящий КОСМИЧЕСКИЙ РЕЙНДЖЕР! ★"),
+    "title.retrocosmos.space_ranger": ("SPACE RANGER", "КОСМИЧЕСКИЙ РЕЙНДЖЕР"),
+    "title.retrocosmos.space_ranger.subtitle": ("The frontier salutes you", "Рубежи салютуют вам"),
+    "book.retrocosmos.last_words.page1": (
+        "To whoever finds this:\n\nThe camp was raided at dawn by Oinstein's ape-men and a walking atomic machine. "
+        "They took the whole expedition.",
+        "Тому, кто найдёт:\n\nНа рассвете на лагерь напали обезьяно-люди Ойнштейна и шагающая атомная машина. Они "
+        "увели всю экспедицию."),
+    "book.retrocosmos.last_words.page2": (
+        "They are held in a prisoner camp at\n\n%s\n\nGet them out.\n\n- Dr. S. Ross", "Их держат в лагере для пленных в\n\n%s\n\nВызволите их.\n\n- Д-р С. Росс"),
+    "book.retrocosmos.last_words.page2.lost": ("I could not see where they were taken.\n\nFind them.\n\n- Dr. S. Ross",
+                                               "Я не видел, куда их увели.\n\nНайдите их.\n\n- Д-р С. Росс"),
+    "command.retrocosmos.quest.status": ("%s: stage %s - %s - target %s", "%s: этап %s - %s - цель %s"),
+    "command.retrocosmos.quest.no_target": ("unknown", "неизвестна"),
+    "command.retrocosmos.quest.bad_stage": ("No such quest stage: %s", "Нет такого этапа: %s"),
+    "command.retrocosmos.quest.set": ("%s moved to stage %s", "%s переведён на этап %s"),
+    "command.retrocosmos.quest.reset": ("%s starts the Space Rangers story again", "%s начинает историю рейнджеров заново"),
+    "command.retrocosmos.quest.worldreset": ("The world forgets the raid, the prisoner camp, the rescue and the boss",
+                                             "Мир забыл налёт, лагерь пленных, освобождение и босса"),
+}
+
+QUEST_ADVANCEMENTS = [  # name, icon, parent, frame, EN title, EN description, RU title, RU description
+    ("rangers_join", "retrocosmos:ranger_blaster", "freedom_station", "task", "Space Ranger, Cadet",
+     "Join the Space Rangers on Freedom Station", "Кадет космических рейнджеров", "Вступить в Космические рейнджеры на станции «Свобода»"),
+    ("rangers_elder", "retrocosmos:tribal_mask", "rangers_join", "task", "The Man with Glass Eyes",
+     "Hear the tribal elder's warning", "Человек со стеклянными глазами", "Выслушать предупреждение старейшины племени"),
+    ("rangers_last_words", "minecraft:writable_book", "rangers_elder", "task", "Too Late",
+     "Learn where the expedition was taken", "Слишком поздно", "Узнать, куда увели экспедицию"),
+    ("rangers_jailbreak", "retrocosmos:keycard_alpha", "rangers_last_words", "goal", "Jailbreak",
+     "Free Dr. Vale from Oinstein's prisoner camp", "Побег", "Освободить д-ра Вейла из лагеря Ойнштейна"),
+    ("rangers_institute", "retrocosmos:professor_id", "rangers_jailbreak", "goal", "The Institute Has Fallen",
+     "Defeat Homo Novus while on the rangers' assignment", "Институт пал", "Победить Homo Novus, выполняя задание рейнджеров"),
+    ("rangers_complete", "retrocosmos:ranger_star", "rangers_institute", "challenge", "Star of the Frontier",
+     "Turn in Professor Oinstein's ID card and receive the Ranger Star", "Звезда рубежей",
+     "Сдать удостоверение профессора Ойнштейна и получить Звезду рейнджера"),
+]
+for _k, (_en, _ru) in QUEST_LINES.items():
+    LINES[_k] = (_en, _ru)
+
 EN, RU = {}, {}
 for _k, (_en, _ru) in ITEM_NAMES.items():
     EN[f"item.{MOD}.{_k}"], RU[f"item.{MOD}.{_k}"] = _en, _ru
@@ -1647,6 +2286,25 @@ for _k, _names in NAMES.items():
         EN[f"npc.{MOD}.name.{_k}.{_i}"], RU[f"npc.{MOD}.name.{_k}.{_i}"] = _en, _ru
 for _k, (_en, _ru) in LINES.items():
     EN[f"chat.{MOD}.npc.{_k}"], RU[f"chat.{MOD}.npc.{_k}"] = _en, _ru
+for _k, (_en, _ru) in QUEST_LANG.items():
+    EN[_k], RU[_k] = _en, _ru
+for _a in QUEST_ADVANCEMENTS:
+    EN[f"advancements.{MOD}.stage2.{_a[0]}.title"], RU[f"advancements.{MOD}.stage2.{_a[0]}.title"] = _a[4], _a[6]
+    EN[f"advancements.{MOD}.stage2.{_a[0]}.description"], RU[f"advancements.{MOD}.stage2.{_a[0]}.description"] = _a[5], _a[7]
+
+
+def write_advancements():
+    """The Space Rangers branch of the stage 2 tree (awarded from code: impossible criteria)."""
+    from gen_resources import DATA
+    for name, icon, parent, frame, *_ in QUEST_ADVANCEMENTS:
+        write_json(os.path.join(DATA, "advancement", "stage2", name + ".json"), {
+            "display": {"icon": {"id": icon},
+                        "title": {"translate": f"advancements.{MOD}.stage2.{name}.title"},
+                        "description": {"translate": f"advancements.{MOD}.stage2.{name}.description"},
+                        "frame": frame, "show_toast": True, "announce_to_chat": True, "hidden": False},
+            "criteria": {"done": {"trigger": "minecraft:impossible"}},
+            "rewards": {"experience": 250} if frame == "challenge" else {},
+            "parent": f"{MOD}:stage2/{parent}"})
 
 
 # ----------------------------------------------------------------------------
@@ -1660,6 +2318,10 @@ def skins():
     for v in range(VARIANTS["scientist"]):
         out[f"scientist_{v}"] = scientist(v)
     out["decorator_0"] = decorator()
+    out["ranger_0"] = ranger()
+    out["liaison_0"] = liaison()
+    for v in range(VARIANTS["doctor"]):
+        out[f"doctor_{v}"] = doctor(v)
     return out
 
 
@@ -1669,6 +2331,7 @@ def generate():
     save(gear_texture(), "entity", "npc", "gear")
     write_java()
     write_lines_java()
+    write_advancements()
 
     save(item_credit(), "item", "space_credit")
     write_json(os.path.join(ASSETS, "models", "item", "space_credit.json"),

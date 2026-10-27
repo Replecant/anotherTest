@@ -33,6 +33,9 @@ public final class ExpeditionNpcs {
     public static final String GUARD = "guard";
     public static final String SCIENTIST = "scientist";
     public static final String DECORATOR = "decorator";
+    public static final String RANGER = "ranger";
+    public static final String LIAISON = "liaison";
+    public static final String DOCTOR = "doctor";
 
     private static final List<DeferredItem<? extends Item>> ITEMS = new ArrayList<>();
 
@@ -57,6 +60,10 @@ public final class ExpeditionNpcs {
             p -> new CrewSpawnEggItem(CrewRole.SCIENTIST, p), UnaryOperator.identity());
     public static final DeferredItem<CrewSpawnEggItem> DECORATOR_SPAWN_EGG = item("decorator_spawn_egg",
             p -> new CrewSpawnEggItem(CrewRole.DECORATOR, p), UnaryOperator.identity());
+    public static final DeferredItem<CrewSpawnEggItem> RANGER_SPAWN_EGG = item("ranger_spawn_egg",
+            p -> new CrewSpawnEggItem(CrewRole.RANGER, p), UnaryOperator.identity());
+    public static final DeferredItem<CrewSpawnEggItem> LIAISON_SPAWN_EGG = item("liaison_spawn_egg",
+            p -> new CrewSpawnEggItem(CrewRole.LIAISON, p), UnaryOperator.identity());
 
     private ExpeditionNpcs() {}
 
@@ -64,6 +71,7 @@ public final class ExpeditionNpcs {
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(ExpeditionNpcs::createAttributes);
         modEventBus.addListener(ExpeditionNpcs::addToVanillaTabs);
+        com.replecant.retrocosmos.npc.quest.QuestEvents.init(modEventBus);
     }
 
     /**
@@ -80,6 +88,27 @@ public final class ExpeditionNpcs {
         if (!present) {
             create(level, pos, yaw, crewRole, post, EntitySpawnReason.STRUCTURE);
         }
+    }
+
+    /**
+     * Spawns one of the expedition's people locked in a cell of Dr. Oinstein's prisoner camp (structure anchors
+     * {@code "expedition_captive"}). {@code role} is guard, scientist or doctor; the doctor is Dr. Norman Vale.
+     * They plead with passing players and walk free once their cell is open. Returns null if one already stands there.
+     */
+    @Nullable
+    public static ExpeditionMember spawnCaptive(ServerLevel level, BlockPos pos, float yaw, String role) {
+        CrewRole crewRole = CrewRole.byKey(role);
+        if (!level.getEntitiesOfClass(ExpeditionMember.class, new AABB(pos).inflate(0.25), ExpeditionMember::isCaptive).isEmpty()) {
+            return null;
+        }
+        ExpeditionMember member = create(level, pos, yaw, crewRole, pos, EntitySpawnReason.STRUCTURE);
+        if (member != null) {
+            if (crewRole == CrewRole.DOCTOR) {
+                member.forceIdentity(1, 0);  // Dr. Norman Vale
+            }
+            member.setCaptive(true);
+        }
+        return member;
     }
 
     /** Creates and adds a crew member; returns it, or null if it could not be created. */
@@ -119,6 +148,8 @@ public final class ExpeditionNpcs {
             event.accept(GUARD_SPAWN_EGG.get());
             event.accept(SCIENTIST_SPAWN_EGG.get());
             event.accept(DECORATOR_SPAWN_EGG.get());
+            event.accept(RANGER_SPAWN_EGG.get());
+            event.accept(LIAISON_SPAWN_EGG.get());
         }
     }
 

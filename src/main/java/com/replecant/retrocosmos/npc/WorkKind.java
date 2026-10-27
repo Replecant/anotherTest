@@ -97,6 +97,9 @@ public enum WorkKind {
             case COOPER -> this == DISPLAY || this == DESK || this == SCOPE;
             case SCIENTIST -> this != DISPLAY && this != SHOWROOM;
             case GUARD -> false;
+            case RANGER -> this == DESK || this == CONSOLE || this == SCOPE;
+            case LIAISON -> this == DESK || this == PLANT || this == DISPLAY || this == SCOPE;
+            case DOCTOR -> this == LAB || this == DESK || this == PLANT;
             case DECORATOR -> this == SHOWROOM || this == CONSOLE || this == DESK || this == DISPLAY || this == PLANT
                     || this == SCOPE;
         };

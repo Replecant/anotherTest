@@ -20,6 +20,7 @@ public final class NpcClient {
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(NpcClient::registerLayers);
         modEventBus.addListener(NpcClient::registerRenderers);
+        com.replecant.retrocosmos.npc.client.QuestClient.init(modEventBus);
     }
 
     private static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {

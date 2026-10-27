@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P",
+    "D",
+    "P"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "D": "minecraft:brown_dye"
+  },
+  "result": {
+    "id": "retrocosmos:poster_venus_briefing",
+    "count": 1
+  }
+}

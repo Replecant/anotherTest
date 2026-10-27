@@ -897,6 +897,7 @@ FONT5 = {
     "W": ["X.X", "X.X", "X.X", "XXX", "XXX"], "Y": ["X.X", "X.X", ".X.", ".X.", ".X."],
     "!": ["X", "X", "X", ".", "X"], " ": ["..", "..", "..", "..", ".."], "-": ["..", "..", "XX", "..", ".."],
     "0": ["XXX", "X.X", "X.X", "X.X", "XXX"], "7": ["XXX", "..X", ".X.", ".X.", ".X."],
+    "X": ["X.X", "X.X", ".X.", "X.X", "X.X"],
     # lower case (x-height 3)
     "r": ["..", "..", "XX", "X.", "X."], "i": ["X", ".", "X", "X", "X"], "n": ["...", "...", "XX.", "X.X", "X.X"],
     "k": ["X..", "X..", "X.X", "XX.", "X.X"],
@@ -1214,9 +1215,70 @@ def poster_freedom():
     return img
 
 
+def poster_rangers():
+    """Space Rangers recruiting poster ("The Galaxy Needs You!"; at 16 px the art reads 'SPACE NEEDS YOU!'):
+    a ranger in a blue uniform and bubble helmet pointing at the viewer."""
+    img = new(16, 32)
+    bands(img, [(0, 31, SPACE)])
+    for (x, y) in ((1, 11), (14, 10), (2, 17), (13, 19), (12, 9)):
+        px(img, [(x, y)], (176, 184, 214))
+    # the ranger: glass helmet, face, blue tunic with a red sash and a gold star, arm pointing out of the poster
+    pat(img, 3, 9, [
+        "...gggg.....",
+        "..gffffg....",
+        "..gfefeg....",
+        "..gffffg....",
+        "..gfmmfg....",
+        "...gggg.....",
+        ".BBBccBBB...",
+        "BBBBrBBBBBhh",
+        "BBBBBrBBBhHh",
+        "BBsBBBrBBBhh",
+    ], {"g": (150, 200, 230), "f": (232, 184, 150), "e": NAVY, "m": RED_D, "B": (52, 84, 168), "c": CHROME,
+        "r": RED, "s": YELLOW, "h": (232, 184, 150), "H": (196, 140, 110)})
+    poster_frame(img)
+    R(img, 0, 1, 15, 7, RED)
+    R(img, 0, 7, 15, 7, RED_D)
+    text(img, None, 1, "SPACE", YELLOW, condensed=True, shadow=RED_D)
+    R(img, 0, 21, 15, 30, CREAM)
+    R(img, 0, 21, 15, 21, CREAM_D)
+    text(img, None, 21, "NEEDS", NAVY, condensed=True)
+    text(img, None, 26, "YOU!", RED)
+    return img
+
+
+def poster_venus_briefing():
+    """Briefing board: a cork board with pinned recon photos of Venus (jungle, a dinosaur, temple ruins) and a
+    red string between the pins."""
+    img = new(16, 32)
+    bands(img, [(0, 31, (150, 108, 64))])
+    for (x, y) in ((2, 3), (9, 6), (5, 14), (12, 17), (3, 25), (10, 28), (13, 9), (6, 21)):
+        px(img, [(x, y)], (128, 90, 52))
+    def photo(x, y, sky, ground, motif):
+        R(img, x, y, x + 6, y + 6, CREAM_L)
+        R(img, x + 1, y + 1, x + 5, y + 3, sky)
+        R(img, x + 1, y + 4, x + 5, y + 5, ground)
+        for (a, b, c) in motif:
+            px(img, [(x + a, y + b)], c)
+        px(img, [(x + 3, y)], RED)                                      # pin
+    photo(1, 2, (150, 170, 120), (52, 96, 44), [(2, 3, (30, 70, 30)), (3, 2, (30, 70, 30)), (4, 3, (30, 70, 30))])
+    photo(8, 7, (176, 160, 110), (90, 110, 50), [(2, 3, (110, 130, 80)), (3, 3, (110, 130, 80)), (4, 2, (110, 130, 80)),
+                                               (2, 4, (110, 130, 80)), (4, 4, (110, 130, 80))])
+    photo(2, 15, (200, 170, 120), (120, 96, 60), [(2, 2, (176, 132, 70)), (3, 1, (176, 132, 70)), (4, 2, (176, 132, 70)),
+                                                (2, 3, (176, 132, 70)), (3, 3, (40, 30, 20)), (4, 3, (176, 132, 70))])
+    photo(8, 22, (120, 150, 190), (60, 110, 60), [(3, 3, (230, 90, 30)), (2, 4, (230, 90, 30))])
+    for (x, y) in ((4, 9), (5, 10), (6, 11), (10, 14), (9, 15), (8, 16), (7, 17), (6, 18), (8, 20), (9, 21)):
+        px(img, [(x, y)], RED)                                          # red string between the pins
+    R(img, 1, 27, 6, 29, CREAM_L)                                       # a typed note
+    R(img, 2, 28, 5, 28, (70, 70, 70))
+    poster_frame(img, (96, 66, 38))
+    return img
+
+
 POSTERS = {"poster_liftoff": poster_liftoff, "poster_vesper": poster_vesper, "poster_space_pop": poster_space_pop,
            "poster_suit_check": poster_suit_check, "poster_homestead": poster_homestead,
-           "poster_freedom": poster_freedom}
+           "poster_freedom": poster_freedom, "poster_rangers": poster_rangers,
+           "poster_venus_briefing": poster_venus_briefing}
 
 
 POSTER_ITEM_DISPLAY = {

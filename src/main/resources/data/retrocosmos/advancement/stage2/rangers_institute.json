@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "retrocosmos:professor_id"
+    },
+    "title": {
+      "translate": "advancements.retrocosmos.stage2.rangers_institute.title"
+    },
+    "description": {
+      "translate": "advancements.retrocosmos.stage2.rangers_institute.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {},
+  "parent": "retrocosmos:stage2/rangers_jailbreak"
+}

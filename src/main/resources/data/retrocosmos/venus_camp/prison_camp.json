@@ -1,0 +1,187 @@
+{
+  "template": "retrocosmos:oinstein/oinstein_prison_camp",
+  "size": [
+    41,
+    16,
+    41
+  ],
+  "ground_y": 0,
+  "center": [
+    20,
+    1,
+    20
+  ],
+  "captives": [
+    {
+      "kind": "expedition_captive",
+      "role": "scientist",
+      "pos": [
+        12,
+        1,
+        12
+      ],
+      "yaw": 0,
+      "cell_door": [
+        11,
+        1,
+        13
+      ],
+      "lever": [
+        10,
+        2,
+        14
+      ]
+    },
+    {
+      "kind": "expedition_captive",
+      "role": "guard",
+      "pos": [
+        17,
+        1,
+        12
+      ],
+      "yaw": 0,
+      "cell_door": [
+        16,
+        1,
+        13
+      ],
+      "lever": [
+        15,
+        2,
+        14
+      ]
+    },
+    {
+      "kind": "expedition_captive",
+      "role": "scientist",
+      "pos": [
+        17,
+        1,
+        17
+      ],
+      "yaw": 180,
+      "cell_door": [
+        16,
+        1,
+        16
+      ],
+      "lever": [
+        15,
+        2,
+        15
+      ]
+    },
+    {
+      "kind": "expedition_captive",
+      "role": "doctor",
+      "name": "vale",
+      "pos": [
+        22,
+        1,
+        12
+      ],
+      "yaw": 0,
+      "cell_door": [
+        21,
+        1,
+        13
+      ],
+      "lever": [
+        20,
+        2,
+        14
+      ]
+    },
+    {
+      "kind": "expedition_captive",
+      "role": "guard",
+      "pos": [
+        22,
+        1,
+        17
+      ],
+      "yaw": 180,
+      "cell_door": [
+        21,
+        1,
+        16
+      ],
+      "lever": [
+        20,
+        2,
+        15
+      ]
+    },
+    {
+      "kind": "expedition_captive",
+      "role": "scientist",
+      "pos": [
+        27,
+        1,
+        17
+      ],
+      "yaw": 180,
+      "cell_door": [
+        26,
+        1,
+        16
+      ],
+      "lever": [
+        25,
+        2,
+        15
+      ]
+    }
+  ],
+  "guards": [
+    {
+      "type": "retrocosmos:atomic_sentry",
+      "pos": [
+        4,
+        9,
+        4
+      ]
+    },
+    {
+      "type": "retrocosmos:atomic_sentry",
+      "pos": [
+        36,
+        9,
+        4
+      ]
+    },
+    {
+      "type": "retrocosmos:hominus_sapiens",
+      "pos": [
+        9,
+        1,
+        31
+      ]
+    },
+    {
+      "type": "retrocosmos:hominid_novus",
+      "pos": [
+        20,
+        1,
+        36
+      ]
+    },
+    {
+      "type": "retrocosmos:hominid_novus",
+      "pos": [
+        13,
+        1,
+        14
+      ]
+    },
+    {
+      "type": "retrocosmos:atomic_automaton",
+      "pos": [
+        27,
+        1,
+        23
+      ]
+    }
+  ]
+}

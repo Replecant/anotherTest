@@ -36,7 +36,7 @@ public class GuardCombatGoal extends Goal {
     @Override
     public boolean canUse() {
         LivingEntity target = guard.getTarget();
-        return guard.role() == CrewRole.GUARD && target != null && target.isAlive() && guard.canAttack(target);
+        return guard.role() == CrewRole.GUARD && !guard.isCaptive() && !guard.isLeaving() && target != null && target.isAlive() && guard.canAttack(target);
     }
 
     @Override

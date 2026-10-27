@@ -9,7 +9,13 @@ public enum CrewRole {
     /** Scientist: works at the camp's instruments and plants, flees to the guards. */
     SCIENTIST(ExpeditionNpcs.SCIENTIST, 4, 12, 26.0, 0.0),
     /** Betty Palmer of the Atomic Home Showroom on Freedom Station: sells furniture, never leaves her counter. */
-    DECORATOR(ExpeditionNpcs.DECORATOR, 1, 4, 30.0, 0.0);
+    DECORATOR(ExpeditionNpcs.DECORATOR, 1, 4, 30.0, 0.0),
+    /** Captain Jack Morrow of the Space Rangers, in their office on Freedom Station: recruits, briefs, rewards, trades. */
+    RANGER(ExpeditionNpcs.RANGER, 1, 4, 40.0, 4.0),
+    /** Dr. Margaret Hale, the camp's xeno-anthropologist: the expedition's contact with the hominid tribes. */
+    LIAISON(ExpeditionNpcs.LIAISON, 1, 8, 26.0, 0.0),
+    /** The expedition's physicians: Dr. Samuel Ross (look 0) and Dr. Norman Vale (look 1). */
+    DOCTOR(ExpeditionNpcs.DOCTOR, 2, 6, 26.0, 0.0);
 
     public final String key;
     /** Number of skins. */
@@ -29,7 +35,7 @@ public enum CrewRole {
 
     /** Trades through the merchant screen (and so stays put, safe on the station). */
     public boolean isMerchant() {
-        return this == COOPER || this == DECORATOR;
+        return this == COOPER || this == DECORATOR || this == RANGER;
     }
 
     public static CrewRole byKey(String key) {

@@ -18,6 +18,9 @@ import net.minecraft.util.Mth;
 /** A blaster bolt: a full-bright streak of crossed glowing quads along its flight path, plus a head-on glow. */
 public class BlasterBoltRenderer extends EntityRenderer<BlasterBolt, BlasterBoltRenderer.State> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "textures/entity/tribe/blaster_bolt.png");
+    /** The Space Rangers' blue bolt. */
+    public static final Identifier RANGER_TEXTURE = Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "textures/entity/tribe/ranger_bolt.png");
+    private final Identifier texture;
     private static final int FULL_BRIGHT = 0xF000F0;
 
     public static class State extends EntityRenderState {
@@ -26,7 +29,12 @@ public class BlasterBoltRenderer extends EntityRenderer<BlasterBolt, BlasterBolt
     }
 
     public BlasterBoltRenderer(EntityRendererProvider.Context context) {
+        this(context, TEXTURE);
+    }
+
+    public BlasterBoltRenderer(EntityRendererProvider.Context context, Identifier texture) {
         super(context);
+        this.texture = texture;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class BlasterBoltRenderer extends EntityRenderer<BlasterBolt, BlasterBolt
         float len = 0.55F;
         float half = 0.11F;
         float pulse = 1.0F + 0.15F * Mth.sin(state.ageInTicks * 2.1F);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TEXTURE), (pose, buffer) -> {
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, buffer) -> {
             // two crossed planes along the flight axis (x)
             quad(buffer, pose, -len, -half * pulse, 0, len, half * pulse, 0, true);
             quad(buffer, pose, -len, 0, -half * pulse, len, 0, half * pulse, false);

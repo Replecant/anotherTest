@@ -21,6 +21,7 @@ from PIL import Image
 import dinosaurs as D
 import tribe_mutants as MU
 import tribe_boss as TB
+import ranger_items as RI
 from gen_resources import ASSETS, DATA, MOD, ROOT, item_def, save, shaped, shapeless, write_json
 
 JAVA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "java",
@@ -1626,6 +1627,8 @@ RU[f"subtitles.{MOD}.blaster_shot"] = "Выстрел бластера"
 EN[f"entity.{MOD}.thrown_spear"], RU[f"entity.{MOD}.thrown_spear"] = "Thrown Spear", "Брошенное копьё"
 EN.update(TB.EN)
 RU.update(TB.RU)
+EN.update(RI.EN)
+RU.update(RI.RU)
 for _i, (_en, _ru) in enumerate(NAMES):
     EN[f"tribe.{MOD}.name.{_i}"], RU[f"tribe.{MOD}.name.{_i}"] = _en, _ru
 for _k, (_en, _ru) in LINES.items():
@@ -1703,6 +1706,7 @@ def generate():
             save(build_texture(role, v), "entity", "tribe", f"tribesman_{role}_{v}")
     mutant_assets()
     TB.boss_assets()
+    RI.generate()
     write_java()
 
     for name, fn in ITEMS.items():

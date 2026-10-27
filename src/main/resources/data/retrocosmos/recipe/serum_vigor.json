@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:oinstein_notes",
+    "minecraft:glass_bottle",
+    "retrocosmos:dino_hide",
+    "retrocosmos:raptor_tooth",
+    "retrocosmos:venus_amber"
+  ],
+  "result": {
+    "id": "retrocosmos:serum_vigor",
+    "count": 1
+  }
+}

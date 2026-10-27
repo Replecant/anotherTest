@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:oinstein_notes",
+    "minecraft:glass_bottle",
+    "retrocosmos:venus_glowcap",
+    "retrocosmos:venus_glowcap",
+    "retrocosmos:venus_amber"
+  ],
+  "result": {
+    "id": "retrocosmos:serum_regeneration",
+    "count": 1
+  }
+}

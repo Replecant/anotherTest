@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:oinstein_notes",
+    "minecraft:glass_bottle",
+    "retrocosmos:fern_fiber",
+    "retrocosmos:fern_fiber",
+    "retrocosmos:raptor_tooth",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "retrocosmos:serum_swiftness",
+    "count": 1
+  }
+}

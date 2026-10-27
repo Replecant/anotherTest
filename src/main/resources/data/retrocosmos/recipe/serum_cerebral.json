@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "retrocosmos:oinstein_notes",
+    "minecraft:glass_bottle",
+    "retrocosmos:brain_flask",
+    "retrocosmos:venus_glowcap"
+  ],
+  "result": {
+    "id": "retrocosmos:serum_cerebral",
+    "count": 1
+  }
+}

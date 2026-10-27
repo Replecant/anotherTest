@@ -605,14 +605,13 @@ def boss_assets():
                {"textures": {"particle": f"{MOD}:item/oinstein_boss_anchor"}})
     write_json(os.path.join(ASSETS, "blockstates", "oinstein_boss_anchor.json"),
                {"variants": {"": {"model": f"{MOD}:block/oinstein_boss_anchor"}}})
-    # Homo Novus' loot (placeholder: his notes drop from code, as a written book)
+    # Homo Novus' loot, kept modest (his final notes book, the ID card and the research notes drop from code)
     write_json(os.path.join(DATA, "loot_table", "entities", "homo_novus.json"), {
         "type": "minecraft:entity", "random_sequence": f"{MOD}:entities/homo_novus",
         "pools": [
-            {"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": f"{MOD}:ray_blaster"}]},
             {"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": f"{MOD}:brain_flask"}]},
             {"rolls": 1, "bonus_rolls": 0, "entries": [{"type": "minecraft:item", "name": f"{MOD}:venus_amber", "functions": [
-                {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 4, "max": 8}}]}]},
+                {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 4}}]}]},
         ]})
     write_json(os.path.join(DATA, "advancement", "stage2", "a_better_ape.json"), {
         "display": {"icon": {"id": f"{MOD}:brain_flask"},
@@ -706,7 +705,7 @@ for _k, (_en, _ru) in {
     f"title.{_MOD}.homo_novus.subtitle": ("Dr. Oinstein has injected the serum", "Доктор Ойнштайн вколол себе сыворотку"),
     f"item.{_MOD}.oinstein_strider_spawn_egg": ("Atomic Strider Spawn Egg", "Яйцо призыва атомного шагохода"),
     f"item.{_MOD}.homo_novus_spawn_egg": ("Homo Novus Spawn Egg", "Яйцо призыва Человека Нового"),
-    f"item.{_MOD}.oinstein_notes": ("Dr. Oinstein's Final Notes", "Последние записи доктора Ойнштайна"),
+    f"item.{_MOD}.oinstein_final_notes": ("Dr. Oinstein's Final Notes", "Последние записи доктора Ойнштайна"),
     f"block.{_MOD}.oinstein_boss_anchor": ("Oinstein Boss Anchor", "Якорь босса Ойнштайна"),
     f"advancements.{_MOD}.stage2.a_better_ape.title": ("A Better Ape", "Человек Новый"),
     f"advancements.{_MOD}.stage2.a_better_ape.description": ("Defeat Dr. Oinstein - in his walker and after the serum",

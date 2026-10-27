@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "retrocosmos:item/serum_cerebral"
+  }
+}

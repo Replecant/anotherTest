@@ -9,6 +9,17 @@ import com.replecant.retrocosmos.registry.ModItems;
 import com.replecant.retrocosmos.tribe.boss.DrOinstein;
 import com.replecant.retrocosmos.tribe.boss.HomoNovus;
 import com.replecant.retrocosmos.tribe.boss.OinsteinStrider;
+import com.replecant.retrocosmos.tribe.ranger.OinsteinNotesItem;
+import com.replecant.retrocosmos.tribe.ranger.RangerBlasterItem;
+import com.replecant.retrocosmos.tribe.ranger.RangerBolt;
+import com.replecant.retrocosmos.tribe.ranger.Serum;
+import com.replecant.retrocosmos.tribe.ranger.SerumItem;
+import java.util.EnumMap;
+import java.util.Map;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Unit;
+import net.minecraft.world.item.component.ItemLore;
 import java.util.Set;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.SoundType;
@@ -139,6 +150,15 @@ public final class ModTribes {
             BLOCK_ENTITIES.register("oinstein_boss_anchor",
                     () -> new BlockEntityType<>(OinsteinBossAnchorBlockEntity::new, Set.of(OINSTEIN_BOSS_ANCHOR.get())));
 
+    /** The Space Rangers' blue blaster bolt. */
+    public static final DeferredHolder<EntityType<?>, EntityType<RangerBolt>> RANGER_BOLT = ModEntities.ENTITIES.register("ranger_bolt",
+            id -> EntityType.Builder.<RangerBolt>of(RangerBolt::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     public static final TagKey<Item> REPAIRS_BONE_SPEAR = TagKey.create(Registries.ITEM,
             Identifier.fromNamespaceAndPath(RetroCosmos.MODID, "repairs_bone_spear"));
     /** Bone & flint: about as good as stone, a little tougher. */
@@ -185,6 +205,24 @@ public final class ModTribes {
     public static final DeferredItem<SpawnEggItem> HOMINUS_SAPIENS_SPAWN_EGG = item("hominus_sapiens_spawn_egg", SpawnEggItem::new,
             p -> p.spawnEgg(HOMINUS_SAPIENS.get()));
 
+    // ---- the Space Rangers storyline ----
+    /** The rangers' unbreakable blue ray pistol: one energy cartridge a shot. */
+    public static final DeferredItem<RangerBlasterItem> RANGER_BLASTER = item("ranger_blaster", RangerBlasterItem::new,
+            p -> p.stacksTo(1).rarity(Rarity.EPIC).component(DataComponents.UNBREAKABLE, Unit.INSTANCE));
+    /** Ranger blaster ammunition. */
+    public static final DeferredItem<Item> ENERGY_CARTRIDGE = item("energy_cartridge", Item::new, UnaryOperator.identity());
+    /** Taken off Homo Novus: the Director's laminated institute pass. */
+    public static final DeferredItem<Item> PROFESSOR_ID = item("professor_id", Item::new, p -> p.stacksTo(1).rarity(Rarity.RARE)
+            .component(DataComponents.LORE, lore("professor_id", 2)));
+    /** Taken off Homo Novus: the catalyst of serum crafting (returned by every recipe). */
+    public static final DeferredItem<OinsteinNotesItem> OINSTEIN_NOTES = item("oinstein_notes", OinsteinNotesItem::new,
+            p -> p.stacksTo(1).rarity(Rarity.RARE));
+    /** The rangers' thank-you: a star badge. */
+    public static final DeferredItem<Item> RANGER_STAR = item("ranger_star", Item::new, p -> p.stacksTo(1).rarity(Rarity.RARE)
+            .component(DataComponents.LORE, lore("ranger_star", 2)));
+    /** Dr. Oinstein's serums, one item per {@link Serum}. */
+    public static final Map<Serum, DeferredItem<SerumItem>> SERUMS = serums();
+
     // ---- the boss ----
     public static final DeferredItem<SpawnEggItem> OINSTEIN_STRIDER_SPAWN_EGG = item("oinstein_strider_spawn_egg", SpawnEggItem::new,
             p -> p.spawnEgg(OINSTEIN_STRIDER.get()));
@@ -194,6 +232,26 @@ public final class ModTribes {
             p -> new BlockItem(OINSTEIN_BOSS_ANCHOR.get(), p), p -> p.useBlockDescriptionPrefix().rarity(Rarity.EPIC));
 
     private ModTribes() {}
+
+    private static ItemLore lore(String name, int lines) {
+        List<Component> out = new ArrayList<>();
+        for (int i = 0; i < lines; i++) {
+            out.add(Component.translatable("item." + RetroCosmos.MODID + "." + name + ".lore." + i)
+                    .withStyle(s -> s.withItalic(true).withColor(ChatFormatting.GRAY)));
+        }
+        return new ItemLore(out);
+    }
+
+    private static Map<Serum, DeferredItem<SerumItem>> serums() {
+        Map<Serum, DeferredItem<SerumItem>> map = new EnumMap<>(Serum.class);
+        for (Serum serum : Serum.values()) {
+            map.put(serum, item(serum.itemName(), p -> new SerumItem(p, serum), p -> p.stacksTo(16).rarity(Rarity.UNCOMMON)
+                    .usingConvertsTo(Items.GLASS_BOTTLE)
+                    .component(DataComponents.CONSUMABLE, Consumables.defaultDrink().consumeSeconds(1.2F)
+                            .onConsume(new ApplyStatusEffectsConsumeEffect(serum.instances())).build())));
+        }
+        return Collections.unmodifiableMap(map);
+    }
 
     /** Called from the mod constructor before the deferred registers are attached. */
     public static void init(IEventBus modEventBus) {
@@ -226,6 +284,10 @@ public final class ModTribes {
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(BONE_SPEAR.get());
             event.accept(RAY_BLASTER.get());
+            event.accept(RANGER_BLASTER.get());
+            event.accept(ENERGY_CARTRIDGE.get());
+        } else if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
+            SERUMS.values().forEach(serum -> event.accept(serum.get()));
         }
     }
 

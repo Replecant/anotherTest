@@ -58,6 +58,7 @@ public final class TribeClient {
         event.registerEntityRenderer(ModTribes.HOMINUS_SAPIENS.get(), context -> new MutantRenderer<>(context,
                 new SapiensModel(context.bakeLayer(HOMINUS_SAPIENS)), 0.5F, "hominus_sapiens", false, true));
         event.registerEntityRenderer(ModTribes.BLASTER_BOLT.get(), BlasterBoltRenderer::new);
+        event.registerEntityRenderer(ModTribes.RANGER_BOLT.get(), context -> new BlasterBoltRenderer(context, BlasterBoltRenderer.RANGER_TEXTURE));
         event.registerEntityRenderer(ModTribes.OINSTEIN_STRIDER.get(), context -> new BossRenderer<>(context,
                 new StriderModel(context.bakeLayer(OINSTEIN_STRIDER)), 1.6F, "oinstein_strider", true));
         event.registerEntityRenderer(ModTribes.DR_OINSTEIN.get(), context -> new BossRenderer<>(context,

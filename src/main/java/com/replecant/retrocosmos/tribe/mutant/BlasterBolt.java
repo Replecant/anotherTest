@@ -36,17 +36,31 @@ public class BlasterBolt extends ThrowableProjectile {
 
     /** A bolt leaving the shooter's muzzle along its view (or towards a target). */
     public static BlasterBolt fire(LivingEntity shooter, Vec3 direction, float inaccuracy) {
-        BlasterBolt bolt = new BlasterBolt(ModTribes.BLASTER_BOLT.get(), shooter.level());
+        return launch(new BlasterBolt(ModTribes.BLASTER_BOLT.get(), shooter.level()), shooter, direction, inaccuracy, 1.0F);
+    }
+
+    /** Sends any bolt off from the shooter's muzzle, with the blaster's report at the given pitch. */
+    public static <B extends BlasterBolt> B launch(B bolt, LivingEntity shooter, Vec3 direction, float inaccuracy, float pitch) {
         bolt.setOwner(shooter);
         Vec3 side = direction.cross(new Vec3(0, 1, 0)).normalize().scale(-0.35);
         bolt.setPos(shooter.getX() + side.x + direction.x * 0.6, shooter.getEyeY() - 0.35 + direction.y * 0.6,
                 shooter.getZ() + side.z + direction.z * 0.6);
-        bolt.shoot(direction.x, direction.y, direction.z, SPEED, inaccuracy);
+        bolt.shoot(direction.x, direction.y, direction.z, bolt.speed(), inaccuracy);
         shooter.level().addFreshEntity(bolt);
         SoundSource source = shooter instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE;
         shooter.level().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), ModSounds.BLASTER_SHOT.get(),
-                source, 1.0F, 0.95F + shooter.getRandom().nextFloat() * 0.1F);
+                source, 1.0F, pitch * (0.95F + shooter.getRandom().nextFloat() * 0.1F));
         return bolt;
+    }
+
+    /** Damage on a hit (the ranger's blue bolt hits harder). */
+    public float damage() {
+        return DAMAGE;
+    }
+
+    /** Muzzle velocity, blocks per tick. */
+    public float speed() {
+        return SPEED;
     }
 
     @Override
@@ -86,7 +100,7 @@ public class BlasterBolt extends ThrowableProjectile {
         super.onHitEntity(result);
         if (level() instanceof ServerLevel server) {
             Entity owner = getOwner();
-            result.getEntity().hurtServer(server, damageSources().source(BLASTER, this, owner != null ? owner : this), DAMAGE);
+            result.getEntity().hurtServer(server, damageSources().source(BLASTER, this, owner != null ? owner : this), damage());
         }
     }
 

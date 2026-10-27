@@ -269,6 +269,9 @@ public class HomoNovus extends OinsteinBoss {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
         spawnAtLocation(level, finalNotes());
+        // the Space Rangers storyline: proof of the deed, and the serum catalyst
+        spawnAtLocation(level, new ItemStack(ModTribes.PROFESSOR_ID.get()));
+        spawnAtLocation(level, new ItemStack(ModTribes.OINSTEIN_NOTES.get()));
     }
 
     /** "Final Notes of Dr. Oinstein": a written book, its pages translated on the reader's side. */
@@ -280,7 +283,7 @@ public class HomoNovus extends OinsteinBoss {
         }
         book.set(DataComponents.WRITTEN_BOOK_CONTENT,
                 new WrittenBookContent(Filterable.passThrough("Final Notes"), "Dr. Oinstein", 0, pages, true));
-        book.set(DataComponents.CUSTOM_NAME, Component.translatable("item.retrocosmos.oinstein_notes")
+        book.set(DataComponents.CUSTOM_NAME, Component.translatable("item.retrocosmos.oinstein_final_notes")
                 .withStyle(s -> s.withItalic(false).withColor(ChatFormatting.GREEN)));
         book.set(DataComponents.RARITY, Rarity.EPIC);
         return book;

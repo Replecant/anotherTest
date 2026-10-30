@@ -1,0 +1,81 @@
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+
+> Task :downloadAssets
+Loaded 127 artifacts from /home/runner/work/anotherTest/anotherTest/naturequirks/build/tmp/downloadAssets/nfrt_artifact_manifest.properties
+Downloading asset index 29
+Using Minecraft asset root: /home/runner/.gradle/caches/neoformruntime/assets
+  ↓ https://piston-meta.mojang.com/v1/packages/a2f0558bd140ae4f8f6a48d0ea6f1dbc16a84baa/29.json
+
+> Task :prepareGameTestServerRun
+
+> Task :runGameTestServer
+2026-10-30T11:05:58.166843068Z main WARN Advanced terminal features are not available in this environment
+[11:05:58] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 66ms
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/naturequirks/run
+[11:05:58] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 20ms
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[11:05:58] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[11:05:58] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[11:05:58] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates naturequirks%%/home/runner/work/anotherTest/anotherTest/naturequirks/build/classes/java/main:naturequirks%%/home/runner/work/anotherTest/anotherTest/naturequirks/build/resources/main from env
+[11:05:58] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[11:05:58] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		Nature's Quirks 0.1.0 (naturequirks)
+		NeoForge 21.11.48 (neoforge)
+[11:05:58] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - naturequirks (composite(folder(/home/runner/work/anotherTest/anotherTest/naturequirks/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/naturequirks/build/resources/main)))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+[11:05:58] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 23ms
+[11:05:59] [main/INFO] [minecraft/GameTestMainUtil]: Running GameTestMain with cwd '/home/runner/work/anotherTest/anotherTest/naturequirks/run', universe path 'gametestserver'
+[11:05:59] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[11:06:02] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[11:06:02] [modloading-worker-0/INFO] [co.re.na.NatureQuirks/]: Nature's Quirks: the Overworld got a little stranger.
+[11:06:04] [main/INFO] [minecraft/RecipeManager]: Loaded 1488 recipes
+[11:06:04] [main/INFO] [minecraft/AdvancementTree]: Loaded 1584 advancements
+[11:06:04] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[11:06:04] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[11:06:04] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[11:06:04] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[11:06:04] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 275 ms
+[11:06:04] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[11:06:04] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[11:06:04] [Server thread/INFO] [minecraft/GameTestServer]: 1 tests are now running at position -4001537, -59, 8886280!
+[11:06:05] [Server thread/INFO] [minecraft/GameTestRunner]: Running test environment 'minecraft:default' batch 0 (1 tests)...
+[11:06:05] [Server thread/INFO] [minecraft/GameTestServer]: [+]
+[11:06:05] [Server thread/INFO] [minecraft/GameTestServer]: ========= 1 GAME TESTS COMPLETE IN 430.3 ms ======================
+[11:06:05] [Server thread/INFO] [minecraft/GameTestServer]: All 1 required tests passed :)
+[11:06:05] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[11:06:05] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[11:06:05] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[11:06:05] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (gametestworld): All chunks are saved
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[11:06:06] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[11:06:06] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/smoke-1793358356979.json
+
+BUILD SUCCESSFUL in 10s
+6 actionable tasks: 3 executed, 3 up-to-date

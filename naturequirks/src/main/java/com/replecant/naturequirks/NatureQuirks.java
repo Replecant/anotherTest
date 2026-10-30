@@ -2,6 +2,9 @@ package com.replecant.naturequirks;
 
 import com.mojang.logging.LogUtils;
 import com.replecant.naturequirks.registry.ModTab;
+import com.replecant.naturequirks.guardianbee.GuardianBees;
+import com.replecant.naturequirks.flowercreeper.FlowerCreepers;
+import com.replecant.naturequirks.stonehead.StoneHeads;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -18,6 +21,9 @@ public class NatureQuirks {
 
     public NatureQuirks(IEventBus modEventBus, ModContainer modContainer) {
         ModTab.TABS.register(modEventBus);
+        StoneHeads.init(modEventBus);
+        FlowerCreepers.init(modEventBus);
+        GuardianBees.init(modEventBus);
         LOGGER.info("Nature's Quirks: the Overworld got a little stranger.");
     }
 }

@@ -1,3 +1,13 @@
 {
+  "effect.naturequirks.hay_fever": "Hay Fever",
+  "entity.naturequirks.flower_creeper": "Flower Creeper",
+  "entity.naturequirks.guardian_bee": "Guardian Bee",
+  "entity.naturequirks.stone_head": "Stone Head",
+  "item.naturequirks.flower_creeper_spawn_egg": "Flower Creeper Spawn Egg",
+  "item.naturequirks.geode": "Geode",
+  "item.naturequirks.geode.desc": "Use to crack it open",
+  "item.naturequirks.geode.rich": "Glittering Geode",
+  "item.naturequirks.guardian_bee_spawn_egg": "Guardian Bee Spawn Egg",
+  "item.naturequirks.stone_head_spawn_egg": "Stone Head Spawn Egg",
   "itemGroup.naturequirks": "Nature's Quirks"
 }

@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#naturequirks:has_flower_creeper",
+  "spawners": [
+    {
+      "type": "naturequirks:flower_creeper",
+      "weight": 40,
+      "minCount": 1,
+      "maxCount": 2
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#naturequirks:has_stone_head",
+  "spawners": [
+    {
+      "type": "naturequirks:stone_head",
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

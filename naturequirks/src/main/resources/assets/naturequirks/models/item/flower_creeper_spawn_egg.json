@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "naturequirks:item/flower_creeper_spawn_egg"
+  }
+}

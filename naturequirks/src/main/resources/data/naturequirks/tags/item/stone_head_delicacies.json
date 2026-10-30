@@ -1,0 +1,36 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:gems",
+      "required": false
+    },
+    {
+      "id": "#c:ingots",
+      "required": false
+    },
+    {
+      "id": "#c:ores",
+      "required": false
+    },
+    {
+      "id": "#c:storage_blocks",
+      "required": false
+    },
+    "minecraft:amethyst_shard",
+    "minecraft:amethyst_block",
+    "minecraft:diamond",
+    "minecraft:emerald",
+    "minecraft:gold_ingot",
+    "minecraft:iron_ingot",
+    "minecraft:copper_ingot",
+    "minecraft:netherite_ingot",
+    "minecraft:lapis_lazuli",
+    "minecraft:quartz",
+    "minecraft:raw_iron",
+    "minecraft:raw_gold",
+    "minecraft:raw_copper",
+    "minecraft:echo_shard",
+    "minecraft:prismarine_crystals"
+  ]
+}

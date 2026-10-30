@@ -1,3 +1,13 @@
 {
+  "effect.naturequirks.hay_fever": "Сенная лихорадка",
+  "entity.naturequirks.flower_creeper": "Цветочный крипер",
+  "entity.naturequirks.guardian_bee": "Пчела-защитник",
+  "entity.naturequirks.stone_head": "Каменная голова",
+  "item.naturequirks.flower_creeper_spawn_egg": "Яйцо призыва цветочного крипера",
+  "item.naturequirks.geode": "Жеода",
+  "item.naturequirks.geode.desc": "Используйте, чтобы расколоть",
+  "item.naturequirks.geode.rich": "Сверкающая жеода",
+  "item.naturequirks.guardian_bee_spawn_egg": "Яйцо призыва пчелы-защитника",
+  "item.naturequirks.stone_head_spawn_egg": "Яйцо призыва каменной головы",
   "itemGroup.naturequirks": "Причуды природы"
 }

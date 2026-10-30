@@ -25,7 +25,8 @@ jobs:
       - name: Find the mods to build
         id: mods
         run: |
-          ALL=$(for f in */gradle.properties; do grep -q '^mod_id=' "$f" && dirname "$f"; done)
+          # (if-blocks, not "a && b", so a mod that doesn't match never fails the step under bash -e)
+          ALL=$(for f in */gradle.properties; do if grep -q '^mod_id=' "$f"; then dirname "$f"; fi; done)
           BEFORE="${{ github.event.before }}"
           if [ "${{ github.event_name }}" != "push" ] || [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
              || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
@@ -35,7 +36,7 @@ jobs:
             if echo "$FILES" | grep -q '^\.github/'; then
               CHANGED="$ALL"
             else
-              CHANGED=$(for m in $ALL; do echo "$FILES" | grep -q "^$m/" && echo "$m"; done)
+              CHANGED=$(for m in $ALL; do if echo "$FILES" | grep -q "^$m/"; then echo "$m"; fi; done)
             fi
           fi
           JSON=$(printf '%s\n' $CHANGED | jq -R . | jq -sc 'map(select(length > 0))')

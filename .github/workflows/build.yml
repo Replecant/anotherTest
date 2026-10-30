@@ -1,4 +1,8 @@
-name: Build mod
+name: Build mods
+
+# One repository, many mods: every top-level folder with a gradle.properties that sets mod_id is a standalone
+# NeoForge 1.21.11 mod. A push builds only the mods whose folder changed (all of them when this workflow changes or
+# on a manual run); main publishes a release per mod, tagged <folder>-v<version>-build.<run>.
 
 on:
   push:
@@ -9,8 +13,46 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  detect:
     runs-on: ubuntu-latest
+    outputs:
+      mods: ${{ steps.mods.outputs.mods }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find the mods to build
+        id: mods
+        run: |
+          ALL=$(for f in */gradle.properties; do grep -q '^mod_id=' "$f" && dirname "$f"; done)
+          BEFORE="${{ github.event.before }}"
+          if [ "${{ github.event_name }}" != "push" ] || [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            CHANGED="$ALL"
+          else
+            FILES=$(git diff --name-only "$BEFORE" "${{ github.sha }}")
+            if echo "$FILES" | grep -q '^\.github/'; then
+              CHANGED="$ALL"
+            else
+              CHANGED=$(for m in $ALL; do echo "$FILES" | grep -q "^$m/" && echo "$m"; done)
+            fi
+          fi
+          JSON=$(printf '%s\n' $CHANGED | jq -R . | jq -sc 'map(select(length > 0))')
+          echo "Mods to build: $JSON"
+          echo "mods=$JSON" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: detect
+    if: needs.detect.outputs.mods != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mod: ${{ fromJSON(needs.detect.outputs.mods) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.mod }}
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +62,14 @@ jobs:
           java-version: 21
 
       - uses: gradle/actions/setup-gradle@v4
+
+      - name: Read mod properties
+        id: props
+        run: |
+          echo "id=$(grep '^mod_id=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+          echo "name=$(grep '^mod_name=' gradle.properties | cut -d= -f2-)" >> "$GITHUB_OUTPUT"
+          echo "version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+          echo "mc=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
 
       - name: Resolve newest NeoForge 21.11.x
         id: neo
@@ -43,17 +93,18 @@ jobs:
           set +e
           timeout 600 ./gradlew runGameTestServer -Pneo_version=${{ steps.neo.outputs.version }} > server.log 2>&1
           echo "gametest server exit code: $?"
-          # Any data-loading error that mentions our mod fails the job
-          if grep -E "(ERROR|Exception|Failed|Couldn't|Unknown|Invalid|Missing)" server.log | grep -i retrocosmos; then
-            echo "::error::Retro Cosmos data failed to load, see server.log"
+          # Any data-loading error that mentions the mod fails the job
+          if grep -E "(ERROR|Exception|Failed|Couldn't|Unknown|Invalid|Missing)" server.log | grep -i "${{ steps.props.outputs.id }}"; then
+            echo "::error::${{ steps.props.outputs.name }} data failed to load, see server.log"
             exit 1
           fi
-          grep -q "Retro Cosmos: countdown initiated" server.log || { echo "::error::Mod did not load"; exit 1; }
-          grep "STATION SMOKE" server.log || true
-          grep -q "STATION SMOKE OK" server.log || { echo "::error::Freedom Station smoke test failed"; exit 1; }
+          # mod-specific checks, if the mod has any
+          if [ -x tools/ci/smoke_check.sh ]; then
+            tools/ci/smoke_check.sh server.log || exit 1
+          fi
 
-      - name: API probe (probe branch only)
-        if: always() && startsWith(github.ref, 'refs/heads/probe')
+      - name: API probe (probe branches only)
+        if: always() && startsWith(github.ref, 'refs/heads/probe') && hashFiles(format('{0}/tools/ci/api_probe.sh', matrix.mod)) != ''
         run: |
           mkdir -p /tmp/logs
           bash tools/ci/api_probe.sh /tmp/logs/api.txt || true
@@ -62,31 +113,30 @@ jobs:
         if: always()
         run: |
           mkdir -p /tmp/logs && cp build.log server.log /tmp/logs/ 2>/dev/null || true
-          echo "status=${{ steps.build.outcome }} smoke=${{ steps.smoke.outcome }} neo=${{ steps.neo.outputs.version }} sha=${{ github.sha }}" > /tmp/logs/status.txt
+          echo "mod=${{ matrix.mod }} status=${{ steps.build.outcome }} smoke=${{ steps.smoke.outcome }} neo=${{ steps.neo.outputs.version }} sha=${{ github.sha }}" > /tmp/logs/status.txt
           cd /tmp/logs
-          LOGS=ci-logs
-          case "${{ github.ref_name }}" in main|probe) ;; *) LOGS="ci-logs-${{ github.ref_name }}" ;; esac
+          LOGS="ci-logs-${{ matrix.mod }}"
+          case "${{ github.ref_name }}" in main) ;; *) LOGS="$LOGS-${{ github.ref_name }}" ;; esac
           git init -q -b "$LOGS"
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add . && git commit -qm "CI log for ${{ github.sha }}"
+          git add . && git commit -qm "CI log for ${{ matrix.mod }} at ${{ github.sha }}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "$LOGS"
 
       - name: Upload jar artifact
         if: steps.smoke.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: retrocosmos-jar
-          path: build/libs/*.jar
+          name: ${{ matrix.mod }}-jar
+          path: ${{ matrix.mod }}/build/libs/*.jar
 
       - name: Publish GitHub release
         if: steps.smoke.outcome == 'success' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VER=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
-          TAG="v${VER}-build.${{ github.run_number }}"
+          TAG="${{ matrix.mod }}-v${{ steps.props.outputs.version }}-build.${{ github.run_number }}"
           gh release create "$TAG" build/libs/*.jar \
-            --title "Retro Cosmos ${VER} (build ${{ github.run_number }}) for Minecraft 1.21.11" \
-            --notes "Automatic build for NeoForge ${{ steps.neo.outputs.version }} / Minecraft 1.21.11. Drop the jar into your \`mods\` folder." \
+            --title "${{ steps.props.outputs.name }} ${{ steps.props.outputs.version }} (build ${{ github.run_number }}) for Minecraft ${{ steps.props.outputs.mc }}" \
+            --notes "Automatic build of \`${{ matrix.mod }}\` for NeoForge ${{ steps.neo.outputs.version }} / Minecraft ${{ steps.props.outputs.mc }}. Drop the jar into your \`mods\` folder." \
             --latest

@@ -1,0 +1,198 @@
+===== SEED hive
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :prepareServerRun
+
+> Task :runServer
+2026-10-30T11:02:32.710252136Z main WARN Advanced terminal features are not available in this environment
+[11:02:32] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 96ms
+[11:02:32] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[11:02:32] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/naturequirks/run
+[11:02:32] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 16ms
+[11:02:32] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[11:02:32] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[11:02:32] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[11:02:32] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[11:02:32] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[11:02:33] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates naturequirks%%/home/runner/work/anotherTest/anotherTest/naturequirks/build/classes/java/main:naturequirks%%/home/runner/work/anotherTest/anotherTest/naturequirks/build/resources/main from env
+[11:02:33] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[11:02:33] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		Nature's Quirks 0.1.0 (naturequirks)
+		NeoForge 21.11.48 (neoforge)
+[11:02:33] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[11:02:33] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[11:02:33] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[11:02:33] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - naturequirks (composite(folder(/home/runner/work/anotherTest/anotherTest/naturequirks/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/naturequirks/build/resources/main)))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+[11:02:33] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 21ms
+[11:02:34] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[11:02:40] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[11:02:40] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[11:02:40] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[11:02:40] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[11:02:40] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[11:02:40] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [waypoint, modify, waypoint, color, reset] and [waypoint, modify, waypoint, color, color] with inputs: [reset]
+[11:02:40] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[11:02:40] [modloading-worker-0/INFO] [co.re.na.NatureQuirks/]: Nature's Quirks: the Overworld got a little stranger.
+[11:02:40] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[11:02:41] [main/INFO] [minecraft/Main]: No existing world data, creating new world
+[11:02:42] [main/INFO] [minecraft/RecipeManager]: Loaded 1488 recipes
+[11:02:42] [main/INFO] [minecraft/AdvancementTree]: Loaded 1584 advancements
+[11:02:42] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[11:02:42] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.11
+[11:02:42] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[11:02:42] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[11:02:42] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[11:02:43] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[11:02:43] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[11:02:43] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[11:02:43] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[11:02:43] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[11:02:43] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "probe_hive"
+[11:02:43] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[11:02:47] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[11:02:47] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[11:02:47] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 3876 ms
+[11:02:47] [Server thread/INFO] [minecraft/DedicatedServer]: Done (4.165s)! For help, type "help"
+[11:02:47] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[11:02:51] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=1440, y=62, z=-1104} | COUNTERCLOCKWISE_90 | Single[Left[naturequirks:giant_hive/tree]]> at BlockPos{x=1440, y=0, z=-1104} box=BoundingBox{minX=1440, minY=62, minZ=-1135, maxX=1471, maxY=99, maxZ=-1104} piece=1 rot=COUNTERCLOCKWISE_90: surface water 0/1024, comb 2748, honey sources 19 flowing 0, heart BlockPos{x=1458, y=71, z=-1116} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@2ddf1870), nests 10 with 18 bees, bees flying 0, chests 3 {chests/giant_hive=2, chests/giant_hive_heart=1}
+[11:02:54] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=3168, y=64, z=736} | NONE | Single[Left[naturequirks:giant_hive/dome]]> at BlockPos{x=3168, y=0, z=736} box=BoundingBox{minX=3168, minY=64, minZ=736, maxX=3197, maxY=83, maxZ=765} piece=1 rot=NONE: surface water 0/900, comb 2559, honey sources 20 flowing 0, heart BlockPos{x=3182, y=68, z=750} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@8a1a03d), nests 7 with 10 bees, bees flying 0, chests 2 {chests/giant_hive=1, chests/giant_hive_heart=1}
+[11:02:58] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=-1216, y=65, z=4576} | CLOCKWISE_180 | Single[Left[naturequirks:giant_hive/dome]]> at BlockPos{x=-1216, y=0, z=4576} box=BoundingBox{minX=-1245, minY=65, minZ=4547, maxX=-1216, maxY=84, maxZ=4576} piece=1 rot=CLOCKWISE_180: surface water 0/900, comb 2559, honey sources 20 flowing 0, heart BlockPos{x=-1230, y=69, z=4562} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@11b2b3e8), nests 7 with 10 bees, bees flying 3, chests 2 {chests/giant_hive=1, chests/giant_hive_heart=1}
+[11:03:02] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=-1984, y=73, z=-4720} | COUNTERCLOCKWISE_90 | Single[Left[naturequirks:giant_hive/dome]]> at BlockPos{x=-1984, y=0, z=-4720} box=BoundingBox{minX=-1984, minY=73, minZ=-4749, maxX=-1955, maxY=92, maxZ=-4720} piece=1 rot=COUNTERCLOCKWISE_90: surface water 0/900, comb 2559, honey sources 20 flowing 0, heart BlockPos{x=-1970, y=77, z=-4734} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@3d1aa859), nests 7 with 10 bees, bees flying 2, chests 2 {chests/giant_hive=1, chests/giant_hive_heart=1}
+[11:03:04] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST alarm: broke comb at BlockPos{x=1454, y=68, z=-1120} -> alarms 0 -> 1, guardians spawned 0 (type registered: false), hearts near: [BlockPos{x=1458, y=71, z=-1116}]
+[11:03:04] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST cooldown: 6 more calls in the same tick -> spawned total 0
+[11:03:05] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST bottle: honey source placed true -> honey bottles 5 (hand 1 minecraft:honey_bottle), source left true
+[11:03:05] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST bucket pickup: 1 naturequirks:honey_bucket
+[11:03:05] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST cake: slices eaten 7 block now minecraft:air, food 3 regen true
+[11:03:05] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST fluid type: naturequirks:honey motionScale-ish canSwim false canDrown true
+[11:03:05] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE PROBE DONE
+[11:03:05] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[11:03:05] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[11:03:05] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[11:03:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_hive]'/minecraft:overworld
+[11:03:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_hive]'/minecraft:the_nether
+[11:03:09] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_hive]'/minecraft:the_end
+[11:03:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (probe_hive): All chunks are saved
+[11:03:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[11:03:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[11:03:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[11:03:09] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Closing FML Loader 2eae56d6
+[11:03:09] [main/INFO] [ne.ne.fm.ModLoader/]: Clearing ModLoader
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1793358151984.json
+
+BUILD SUCCESSFUL in 38s
+6 actionable tasks: 2 executed, 4 up-to-date
+===== SEED 4242
+
+> Configure project :
+Creating Minecraft artifacts without recompilation.
+
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :prepareServerRun UP-TO-DATE
+
+> Task :runServer
+2026-10-30T11:03:10.860614598Z main WARN Advanced terminal features are not available in this environment
+[11:03:10] [main/INFO] [ne.ne.fm.st.Entrypoint/]: JVM Uptime at startup: 110ms
+[11:03:10] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Starting FancyModLoader version 10.0.36 (DEDICATED_SERVER in DEV)
+[11:03:10] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Game directory: /home/runner/work/anotherTest/anotherTest/naturequirks/run
+[11:03:11] [main/INFO] [ne.ne.fm.lo.EarlyServiceDiscovery/]: Found 2 early service jars (out of 90) in 15ms
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Early Services:
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/loader/10.0.36/f72ab4d3e755fe736829883d90430a281527aca/loader-10.0.36.jar
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/.gradle/caches/modules-2/files-2.1/net.neoforged.fancymodloader/earlydisplay/10.0.36/dbd0e11d545443f602addede111c39d9639708f9/earlydisplay-10.0.36.jar
+[11:03:11] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: Not loading early display in headless mode.
+[11:03:11] [main/INFO] [ne.ne.fm.lo.mo.lo.GameLocator/]: Detected a joined NeoForge and Minecraft configuration. Applying filtering...
+[11:03:11] [main/INFO] [ne.ne.fm.lo.mo.lo.InDevFolderLocator/CORE]: Got mod coordinates naturequirks%%/home/runner/work/anotherTest/anotherTest/naturequirks/build/classes/java/main:naturequirks%%/home/runner/work/anotherTest/anotherTest/naturequirks/build/resources/main from env
+[11:03:11] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[11:03:11] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Minecraft 1.21.11 (minecraft)
+		Nature's Quirks 0.1.0 (naturequirks)
+		NeoForge 21.11.48 (neoforge)
+[11:03:11] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.5+mixin.0.8.7/80fc3a9f592673cea87f4cd702f87991c6c9fe4d/sponge-mixin-0.16.5+mixin.0.8.7.jar Service=FML Env=SERVER
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Loading FML Plugins:
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]:  - /home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar > net.neoforged.neoforge-coremods-21.11.48.jar
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Building game content classloader:
+ - minecraft (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48-client-extra-aka-minecraft-resources.jar)), filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - mixinextras.neoforge (jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar > mixinextras-neoforge-0.5.3.jar))
+ - naturequirks (composite(folder(/home/runner/work/anotherTest/anotherTest/naturequirks/build/classes/java/main), folder(/home/runner/work/anotherTest/anotherTest/naturequirks/build/resources/main)))
+ - neoforge (composite(filtered(jar(/home/runner/work/anotherTest/anotherTest/naturequirks/build/moddev/artifacts/neoforge-21.11.48.jar))))
+ - net.neoforged.fml.generated (empty(VirtualJar/net.neoforged.fml.generated))
+[11:03:11] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Built game content classloader in 32ms
+[11:03:12] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.3).
+[11:03:17] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[11:03:17] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[11:03:17] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[11:03:17] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[11:03:17] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[11:03:17] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [waypoint, modify, waypoint, color, reset] and [waypoint, modify, waypoint, color, color] with inputs: [reset]
+[11:03:17] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.11.48, for MC 1.21.11
+[11:03:17] [modloading-worker-0/INFO] [co.re.na.NatureQuirks/]: Nature's Quirks: the Overworld got a little stranger.
+[11:03:18] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[11:03:19] [main/INFO] [minecraft/Main]: No existing world data, creating new world
+[11:03:20] [main/INFO] [minecraft/RecipeManager]: Loaded 1488 recipes
+[11:03:20] [main/INFO] [minecraft/AdvancementTree]: Loaded 1584 advancements
+[11:03:20] [main/INFO] [ne.ne.ne.co.cr.RecipePriorityManager/]: Loaded 0 recipe priority overrides
+[11:03:20] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.21.11
+[11:03:20] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
+[11:03:20] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
+[11:03:20] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[11:03:20] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
+[11:03:20] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[11:03:20] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
+[11:03:20] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[11:03:20] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
+[11:03:20] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "probe_4242"
+[11:03:20] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Selecting global world spawn...
+[11:03:24] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Loading 0 persistent chunks...
+[11:03:24] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Preparing spawn area: 100%
+[11:03:24] [Server thread/INFO] [minecraft/LoggingLevelLoadListener]: Time elapsed: 3372 ms
+[11:03:24] [Server thread/INFO] [minecraft/DedicatedServer]: Done (3.645s)! For help, type "help"
+[11:03:24] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[11:03:28] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=-368, y=63, z=-1296} | NONE | Single[Left[naturequirks:giant_hive/tree]]> at BlockPos{x=-368, y=0, z=-1296} box=BoundingBox{minX=-368, minY=63, minZ=-1296, maxX=-337, maxY=100, maxZ=-1265} piece=1 rot=NONE: surface water 0/1024, comb 2748, honey sources 19 flowing 0, heart BlockPos{x=-356, y=72, z=-1278} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@268976f8), nests 10 with 18 bees, bees flying 0, chests 3 {chests/giant_hive=2, chests/giant_hive_heart=1}
+[11:03:31] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=320, y=63, z=1568} | CLOCKWISE_90 | Single[Left[naturequirks:giant_hive/tree]]> at BlockPos{x=320, y=0, z=1568} box=BoundingBox{minX=289, minY=63, minZ=1568, maxX=320, maxY=100, maxZ=1599} piece=1 rot=CLOCKWISE_90: surface water 0/1024, comb 2748, honey sources 19 flowing 0, heart BlockPos{x=302, y=72, z=1580} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@71bcce86), nests 10 with 18 bees, bees flying 3, chests 3 {chests/giant_hive=2, chests/giant_hive_heart=1}
+[11:03:35] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=-400, y=69, z=2448} | CLOCKWISE_90 | Single[Left[naturequirks:giant_hive/tree]]> at BlockPos{x=-400, y=0, z=2448} box=BoundingBox{minX=-431, minY=69, minZ=2448, maxX=-400, maxY=106, maxZ=2479} piece=1 rot=CLOCKWISE_90: surface water 0/1024, comb 2748, honey sources 19 flowing 0, heart BlockPos{x=-418, y=78, z=2460} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@5ed63677), nests 10 with 18 bees, bees flying 3, chests 3 {chests/giant_hive=2, chests/giant_hive_heart=1}
+[11:03:35] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE AUDIT <PoolElementStructurePiece | BlockPos{x=-368, y=63, z=-1296} | NONE | Single[Left[naturequirks:giant_hive/tree]]> at BlockPos{x=-368, y=0, z=-1296} box=BoundingBox{minX=-368, minY=63, minZ=-1296, maxX=-337, maxY=100, maxZ=-1265} piece=1 rot=NONE: surface water 0/1024, comb 2748, honey sources 19 flowing 0, heart BlockPos{x=-356, y=72, z=-1278} (be com.replecant.naturequirks.hive.HiveHeartBlockEntity@268976f8), nests 10 with 18 bees, bees flying 4, chests 3 {chests/giant_hive=2, chests/giant_hive_heart=1}
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST alarm: broke comb at BlockPos{x=-360, y=69, z=-1282} -> alarms 0 -> 1, guardians spawned 0 (type registered: false), hearts near: [BlockPos{x=-356, y=72, z=-1278}]
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST cooldown: 6 more calls in the same tick -> spawned total 0
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST bottle: honey source placed true -> honey bottles 5 (hand 1 minecraft:honey_bottle), source left true
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST bucket pickup: 1 naturequirks:honey_bucket
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST cake: slices eaten 7 block now minecraft:air, food 3 regen true
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE TEST fluid type: naturequirks:honey motionScale-ish canSwim false canDrown true
+[11:03:37] [Server thread/INFO] [co.re.na.NatureQuirks/]: HIVE PROBE DONE
+[11:03:37] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[11:03:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[11:03:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[11:03:39] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/minecraft:overworld
+[11:03:40] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/minecraft:the_nether
+[11:03:40] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[probe_4242]'/minecraft:the_end
+[11:03:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (probe_4242): All chunks are saved
+[11:03:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[11:03:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[11:03:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[11:03:40] [main/INFO] [ne.ne.fm.lo.FMLLoader/]: Closing FML Loader 71ffa4f4
+[11:03:40] [main/INFO] [ne.ne.fm.ModLoader/]: Clearing ModLoader
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1793358190153.json
+
+BUILD SUCCESSFUL in 30s
+6 actionable tasks: 1 executed, 5 up-to-date

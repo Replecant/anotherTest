@@ -7,6 +7,7 @@
 | Мод | Папка | Статус | Скачать |
 |---|---|---|---|
 | **Ретрокосмос (Retro Cosmos)** — американский ретрофутуристический космос 1950-х: ракеты, станция «Свобода», Венера с динозаврами, доктор Ойнштайн и Космические рейнджеры | [`retrocosmos/`](retrocosmos/) | завершён, не меняется | [релизы `retrocosmos-v…`](https://github.com/Replecant/anotherTest/releases) |
+| **Причуды природы (Nature's Quirks)** — ванильные странности: каменные головы, цветочные криперы, огромные ульи | [`naturequirks/`](naturequirks/) | в работе | [релизы `naturequirks-v…`](https://github.com/Replecant/anotherTest/releases) |
 
 ## Как это устроено
 - Мод — это папка верхнего уровня с собственным Gradle-проектом (`build.gradle`, `settings.gradle`, `gradlew`,

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " C ",
+    "CGC",
+    " C "
+  ],
+  "key": {
+    "C": "minecraft:honeycomb",
+    "G": "minecraft:glass"
+  },
+  "result": {
+    "id": "naturequirks:comb_window",
+    "count": 2
+  }
+}

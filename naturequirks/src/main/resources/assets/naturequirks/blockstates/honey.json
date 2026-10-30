@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=1": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=2": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=3": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=4": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=5": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=6": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=7": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=8": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=9": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=10": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=11": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=12": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=13": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=14": {
+      "model": "naturequirks:block/honey"
+    },
+    "level=15": {
+      "model": "naturequirks:block/honey"
+    }
+  }
+}

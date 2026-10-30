@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "naturequirks:giant_hive",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 44,
+    "separation": 18,
+    "salt": 581233907,
+    "exclusion_zone": {
+      "other_set": "minecraft:villages",
+      "chunk_count": 6
+    }
+  }
+}

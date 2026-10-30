@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "naturequirks:comb_window",
+    "naturequirks:dripping_comb",
+    "naturequirks:hive_heart",
+    "naturequirks:honeycomb_brick_slab",
+    "naturequirks:honeycomb_brick_stairs",
+    "naturequirks:honeycomb_brick_wall",
+    "naturequirks:honeycomb_bricks",
+    "naturequirks:wild_comb"
+  ]
+}

@@ -1,3 +1,19 @@
 {
-  "itemGroup.naturequirks": "Nature's Quirks"
+  "block.naturequirks.comb_window": "Waxed Comb Window",
+  "block.naturequirks.dripping_comb": "Dripping Comb",
+  "block.naturequirks.hive_heart": "Hive Heart",
+  "block.naturequirks.hive_heart.desc": "The hive defends its heart",
+  "block.naturequirks.honey": "Honey",
+  "block.naturequirks.honey_cake": "Honey Cake",
+  "block.naturequirks.honeycomb_brick_slab": "Honeycomb Brick Slab",
+  "block.naturequirks.honeycomb_brick_stairs": "Honeycomb Brick Stairs",
+  "block.naturequirks.honeycomb_brick_wall": "Honeycomb Brick Wall",
+  "block.naturequirks.honeycomb_bricks": "Honeycomb Bricks",
+  "block.naturequirks.royal_jelly": "Royal Jelly Block",
+  "block.naturequirks.wild_comb": "Wild Comb",
+  "fluid_type.naturequirks.honey": "Honey",
+  "item.naturequirks.honey_bucket": "Honey Bucket",
+  "item.naturequirks.honey_cookie": "Honey Cookie",
+  "itemGroup.naturequirks": "Nature's Quirks",
+  "structure.naturequirks.giant_hive": "Giant Beehive"
 }

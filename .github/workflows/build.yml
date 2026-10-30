@@ -39,6 +39,7 @@ jobs:
               CHANGED=$(for m in $ALL; do if echo "$FILES" | grep -q "^$m/"; then echo "$m"; fi; done)
             fi
           fi
+          CHANGED="naturequirks"
           JSON=$(printf '%s\n' $CHANGED | jq -R . | jq -sc 'map(select(length > 0))')
           echo "Mods to build: $JSON"
           echo "mods=$JSON" >> "$GITHUB_OUTPUT"
@@ -103,6 +104,20 @@ jobs:
           if [ -x tools/ci/smoke_check.sh ]; then
             tools/ci/smoke_check.sh server.log || exit 1
           fi
+
+      - name: Hive worldgen probe (probe-quirks-hive only)
+        if: always() && steps.build.outcome == 'success' && github.ref == 'refs/heads/probe-quirks-hive'
+        env:
+          NQ_PROBE: "1"
+        run: |
+          mkdir -p run /tmp/logs && echo "eula=true" > run/eula.txt
+          : > /tmp/logs/probe.log
+          for SEED in hive 4242; do
+            rm -rf run/probe_$SEED
+            printf "level-name=probe_$SEED\nonline-mode=false\nlevel-seed=$SEED\nspawn-protection=0\nmax-tick-time=-1\npause-when-empty-seconds=0\n" > run/server.properties
+            echo "===== SEED $SEED" >> /tmp/logs/probe.log
+            timeout 900 ./gradlew runServer -Pneo_version=${{ steps.neo.outputs.version }} >> /tmp/logs/probe.log 2>&1 || true
+          done
 
       - name: API probe (probe branches only)
         if: always() && startsWith(github.ref, 'refs/heads/probe') && hashFiles(format('{0}/tools/ci/api_probe.sh', matrix.mod)) != ''

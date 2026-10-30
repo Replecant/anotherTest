@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "naturequirks:block/honeycomb_brick_slab"
+    },
+    "type=top": {
+      "model": "naturequirks:block/honeycomb_brick_slab_top"
+    },
+    "type=double": {
+      "model": "naturequirks:block/honeycomb_bricks"
+    }
+  }
+}

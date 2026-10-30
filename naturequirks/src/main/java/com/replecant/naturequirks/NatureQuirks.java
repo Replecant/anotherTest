@@ -1,6 +1,7 @@
 package com.replecant.naturequirks;
 
 import com.mojang.logging.LogUtils;
+import com.replecant.naturequirks.hive.ModHive;
 import com.replecant.naturequirks.registry.ModTab;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -18,6 +19,7 @@ public class NatureQuirks {
 
     public NatureQuirks(IEventBus modEventBus, ModContainer modContainer) {
         ModTab.TABS.register(modEventBus);
+        ModHive.init(modEventBus);
         LOGGER.info("Nature's Quirks: the Overworld got a little stranger.");
     }
 }

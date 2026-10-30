@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "naturequirks:honeycomb_bricks",
+  "result": {
+    "id": "naturequirks:honeycomb_brick_wall",
+    "count": 1
+  }
+}

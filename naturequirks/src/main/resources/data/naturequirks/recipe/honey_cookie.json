@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WHW"
+  ],
+  "key": {
+    "W": "minecraft:wheat",
+    "H": "minecraft:honey_bottle"
+  },
+  "result": {
+    "id": "naturequirks:honey_cookie",
+    "count": 8
+  }
+}

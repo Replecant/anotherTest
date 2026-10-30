@@ -1,6 +1,7 @@
 package com.replecant.naturequirks;
 
 import com.mojang.logging.LogUtils;
+import com.replecant.naturequirks.hive.ModHive;
 import com.replecant.naturequirks.registry.ModTab;
 import com.replecant.naturequirks.guardianbee.GuardianBees;
 import com.replecant.naturequirks.flowercreeper.FlowerCreepers;
@@ -24,6 +25,7 @@ public class NatureQuirks {
         StoneHeads.init(modEventBus);
         FlowerCreepers.init(modEventBus);
         GuardianBees.init(modEventBus);
+        ModHive.init(modEventBus);
         LOGGER.info("Nature's Quirks: the Overworld got a little stranger.");
     }
 }

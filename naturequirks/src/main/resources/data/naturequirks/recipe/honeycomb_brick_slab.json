@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "BBB"
+  ],
+  "key": {
+    "B": "naturequirks:honeycomb_bricks"
+  },
+  "result": {
+    "id": "naturequirks:honeycomb_brick_slab",
+    "count": 6
+  }
+}

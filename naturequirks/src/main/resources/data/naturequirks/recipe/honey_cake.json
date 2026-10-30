@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "HHH",
+    "SEM",
+    "WWW"
+  ],
+  "key": {
+    "H": "minecraft:honey_bottle",
+    "S": "minecraft:sugar",
+    "E": "#minecraft:eggs",
+    "M": "minecraft:milk_bucket",
+    "W": "minecraft:wheat"
+  },
+  "result": {
+    "id": "naturequirks:honey_cake",
+    "count": 1
+  }
+}

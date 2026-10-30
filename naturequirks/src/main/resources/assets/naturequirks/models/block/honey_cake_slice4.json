@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/cake_slice4",
+  "textures": {
+    "particle": "naturequirks:block/honey_cake_side",
+    "bottom": "naturequirks:block/honey_cake_bottom",
+    "top": "naturequirks:block/honey_cake_top",
+    "side": "naturequirks:block/honey_cake_side",
+    "inside": "naturequirks:block/honey_cake_inner"
+  }
+}

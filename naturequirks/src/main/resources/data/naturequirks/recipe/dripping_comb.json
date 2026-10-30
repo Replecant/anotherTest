@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "naturequirks:wild_comb",
+    "minecraft:honey_bottle"
+  ],
+  "result": {
+    "id": "naturequirks:dripping_comb",
+    "count": 1
+  }
+}

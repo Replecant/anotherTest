@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:bee_nest",
+    "minecraft:beehive",
+    "minecraft:honey_block",
+    "minecraft:honeycomb_block",
+    "naturequirks:dripping_comb",
+    "naturequirks:royal_jelly",
+    "naturequirks:wild_comb"
+  ]
+}

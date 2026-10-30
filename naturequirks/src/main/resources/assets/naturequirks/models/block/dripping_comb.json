@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "side": "naturequirks:block/dripping_comb_side",
+    "top": "naturequirks:block/dripping_comb_top",
+    "bottom": "naturequirks:block/dripping_comb_bottom"
+  }
+}
